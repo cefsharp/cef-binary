@@ -1,4 +1,5 @@
-libcef-dll-wrapper
-==================
+# README
 
-Personal fork of the libcef_dll_wrapper provided by Chromium which works better with CefSharp
+This is a personal fork of the Chromium Embedded Framework (CEF) binary distribution, found at http://www.magpcss.net/cef_downloads/. To make it work properly with the VS2010 and VS2012 version of [CefSharp](http://github.com/perlun/CefSharp), we need to do some local modifications to make the project compile properly. This purpose of this repository is to track and maintain these modifications.
+
+The original README for CEF can be found here: [README.txt](README.txt).
