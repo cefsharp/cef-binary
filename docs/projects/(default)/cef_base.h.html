@@ -1,0 +1,166 @@
+<HTML>
+<HEAD>
+<TITLE>
+cef_base.h
+</TITLE>
+</HEAD>
+<BODY>
+<PRE>
+<font color="green">// Copyright (c) 2011 Marshall A. Greenblatt. All rights reserved.</font>
+<font color="green">//</font>
+<font color="green">// Redistribution and use in source and binary forms, with or without</font>
+<font color="green">// modification, are permitted provided that the following conditions are</font>
+<font color="green">// met:</font>
+<font color="green">//</font>
+<font color="green">//    * Redistributions of source code must retain the above copyright</font>
+<font color="green">// notice, this list of conditions and the following disclaimer.</font>
+<font color="green">//    * Redistributions in binary form must reproduce the above</font>
+<font color="green">// copyright notice, this list of conditions and the following disclaimer</font>
+<font color="green">// in the documentation and/or other materials provided with the</font>
+<font color="green">// distribution.</font>
+<font color="green">//    * Neither the name of Google Inc. nor the name Chromium Embedded</font>
+<font color="green">// Framework nor the names of its contributors may be used to endorse</font>
+<font color="green">// or promote products derived from this software without specific prior</font>
+<font color="green">// written permission.</font>
+<font color="green">//</font>
+<font color="green">// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS</font>
+<font color="green">// "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT</font>
+<font color="green">// LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR</font>
+<font color="green">// A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT</font>
+<font color="green">// OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,</font>
+<font color="green">// SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT</font>
+<font color="green">// LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,</font>
+<font color="green">// DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY</font>
+<font color="green">// THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT</font>
+<font color="green">// (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE</font>
+<font color="green">// OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.</font>
+<font color="green">//</font>
+<font color="green">// ---------------------------------------------------------------------------</font>
+<font color="green">//</font>
+<font color="green">// The contents of this file must follow a specific format in order to</font>
+<font color="green">// support the CEF translator tool. See the translator.README.txt file in the</font>
+<font color="green">// tools directory for more information.</font>
+<font color="green">//</font>
+
+
+<font color="blue">#ifndef</font> CEF_INCLUDE_CEF_BASE_H_
+<font color="blue">#define</font> CEF_INCLUDE_CEF_BASE_H_
+<font color="blue">#pragma</font> once
+
+<font color="blue">#include</font> <font color="maroon">"include/internal/cef_build.h"</font>
+<font color="blue">#include</font> <font color="maroon">"include/internal/cef_ptr.h"</font>
+<font color="blue">#include</font> <font color="maroon">"include/internal/cef_types_wrappers.h"</font>
+
+<font color="green">// Bring in platform-specific definitions.</font>
+<font color="blue">#if</font> defined<font color="black">(</font>OS_WIN<font color="black">)</font>
+<font color="blue">#include</font> <font color="maroon">"include/internal/cef_win.h"</font>
+<font color="blue">#elif</font> defined<font color="black">(</font>OS_MACOSX<font color="black">)</font>
+<font color="blue">#include</font> <font color="maroon">"include/internal/cef_mac.h"</font>
+<font color="blue">#elif</font> defined<font color="black">(</font>OS_LINUX<font color="black">)</font>
+<font color="blue">#include</font> <font color="maroon">"include/internal/cef_linux.h"</font>
+<font color="blue">#endif</font>
+
+<font color="green">///</font>
+<font color="green">// Interface defining the reference count implementation methods. All framework</font>
+<font color="green">// classes must extend the CefBase class.</font>
+<font color="green">///</font>
+<font color="blue">class</font> CefBase <font color="black">{</font>
+ <font color="blue">public</font><font color="black">:</font>
+  <font color="green">///</font>
+  <font color="green">// The AddRef method increments the reference count for the object. It should</font>
+  <font color="green">// be called for every new copy of a pointer to a given object. The resulting</font>
+  <font color="green">// reference count value is returned and should be used for diagnostic/testing</font>
+  <font color="green">// purposes only.</font>
+  <font color="green">///</font>
+  virtual <font color="blue">int</font> AddRef<font color="black">(</font><font color="black">)</font> <font color="black">=</font><font color="maroon">0</font>;
+
+  <font color="green">///</font>
+  <font color="green">// The Release method decrements the reference count for the object. If the</font>
+  <font color="green">// reference count on the object falls to 0, then the object should free</font>
+  <font color="green">// itself from memory.  The resulting reference count value is returned and</font>
+  <font color="green">// should be used for diagnostic/testing purposes only.</font>
+  <font color="green">///</font>
+  virtual <font color="blue">int</font> Release<font color="black">(</font><font color="black">)</font> <font color="black">=</font><font color="maroon">0</font>;
+
+  <font color="green">///</font>
+  <font color="green">// Return the current number of references.</font>
+  <font color="green">///</font>
+  virtual <font color="blue">int</font> GetRefCt<font color="black">(</font><font color="black">)</font> <font color="black">=</font><font color="maroon">0</font>;
+
+ <font color="blue">protected</font><font color="black">:</font>
+  virtual ~CefBase<font color="black">(</font><font color="black">)</font> <font color="black">{</font><font color="black">}</font>
+<font color="black">}</font>;
+
+
+<font color="green">///</font>
+<font color="green">// Class that implements atomic reference counting.</font>
+<font color="green">///</font>
+<font color="blue">class</font> CefRefCount <font color="black">{</font>
+ <font color="blue">public</font><font color="black">:</font>
+  CefRefCount<font color="black">(</font><font color="black">)</font> <font color="black">:</font> refct_<font color="black">(</font><font color="maroon">0</font><font color="black">)</font> <font color="black">{</font><font color="black">}</font>
+
+  <font color="green">///</font>
+  <font color="green">// Atomic reference increment.</font>
+  <font color="green">///</font>
+  <font color="blue">int</font> AddRef<font color="black">(</font><font color="black">)</font> <font color="black">{</font>
+    <font color="blue">return</font> CefAtomicIncrement<font color="black">(</font><font color="black">&</font>refct_<font color="black">)</font>;
+  <font color="black">}</font>
+
+  <font color="green">///</font>
+  <font color="green">// Atomic reference decrement. Delete the object when no references remain.</font>
+  <font color="green">///</font>
+  <font color="blue">int</font> Release<font color="black">(</font><font color="black">)</font> <font color="black">{</font>
+    <font color="blue">return</font> CefAtomicDecrement<font color="black">(</font><font color="black">&</font>refct_<font color="black">)</font>;
+  <font color="black">}</font>
+
+  <font color="green">///</font>
+  <font color="green">// Return the current number of references.</font>
+  <font color="green">///</font>
+  <font color="blue">int</font> GetRefCt<font color="black">(</font><font color="black">)</font> <font color="black">{</font> <font color="blue">return</font> refct_; <font color="black">}</font>
+
+ <font color="blue">private</font><font color="black">:</font>
+  <font color="blue">long</font> refct_;  <font color="green">// NOLINT(runtime/int)</font>
+<font color="black">}</font>;
+
+<font color="green">///</font>
+<font color="green">// Macro that provides a reference counting implementation for classes extending</font>
+<font color="green">// CefBase.</font>
+<font color="green">///</font>
+<font color="blue">#define</font> IMPLEMENT_REFCOUNTING<font color="black">(</font>ClassName<font color="black">)</font>            \
+  <font color="blue">public</font><font color="black">:</font>                                           \
+    <font color="blue">int</font> AddRef<font color="black">(</font><font color="black">)</font> <font color="black">{</font> <font color="blue">return</font> refct_.AddRef<font color="black">(</font><font color="black">)</font>; <font color="black">}</font>        \
+    <font color="blue">int</font> Release<font color="black">(</font><font color="black">)</font> <font color="black">{</font>                                 \
+      <font color="blue">int</font> retval <font color="black">=</font> refct_.Release<font color="black">(</font><font color="black">)</font>;                \
+      <font color="blue">if</font> <font color="black">(</font>retval <font color="black">=</font><font color="black">=</font> <font color="maroon">0</font><font color="black">)</font>                              \
+        <font color="blue">delete</font> <font color="blue">this</font>;                                \
+      <font color="blue">return</font> retval;                                \
+    <font color="black">}</font>                                               \
+    <font color="blue">int</font> GetRefCt<font color="black">(</font><font color="black">)</font> <font color="black">{</font> <font color="blue">return</font> refct_.GetRefCt<font color="black">(</font><font color="black">)</font>; <font color="black">}</font>    \
+  <font color="blue">private</font><font color="black">:</font>                                          \
+    CefRefCount refct_;
+
+<font color="green">///</font>
+<font color="green">// Macro that provides a locking implementation. Use the Lock() and Unlock()</font>
+<font color="green">// methods to protect a section of code from simultaneous access by multiple</font>
+<font color="green">// threads. The AutoLock class is a helper that will hold the lock while in</font>
+<font color="green">// scope.</font>
+<font color="green">///</font>
+<font color="blue">#define</font> IMPLEMENT_LOCKING<font color="black">(</font>ClassName<font color="black">)</font>                                       \
+  <font color="blue">public</font><font color="black">:</font>                                                                  \
+    <font color="blue">class</font> AutoLock <font color="black">{</font>                                                       \
+     <font color="blue">public</font><font color="black">:</font>                                                               \
+      explicit AutoLock<font color="black">(</font>ClassName<font color="black">*</font> base<font color="black">)</font> <font color="black">:</font> base_<font color="black">(</font>base<font color="black">)</font> <font color="black">{</font> base_<font color="black">-</font><font color="black">&#62;</font>Lock<font color="black">(</font><font color="black">)</font>; <font color="black">}</font>  \
+      ~AutoLock<font color="black">(</font><font color="black">)</font> <font color="black">{</font> base_<font color="black">-</font><font color="black">&#62;</font>Unlock<font color="black">(</font><font color="black">)</font>; <font color="black">}</font>                                     \
+     <font color="blue">private</font><font color="black">:</font>                                                              \
+      ClassName<font color="black">*</font> base_;                                                    \
+    <font color="black">}</font>;                                                                     \
+    <font color="blue">void</font> Lock<font color="black">(</font><font color="black">)</font> <font color="black">{</font> critsec_.Lock<font color="black">(</font><font color="black">)</font>; <font color="black">}</font>                                       \
+    <font color="blue">void</font> Unlock<font color="black">(</font><font color="black">)</font> <font color="black">{</font> critsec_.Unlock<font color="black">(</font><font color="black">)</font>; <font color="black">}</font>                                   \
+  <font color="blue">private</font><font color="black">:</font>                                                                 \
+    CefCriticalSection critsec_;
+
+<font color="blue">#endif</font>  <font color="green">// CEF_INCLUDE_CEF_BASE_H_</font>
+
+</PRE>
+</BODY>
+</HTML>

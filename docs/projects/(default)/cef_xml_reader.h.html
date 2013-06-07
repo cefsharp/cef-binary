@@ -1,0 +1,280 @@
+<HTML>
+<HEAD>
+<TITLE>
+cef_xml_reader.h
+</TITLE>
+</HEAD>
+<BODY>
+<PRE>
+<font color="green">// Copyright (c) 2011 Marshall A. Greenblatt. All rights reserved.</font>
+<font color="green">//</font>
+<font color="green">// Redistribution and use in source and binary forms, with or without</font>
+<font color="green">// modification, are permitted provided that the following conditions are</font>
+<font color="green">// met:</font>
+<font color="green">//</font>
+<font color="green">//    * Redistributions of source code must retain the above copyright</font>
+<font color="green">// notice, this list of conditions and the following disclaimer.</font>
+<font color="green">//    * Redistributions in binary form must reproduce the above</font>
+<font color="green">// copyright notice, this list of conditions and the following disclaimer</font>
+<font color="green">// in the documentation and/or other materials provided with the</font>
+<font color="green">// distribution.</font>
+<font color="green">//    * Neither the name of Google Inc. nor the name Chromium Embedded</font>
+<font color="green">// Framework nor the names of its contributors may be used to endorse</font>
+<font color="green">// or promote products derived from this software without specific prior</font>
+<font color="green">// written permission.</font>
+<font color="green">//</font>
+<font color="green">// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS</font>
+<font color="green">// "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT</font>
+<font color="green">// LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR</font>
+<font color="green">// A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT</font>
+<font color="green">// OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,</font>
+<font color="green">// SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT</font>
+<font color="green">// LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,</font>
+<font color="green">// DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY</font>
+<font color="green">// THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT</font>
+<font color="green">// (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE</font>
+<font color="green">// OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.</font>
+<font color="green">//</font>
+<font color="green">// ---------------------------------------------------------------------------</font>
+<font color="green">//</font>
+<font color="green">// The contents of this file must follow a specific format in order to</font>
+<font color="green">// support the CEF translator tool. See the translator.README.txt file in the</font>
+<font color="green">// tools directory for more information.</font>
+<font color="green">//</font>
+
+<font color="blue">#ifndef</font> CEF_INCLUDE_CEF_XML_READER_H_
+<font color="blue">#define</font> CEF_INCLUDE_CEF_XML_READER_H_
+<font color="blue">#pragma</font> once
+
+<font color="blue">#include</font> <font color="maroon">"include/cef_base.h"</font>
+<font color="blue">#include</font> <font color="maroon">"include/cef_stream.h"</font>
+
+<font color="green">///</font>
+<font color="green">// Class that supports the reading of XML data via the libxml streaming API.</font>
+<font color="green">// The methods of this class should only be called on the thread that creates</font>
+<font color="green">// the object.</font>
+<font color="green">///</font>
+<font color="green">/*--cef(source=library)--*/</font>
+<font color="blue">class</font> CefXmlReader <font color="black">:</font> <font color="blue">public</font> virtual CefBase <font color="black">{</font>
+ <font color="blue">public</font><font color="black">:</font>
+  <font color="blue">typedef</font> cef_xml_encoding_type_t EncodingType;
+  <font color="blue">typedef</font> cef_xml_node_type_t NodeType;
+
+  <font color="green">///</font>
+  <font color="green">// Create a new CefXmlReader object. The returned object's methods can only</font>
+  <font color="green">// be called from the thread that created the object.</font>
+  <font color="green">///</font>
+  <font color="green">/*--cef()--*/</font>
+  <font color="blue">static</font> CefRefPtr<font color="black">&#60;</font>CefXmlReader<font color="black">&#62;</font> Create<font color="black">(</font>CefRefPtr<font color="black">&#60;</font>CefStreamReader<font color="black">&#62;</font> stream,
+                                        EncodingType encodingType,
+                                        <font color="blue">const</font> CefString<font color="black">&</font> URI<font color="black">)</font>;
+
+  <font color="green">///</font>
+  <font color="green">// Moves the cursor to the next node in the document. This method must be</font>
+  <font color="green">// called at least once to set the current cursor position. Returns true if</font>
+  <font color="green">// the cursor position was set successfully.</font>
+  <font color="green">///</font>
+  <font color="green">/*--cef()--*/</font>
+  virtual <font color="blue">bool</font> MoveToNextNode<font color="black">(</font><font color="black">)</font> <font color="black">=</font><font color="maroon">0</font>;
+
+  <font color="green">///</font>
+  <font color="green">// Close the document. This should be called directly to ensure that cleanup</font>
+  <font color="green">// occurs on the correct thread.</font>
+  <font color="green">///</font>
+  <font color="green">/*--cef()--*/</font>
+  virtual <font color="blue">bool</font> Close<font color="black">(</font><font color="black">)</font> <font color="black">=</font><font color="maroon">0</font>;
+
+  <font color="green">///</font>
+  <font color="green">// Returns true if an error has been reported by the XML parser.</font>
+  <font color="green">///</font>
+  <font color="green">/*--cef()--*/</font>
+  virtual <font color="blue">bool</font> HasError<font color="black">(</font><font color="black">)</font> <font color="black">=</font><font color="maroon">0</font>;
+
+  <font color="green">///</font>
+  <font color="green">// Returns the error string.</font>
+  <font color="green">///</font>
+  <font color="green">/*--cef()--*/</font>
+  virtual CefString GetError<font color="black">(</font><font color="black">)</font> <font color="black">=</font><font color="maroon">0</font>;
+
+
+  <font color="green">// The below methods retrieve data for the node at the current cursor</font>
+  <font color="green">// position.</font>
+
+  <font color="green">///</font>
+  <font color="green">// Returns the node type.</font>
+  <font color="green">///</font>
+  <font color="green">/*--cef(default_retval=XML_NODE_UNSUPPORTED)--*/</font>
+  virtual NodeType GetType<font color="black">(</font><font color="black">)</font> <font color="black">=</font><font color="maroon">0</font>;
+
+  <font color="green">///</font>
+  <font color="green">// Returns the node depth. Depth starts at 0 for the root node.</font>
+  <font color="green">///</font>
+  <font color="green">/*--cef()--*/</font>
+  virtual <font color="blue">int</font> GetDepth<font color="black">(</font><font color="black">)</font> <font color="black">=</font><font color="maroon">0</font>;
+
+  <font color="green">///</font>
+  <font color="green">// Returns the local name. See</font>
+  <font color="green">// http://www.w3.org/TR/REC-xml-names/#NT-LocalPart for additional details.</font>
+  <font color="green">///</font>
+  <font color="green">/*--cef()--*/</font>
+  virtual CefString GetLocalName<font color="black">(</font><font color="black">)</font> <font color="black">=</font><font color="maroon">0</font>;
+
+  <font color="green">///</font>
+  <font color="green">// Returns the namespace prefix. See http://www.w3.org/TR/REC-xml-names/ for</font>
+  <font color="green">// additional details.</font>
+  <font color="green">///</font>
+  <font color="green">/*--cef()--*/</font>
+  virtual CefString GetPrefix<font color="black">(</font><font color="black">)</font> <font color="black">=</font><font color="maroon">0</font>;
+
+  <font color="green">///</font>
+  <font color="green">// Returns the qualified name, equal to (Prefix:)LocalName. See</font>
+  <font color="green">// http://www.w3.org/TR/REC-xml-names/#ns-qualnames for additional details.</font>
+  <font color="green">///</font>
+  <font color="green">/*--cef()--*/</font>
+  virtual CefString GetQualifiedName<font color="black">(</font><font color="black">)</font> <font color="black">=</font><font color="maroon">0</font>;
+
+  <font color="green">///</font>
+  <font color="green">// Returns the URI defining the namespace associated with the node. See</font>
+  <font color="green">// http://www.w3.org/TR/REC-xml-names/ for additional details.</font>
+  <font color="green">///</font>
+  <font color="green">/*--cef()--*/</font>
+  virtual CefString GetNamespaceURI<font color="black">(</font><font color="black">)</font> <font color="black">=</font><font color="maroon">0</font>;
+
+  <font color="green">///</font>
+  <font color="green">// Returns the base URI of the node. See http://www.w3.org/TR/xmlbase/ for</font>
+  <font color="green">// additional details.</font>
+  <font color="green">///</font>
+  <font color="green">/*--cef()--*/</font>
+  virtual CefString GetBaseURI<font color="black">(</font><font color="black">)</font> <font color="black">=</font><font color="maroon">0</font>;
+
+  <font color="green">///</font>
+  <font color="green">// Returns the xml:lang scope within which the node resides. See</font>
+  <font color="green">// http://www.w3.org/TR/REC-xml/#sec-lang-tag for additional details.</font>
+  <font color="green">///</font>
+  <font color="green">/*--cef()--*/</font>
+  virtual CefString GetXmlLang<font color="black">(</font><font color="black">)</font> <font color="black">=</font><font color="maroon">0</font>;
+
+  <font color="green">///</font>
+  <font color="green">// Returns true if the node represents an empty element. &#60;a/&#62; is considered</font>
+  <font color="green">// empty but &#60;a&#62;&#60;/a&#62; is not.</font>
+  <font color="green">///</font>
+  <font color="green">/*--cef()--*/</font>
+  virtual <font color="blue">bool</font> IsEmptyElement<font color="black">(</font><font color="black">)</font> <font color="black">=</font><font color="maroon">0</font>;
+
+  <font color="green">///</font>
+  <font color="green">// Returns true if the node has a text value.</font>
+  <font color="green">///</font>
+  <font color="green">/*--cef()--*/</font>
+  virtual <font color="blue">bool</font> HasValue<font color="black">(</font><font color="black">)</font> <font color="black">=</font><font color="maroon">0</font>;
+
+  <font color="green">///</font>
+  <font color="green">// Returns the text value.</font>
+  <font color="green">///</font>
+  <font color="green">/*--cef()--*/</font>
+  virtual CefString GetValue<font color="black">(</font><font color="black">)</font> <font color="black">=</font><font color="maroon">0</font>;
+
+  <font color="green">///</font>
+  <font color="green">// Returns true if the node has attributes.</font>
+  <font color="green">///</font>
+  <font color="green">/*--cef()--*/</font>
+  virtual <font color="blue">bool</font> HasAttributes<font color="black">(</font><font color="black">)</font> <font color="black">=</font><font color="maroon">0</font>;
+
+  <font color="green">///</font>
+  <font color="green">// Returns the number of attributes.</font>
+  <font color="green">///</font>
+  <font color="green">/*--cef()--*/</font>
+  virtual size_t GetAttributeCount<font color="black">(</font><font color="black">)</font> <font color="black">=</font><font color="maroon">0</font>;
+
+  <font color="green">///</font>
+  <font color="green">// Returns the value of the attribute at the specified 0-based index.</font>
+  <font color="green">///</font>
+  <font color="green">/*--cef(capi_name=get_attribute_byindex,index_param=index)--*/</font>
+  virtual CefString GetAttribute<font color="black">(</font><font color="blue">int</font> index<font color="black">)</font> <font color="black">=</font><font color="maroon">0</font>;
+
+  <font color="green">///</font>
+  <font color="green">// Returns the value of the attribute with the specified qualified name.</font>
+  <font color="green">///</font>
+  <font color="green">/*--cef(capi_name=get_attribute_byqname)--*/</font>
+  virtual CefString GetAttribute<font color="black">(</font><font color="blue">const</font> CefString<font color="black">&</font> qualifiedName<font color="black">)</font> <font color="black">=</font><font color="maroon">0</font>;
+
+  <font color="green">///</font>
+  <font color="green">// Returns the value of the attribute with the specified local name and</font>
+  <font color="green">// namespace URI.</font>
+  <font color="green">///</font>
+  <font color="green">/*--cef(capi_name=get_attribute_bylname)--*/</font>
+  virtual CefString GetAttribute<font color="black">(</font><font color="blue">const</font> CefString<font color="black">&</font> localName,
+                                 <font color="blue">const</font> CefString<font color="black">&</font> namespaceURI<font color="black">)</font> <font color="black">=</font><font color="maroon">0</font>;
+
+  <font color="green">///</font>
+  <font color="green">// Returns an XML representation of the current node's children.</font>
+  <font color="green">///</font>
+  <font color="green">/*--cef()--*/</font>
+  virtual CefString GetInnerXml<font color="black">(</font><font color="black">)</font> <font color="black">=</font><font color="maroon">0</font>;
+
+  <font color="green">///</font>
+  <font color="green">// Returns an XML representation of the current node including its children.</font>
+  <font color="green">///</font>
+  <font color="green">/*--cef()--*/</font>
+  virtual CefString GetOuterXml<font color="black">(</font><font color="black">)</font> <font color="black">=</font><font color="maroon">0</font>;
+
+  <font color="green">///</font>
+  <font color="green">// Returns the line number for the current node.</font>
+  <font color="green">///</font>
+  <font color="green">/*--cef()--*/</font>
+  virtual <font color="blue">int</font> GetLineNumber<font color="black">(</font><font color="black">)</font> <font color="black">=</font><font color="maroon">0</font>;
+
+
+  <font color="green">// Attribute nodes are not traversed by default. The below methods can be</font>
+  <font color="green">// used to move the cursor to an attribute node. MoveToCarryingElement() can</font>
+  <font color="green">// be called afterwards to return the cursor to the carrying element. The</font>
+  <font color="green">// depth of an attribute node will be 1 + the depth of the carrying element.</font>
+
+  <font color="green">///</font>
+  <font color="green">// Moves the cursor to the attribute at the specified 0-based index. Returns</font>
+  <font color="green">// true if the cursor position was set successfully.</font>
+  <font color="green">///</font>
+  <font color="green">/*--cef(capi_name=move_to_attribute_byindex,index_param=index)--*/</font>
+  virtual <font color="blue">bool</font> MoveToAttribute<font color="black">(</font><font color="blue">int</font> index<font color="black">)</font> <font color="black">=</font><font color="maroon">0</font>;
+
+  <font color="green">///</font>
+  <font color="green">// Moves the cursor to the attribute with the specified qualified name.</font>
+  <font color="green">// Returns true if the cursor position was set successfully.</font>
+  <font color="green">///</font>
+  <font color="green">/*--cef(capi_name=move_to_attribute_byqname)--*/</font>
+  virtual <font color="blue">bool</font> MoveToAttribute<font color="black">(</font><font color="blue">const</font> CefString<font color="black">&</font> qualifiedName<font color="black">)</font> <font color="black">=</font><font color="maroon">0</font>;
+
+  <font color="green">///</font>
+  <font color="green">// Moves the cursor to the attribute with the specified local name and</font>
+  <font color="green">// namespace URI. Returns true if the cursor position was set successfully.</font>
+  <font color="green">///</font>
+  <font color="green">/*--cef(capi_name=move_to_attribute_bylname)--*/</font>
+  virtual <font color="blue">bool</font> MoveToAttribute<font color="black">(</font><font color="blue">const</font> CefString<font color="black">&</font> localName,
+                               <font color="blue">const</font> CefString<font color="black">&</font> namespaceURI<font color="black">)</font> <font color="black">=</font><font color="maroon">0</font>;
+
+  <font color="green">///</font>
+  <font color="green">// Moves the cursor to the first attribute in the current element. Returns</font>
+  <font color="green">// true if the cursor position was set successfully.</font>
+  <font color="green">///</font>
+  <font color="green">/*--cef()--*/</font>
+  virtual <font color="blue">bool</font> MoveToFirstAttribute<font color="black">(</font><font color="black">)</font> <font color="black">=</font><font color="maroon">0</font>;
+
+  <font color="green">///</font>
+  <font color="green">// Moves the cursor to the next attribute in the current element. Returns</font>
+  <font color="green">// true if the cursor position was set successfully.</font>
+  <font color="green">///</font>
+  <font color="green">/*--cef()--*/</font>
+  virtual <font color="blue">bool</font> MoveToNextAttribute<font color="black">(</font><font color="black">)</font> <font color="black">=</font><font color="maroon">0</font>;
+
+  <font color="green">///</font>
+  <font color="green">// Moves the cursor back to the carrying element. Returns true if the cursor</font>
+  <font color="green">// position was set successfully.</font>
+  <font color="green">///</font>
+  <font color="green">/*--cef()--*/</font>
+  virtual <font color="blue">bool</font> MoveToCarryingElement<font color="black">(</font><font color="black">)</font> <font color="black">=</font><font color="maroon">0</font>;
+<font color="black">}</font>;
+
+<font color="blue">#endif</font>  <font color="green">// CEF_INCLUDE_CEF_XML_READER_H_</font>
+
+</PRE>
+</BODY>
+</HTML>

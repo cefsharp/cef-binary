@@ -1,0 +1,159 @@
+<HTML>
+<HEAD>
+<TITLE>
+cef_cookie.h
+</TITLE>
+</HEAD>
+<BODY>
+<PRE>
+<font color="green">// Copyright (c) 2012 Marshall A. Greenblatt. All rights reserved.</font>
+<font color="green">//</font>
+<font color="green">// Redistribution and use in source and binary forms, with or without</font>
+<font color="green">// modification, are permitted provided that the following conditions are</font>
+<font color="green">// met:</font>
+<font color="green">//</font>
+<font color="green">//    * Redistributions of source code must retain the above copyright</font>
+<font color="green">// notice, this list of conditions and the following disclaimer.</font>
+<font color="green">//    * Redistributions in binary form must reproduce the above</font>
+<font color="green">// copyright notice, this list of conditions and the following disclaimer</font>
+<font color="green">// in the documentation and/or other materials provided with the</font>
+<font color="green">// distribution.</font>
+<font color="green">//    * Neither the name of Google Inc. nor the name Chromium Embedded</font>
+<font color="green">// Framework nor the names of its contributors may be used to endorse</font>
+<font color="green">// or promote products derived from this software without specific prior</font>
+<font color="green">// written permission.</font>
+<font color="green">//</font>
+<font color="green">// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS</font>
+<font color="green">// "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT</font>
+<font color="green">// LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR</font>
+<font color="green">// A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT</font>
+<font color="green">// OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,</font>
+<font color="green">// SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT</font>
+<font color="green">// LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,</font>
+<font color="green">// DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY</font>
+<font color="green">// THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT</font>
+<font color="green">// (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE</font>
+<font color="green">// OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.</font>
+<font color="green">//</font>
+<font color="green">// ---------------------------------------------------------------------------</font>
+<font color="green">//</font>
+<font color="green">// The contents of this file must follow a specific format in order to</font>
+<font color="green">// support the CEF translator tool. See the translator.README.txt file in the</font>
+<font color="green">// tools directory for more information.</font>
+<font color="green">//</font>
+
+<font color="blue">#ifndef</font> CEF_INCLUDE_CEF_COOKIE_H_
+<font color="blue">#define</font> CEF_INCLUDE_CEF_COOKIE_H_
+<font color="blue">#pragma</font> once
+
+<font color="blue">#include</font> <font color="maroon">"include/cef_base.h"</font>
+<font color="blue">#include</font> <font color="maroon">&#60;vector&#62;</font>
+
+<font color="blue">class</font> CefCookieVisitor;
+
+
+<font color="green">///</font>
+<font color="green">// Class used for managing cookies. The methods of this class may be called on</font>
+<font color="green">// any thread unless otherwise indicated.</font>
+<font color="green">///</font>
+<font color="green">/*--cef(source=library)--*/</font>
+<font color="blue">class</font> CefCookieManager <font color="black">:</font> <font color="blue">public</font> virtual CefBase <font color="black">{</font>
+ <font color="blue">public</font><font color="black">:</font>
+  <font color="green">///</font>
+  <font color="green">// Returns the global cookie manager. By default data will be stored at</font>
+  <font color="green">// CefSettings.cache_path if specified or in memory otherwise.</font>
+  <font color="green">///</font>
+  <font color="green">/*--cef()--*/</font>
+  <font color="blue">static</font> CefRefPtr<font color="black">&#60;</font>CefCookieManager<font color="black">&#62;</font> GetGlobalManager<font color="black">(</font><font color="black">)</font>;
+
+  <font color="green">///</font>
+  <font color="green">// Creates a new cookie manager. If |path| is empty data will be stored in</font>
+  <font color="green">// memory only. Returns NULL if creation fails.</font>
+  <font color="green">///</font>
+  <font color="green">/*--cef(optional_param=path)--*/</font>
+  <font color="blue">static</font> CefRefPtr<font color="black">&#60;</font>CefCookieManager<font color="black">&#62;</font> CreateManager<font color="black">(</font><font color="blue">const</font> CefString<font color="black">&</font> path<font color="black">)</font>;
+
+  <font color="green">///</font>
+  <font color="green">// Set the schemes supported by this manager. By default only "http" and</font>
+  <font color="green">// "https" schemes are supported. Must be called before any cookies are</font>
+  <font color="green">// accessed.</font>
+  <font color="green">///</font>
+  <font color="green">/*--cef()--*/</font>
+  virtual <font color="blue">void</font> SetSupportedSchemes<font color="black">(</font><font color="blue">const</font> std<font color="black">:</font><font color="black">:</font>vector<font color="black">&#60;</font>CefString<font color="black">&#62;</font><font color="black">&</font> schemes<font color="black">)</font> <font color="black">=</font><font color="maroon">0</font>;
+
+  <font color="green">///</font>
+  <font color="green">// Visit all cookies. The returned cookies are ordered by longest path, then</font>
+  <font color="green">// by earliest creation date. Returns false if cookies cannot be accessed.</font>
+  <font color="green">///</font>
+  <font color="green">/*--cef()--*/</font>
+  virtual <font color="blue">bool</font> VisitAllCookies<font color="black">(</font>CefRefPtr<font color="black">&#60;</font>CefCookieVisitor<font color="black">&#62;</font> visitor<font color="black">)</font> <font color="black">=</font><font color="maroon">0</font>;
+
+  <font color="green">///</font>
+  <font color="green">// Visit a subset of cookies. The results are filtered by the given url</font>
+  <font color="green">// scheme, host, domain and path. If |includeHttpOnly| is true HTTP-only</font>
+  <font color="green">// cookies will also be included in the results. The returned cookies are</font>
+  <font color="green">// ordered by longest path, then by earliest creation date. Returns false if</font>
+  <font color="green">// cookies cannot be accessed.</font>
+  <font color="green">///</font>
+  <font color="green">/*--cef()--*/</font>
+  virtual <font color="blue">bool</font> VisitUrlCookies<font color="black">(</font><font color="blue">const</font> CefString<font color="black">&</font> url, <font color="blue">bool</font> includeHttpOnly,
+                               CefRefPtr<font color="black">&#60;</font>CefCookieVisitor<font color="black">&#62;</font> visitor<font color="black">)</font> <font color="black">=</font><font color="maroon">0</font>;
+
+  <font color="green">///</font>
+  <font color="green">// Sets a cookie given a valid URL and explicit user-provided cookie</font>
+  <font color="green">// attributes. This function expects each attribute to be well-formed. It will</font>
+  <font color="green">// check for disallowed characters (e.g. the ';' character is disallowed</font>
+  <font color="green">// within the cookie value attribute) and will return false without setting</font>
+  <font color="green">// the cookie if such characters are found. This method must be called on the</font>
+  <font color="green">// IO thread.</font>
+  <font color="green">///</font>
+  <font color="green">/*--cef()--*/</font>
+  virtual <font color="blue">bool</font> SetCookie<font color="black">(</font><font color="blue">const</font> CefString<font color="black">&</font> url, <font color="blue">const</font> CefCookie<font color="black">&</font> cookie<font color="black">)</font> <font color="black">=</font><font color="maroon">0</font>;
+
+  <font color="green">///</font>
+  <font color="green">// Delete all cookies that match the specified parameters. If both |url| and</font>
+  <font color="green">// values |cookie_name| are specified all host and domain cookies matching</font>
+  <font color="green">// both will be deleted. If only |url| is specified all host cookies (but not</font>
+  <font color="green">// domain cookies) irrespective of path will be deleted. If |url| is empty all</font>
+  <font color="green">// cookies for all hosts and domains will be deleted. Returns false if a non-</font>
+  <font color="green">// empty invalid URL is specified or if cookies cannot be accessed. This</font>
+  <font color="green">// method must be called on the IO thread.</font>
+  <font color="green">///</font>
+  <font color="green">/*--cef(optional_param=url,optional_param=cookie_name)--*/</font>
+  virtual <font color="blue">bool</font> DeleteCookies<font color="black">(</font><font color="blue">const</font> CefString<font color="black">&</font> url,
+                             <font color="blue">const</font> CefString<font color="black">&</font> cookie_name<font color="black">)</font> <font color="black">=</font><font color="maroon">0</font>;
+
+  <font color="green">///</font>
+  <font color="green">// Sets the directory path that will be used for storing cookie data. If</font>
+  <font color="green">// |path| is empty data will be stored in memory only. Returns false if</font>
+  <font color="green">// cookies cannot be accessed.</font>
+  <font color="green">///</font>
+  <font color="green">/*--cef(optional_param=path)--*/</font>
+  virtual <font color="blue">bool</font> SetStoragePath<font color="black">(</font><font color="blue">const</font> CefString<font color="black">&</font> path<font color="black">)</font> <font color="black">=</font><font color="maroon">0</font>;
+<font color="black">}</font>;
+
+
+<font color="green">///</font>
+<font color="green">// Interface to implement for visiting cookie values. The methods of this class</font>
+<font color="green">// will always be called on the IO thread.</font>
+<font color="green">///</font>
+<font color="green">/*--cef(source=client)--*/</font>
+<font color="blue">class</font> CefCookieVisitor <font color="black">:</font> <font color="blue">public</font> virtual CefBase <font color="black">{</font>
+ <font color="blue">public</font><font color="black">:</font>
+  <font color="green">///</font>
+  <font color="green">// Method that will be called once for each cookie. |count| is the 0-based</font>
+  <font color="green">// index for the current cookie. |total| is the total number of cookies.</font>
+  <font color="green">// Set |deleteCookie| to true to delete the cookie currently being visited.</font>
+  <font color="green">// Return false to stop visiting cookies. This method may never be called if</font>
+  <font color="green">// no cookies are found.</font>
+  <font color="green">///</font>
+  <font color="green">/*--cef()--*/</font>
+  virtual <font color="blue">bool</font> Visit<font color="black">(</font><font color="blue">const</font> CefCookie<font color="black">&</font> cookie, <font color="blue">int</font> count, <font color="blue">int</font> total,
+                     <font color="blue">bool</font><font color="black">&</font> deleteCookie<font color="black">)</font> <font color="black">=</font><font color="maroon">0</font>;
+<font color="black">}</font>;
+
+<font color="blue">#endif</font>  <font color="green">// CEF_INCLUDE_CEF_COOKIE_H_</font>
+
+</PRE>
+</BODY>
+</HTML>

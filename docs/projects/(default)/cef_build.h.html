@@ -1,0 +1,141 @@
+<HTML>
+<HEAD>
+<TITLE>
+cef_build.h
+</TITLE>
+</HEAD>
+<BODY>
+<PRE>
+<font color="green">// Copyright (c) 2011 Marshall A. Greenblatt. All rights reserved.</font>
+<font color="green">//</font>
+<font color="green">// Redistribution and use in source and binary forms, with or without</font>
+<font color="green">// modification, are permitted provided that the following conditions are</font>
+<font color="green">// met:</font>
+<font color="green">//</font>
+<font color="green">//    * Redistributions of source code must retain the above copyright</font>
+<font color="green">// notice, this list of conditions and the following disclaimer.</font>
+<font color="green">//    * Redistributions in binary form must reproduce the above</font>
+<font color="green">// copyright notice, this list of conditions and the following disclaimer</font>
+<font color="green">// in the documentation and/or other materials provided with the</font>
+<font color="green">// distribution.</font>
+<font color="green">//    * Neither the name of Google Inc. nor the name Chromium Embedded</font>
+<font color="green">// Framework nor the names of its contributors may be used to endorse</font>
+<font color="green">// or promote products derived from this software without specific prior</font>
+<font color="green">// written permission.</font>
+<font color="green">//</font>
+<font color="green">// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS</font>
+<font color="green">// "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT</font>
+<font color="green">// LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR</font>
+<font color="green">// A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT</font>
+<font color="green">// OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,</font>
+<font color="green">// SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT</font>
+<font color="green">// LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,</font>
+<font color="green">// DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY</font>
+<font color="green">// THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT</font>
+<font color="green">// (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE</font>
+<font color="green">// OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.</font>
+
+
+<font color="blue">#ifndef</font> CEF_INCLUDE_INTERNAL_CEF_BUILD_H_
+<font color="blue">#define</font> CEF_INCLUDE_INTERNAL_CEF_BUILD_H_
+<font color="blue">#pragma</font> once
+
+<font color="blue">#if</font> defined<font color="black">(</font>BUILDING_CEF_SHARED<font color="black">)</font>
+
+<font color="blue">#include</font> <font color="maroon">"base/compiler_specific.h"</font>
+
+<font color="blue">#else</font>  <font color="green">// !BUILDING_CEF_SHARED</font>
+
+<font color="blue">#if</font> defined<font color="black">(</font>_WIN32<font color="black">)</font>
+<font color="blue">#ifndef</font> OS_WIN
+<font color="blue">#define</font> OS_WIN <font color="maroon">1</font>
+<font color="blue">#endif</font>
+<font color="blue">#elif</font> defined<font color="black">(</font>__APPLE__<font color="black">)</font>
+<font color="blue">#ifndef</font> OS_MACOSX
+<font color="blue">#define</font> OS_MACOSX <font color="maroon">1</font>
+<font color="blue">#endif</font>
+<font color="blue">#elif</font> defined<font color="black">(</font>__linux__<font color="black">)</font>
+<font color="blue">#ifndef</font> OS_LINUX
+<font color="blue">#define</font> OS_LINUX <font color="maroon">1</font>
+<font color="blue">#endif</font>
+<font color="blue">#else</font>
+<font color="blue">#error</font> Please add support <font color="blue">for</font> your platform in cef_build.h
+<font color="blue">#endif</font>
+
+<font color="green">// For access to standard POSIXish features, use OS_POSIX instead of a</font>
+<font color="green">// more specific macro.</font>
+<font color="blue">#if</font> defined<font color="black">(</font>OS_MACOSX<font color="black">)</font> <font color="black">|</font><font color="black">|</font> defined<font color="black">(</font>OS_LINUX<font color="black">)</font>
+<font color="blue">#ifndef</font> OS_POSIX
+<font color="blue">#define</font> OS_POSIX <font color="maroon">1</font>
+<font color="blue">#endif</font>
+<font color="blue">#endif</font>
+
+<font color="green">// Compiler detection.</font>
+<font color="blue">#if</font> defined<font color="black">(</font>__GNUC__<font color="black">)</font>
+<font color="blue">#ifndef</font> COMPILER_GCC
+<font color="blue">#define</font> COMPILER_GCC <font color="maroon">1</font>
+<font color="blue">#endif</font>
+<font color="blue">#elif</font> defined<font color="black">(</font>_MSC_VER<font color="black">)</font>
+<font color="blue">#ifndef</font> COMPILER_MSVC
+<font color="blue">#define</font> COMPILER_MSVC <font color="maroon">1</font>
+<font color="blue">#endif</font>
+<font color="blue">#else</font>
+<font color="blue">#error</font> Please add support <font color="blue">for</font> your compiler in cef_build.h
+<font color="blue">#endif</font>
+
+<font color="green">// Annotate a virtual method indicating it must be overriding a virtual</font>
+<font color="green">// method in the parent class.</font>
+<font color="green">// Use like:</font>
+<font color="green">//   virtual void foo() OVERRIDE;</font>
+<font color="blue">#ifndef</font> OVERRIDE
+<font color="blue">#if</font> defined<font color="black">(</font>COMPILER_MSVC<font color="black">)</font>
+<font color="blue">#define</font> OVERRIDE override
+<font color="blue">#elif</font> defined<font color="black">(</font>__clang__<font color="black">)</font>
+<font color="blue">#define</font> OVERRIDE override
+<font color="blue">#else</font>
+<font color="blue">#define</font> OVERRIDE
+<font color="blue">#endif</font>
+<font color="blue">#endif</font>
+
+<font color="blue">#ifndef</font> ALLOW_THIS_IN_INITIALIZER_LIST
+<font color="blue">#if</font> defined<font color="black">(</font>COMPILER_MSVC<font color="black">)</font>
+
+<font color="green">// MSVC_PUSH_DISABLE_WARNING pushes |n| onto a stack of warnings to be disabled.</font>
+<font color="green">// The warning remains disabled until popped by MSVC_POP_WARNING.</font>
+<font color="blue">#define</font> MSVC_PUSH_DISABLE_WARNING<font color="black">(</font>n<font color="black">)</font> __pragma<font color="black">(</font><font color="blue">warning</font><font color="black">(</font>push<font color="black">)</font><font color="black">)</font> \
+                                     __pragma<font color="black">(</font><font color="blue">warning</font><font color="black">(</font>disable<font color="black">:</font>n<font color="black">)</font><font color="black">)</font>
+
+<font color="green">// MSVC_PUSH_WARNING_LEVEL pushes |n| as the global warning level.  The level</font>
+<font color="green">// remains in effect until popped by MSVC_POP_WARNING().  Use 0 to disable all</font>
+<font color="green">// warnings.</font>
+<font color="blue">#define</font> MSVC_PUSH_WARNING_LEVEL<font color="black">(</font>n<font color="black">)</font> __pragma<font color="black">(</font><font color="blue">warning</font><font color="black">(</font>push, n<font color="black">)</font><font color="black">)</font>
+
+<font color="green">// Pop effects of innermost MSVC_PUSH_* macro.</font>
+<font color="blue">#define</font> MSVC_POP_WARNING<font color="black">(</font><font color="black">)</font> __pragma<font color="black">(</font><font color="blue">warning</font><font color="black">(</font>pop<font color="black">)</font><font color="black">)</font>
+
+<font color="green">// Allows |this| to be passed as an argument in constructor initializer lists.</font>
+<font color="green">// This uses push/pop instead of the seemingly simpler suppress feature to avoid</font>
+<font color="green">// having the warning be disabled for more than just |code|.</font>
+<font color="green">//</font>
+<font color="green">// Example usage:</font>
+<font color="green">// Foo::Foo() : x(NULL), ALLOW_THIS_IN_INITIALIZER_LIST(y(this)), z(3) {}</font>
+<font color="green">//</font>
+<font color="green">// Compiler warning C4355: 'this': used in base member initializer list:</font>
+<font color="green">// http://msdn.microsoft.com/en-us/library/3c594ae3(VS.80).aspx</font>
+<font color="blue">#define</font> ALLOW_THIS_IN_INITIALIZER_LIST<font color="black">(</font>code<font color="black">)</font> MSVC_PUSH_DISABLE_WARNING<font color="black">(</font><font color="maroon">4355</font><font color="black">)</font> \
+                                             code \
+                                             MSVC_POP_WARNING<font color="black">(</font><font color="black">)</font>
+<font color="blue">#else</font>  <font color="green">// !COMPILER_MSVC</font>
+
+<font color="blue">#define</font> ALLOW_THIS_IN_INITIALIZER_LIST<font color="black">(</font>code<font color="black">)</font> code
+
+<font color="blue">#endif</font>  <font color="green">// !COMPILER_MSVC</font>
+<font color="blue">#endif</font>
+
+<font color="blue">#endif</font>  <font color="green">// !BUILDING_CEF_SHARED</font>
+
+<font color="blue">#endif</font>  <font color="green">// CEF_INCLUDE_INTERNAL_CEF_BUILD_H_</font>
+
+</PRE>
+</BODY>
+</HTML>

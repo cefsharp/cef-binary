@@ -1,0 +1,88 @@
+<HTML>
+<HEAD>
+<TITLE>
+cef_keyboard_handler.h
+</TITLE>
+</HEAD>
+<BODY>
+<PRE>
+<font color="green">// Copyright (c) 2011 Marshall A. Greenblatt. All rights reserved.</font>
+<font color="green">//</font>
+<font color="green">// Redistribution and use in source and binary forms, with or without</font>
+<font color="green">// modification, are permitted provided that the following conditions are</font>
+<font color="green">// met:</font>
+<font color="green">//</font>
+<font color="green">//    * Redistributions of source code must retain the above copyright</font>
+<font color="green">// notice, this list of conditions and the following disclaimer.</font>
+<font color="green">//    * Redistributions in binary form must reproduce the above</font>
+<font color="green">// copyright notice, this list of conditions and the following disclaimer</font>
+<font color="green">// in the documentation and/or other materials provided with the</font>
+<font color="green">// distribution.</font>
+<font color="green">//    * Neither the name of Google Inc. nor the name Chromium Embedded</font>
+<font color="green">// Framework nor the names of its contributors may be used to endorse</font>
+<font color="green">// or promote products derived from this software without specific prior</font>
+<font color="green">// written permission.</font>
+<font color="green">//</font>
+<font color="green">// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS</font>
+<font color="green">// "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT</font>
+<font color="green">// LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR</font>
+<font color="green">// A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT</font>
+<font color="green">// OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,</font>
+<font color="green">// SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT</font>
+<font color="green">// LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,</font>
+<font color="green">// DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY</font>
+<font color="green">// THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT</font>
+<font color="green">// (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE</font>
+<font color="green">// OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.</font>
+<font color="green">//</font>
+<font color="green">// ---------------------------------------------------------------------------</font>
+<font color="green">//</font>
+<font color="green">// The contents of this file must follow a specific format in order to</font>
+<font color="green">// support the CEF translator tool. See the translator.README.txt file in the</font>
+<font color="green">// tools directory for more information.</font>
+<font color="green">//</font>
+
+<font color="blue">#ifndef</font> CEF_INCLUDE_CEF_KEYBOARD_HANDLER_H_
+<font color="blue">#define</font> CEF_INCLUDE_CEF_KEYBOARD_HANDLER_H_
+<font color="blue">#pragma</font> once
+
+<font color="blue">#include</font> <font color="maroon">"include/cef_base.h"</font>
+<font color="blue">#include</font> <font color="maroon">"include/cef_browser.h"</font>
+
+<font color="green">///</font>
+<font color="green">// Implement this interface to handle events related to keyboard input. The</font>
+<font color="green">// methods of this class will be called on the UI thread.</font>
+<font color="green">///</font>
+<font color="green">/*--cef(source=client)--*/</font>
+<font color="blue">class</font> CefKeyboardHandler <font color="black">:</font> <font color="blue">public</font> virtual CefBase <font color="black">{</font>
+ <font color="blue">public</font><font color="black">:</font>
+  <font color="blue">typedef</font> cef_handler_keyevent_type_t KeyEventType;
+
+  <font color="green">///</font>
+  <font color="green">// Called when the browser component receives a keyboard event. This method</font>
+  <font color="green">// is called both before the event is passed to the renderer and after</font>
+  <font color="green">// JavaScript in the page has had a chance to handle the event. |type| is the</font>
+  <font color="green">// type of keyboard event, |code| is the windows scan-code for the event,</font>
+  <font color="green">// |modifiers| is a set of bit- flags describing any pressed modifier keys and</font>
+  <font color="green">// |isSystemKey| is true if Windows considers this a 'system key' message (see</font>
+  <font color="green">// http://msdn.microsoft.com/en-us/library/ms646286(VS.85).aspx). If</font>
+  <font color="green">// |isAfterJavaScript| is true then JavaScript in the page has had a chance</font>
+  <font color="green">// to handle the event and has chosen not to. Only RAWKEYDOWN, KEYDOWN and</font>
+  <font color="green">// CHAR events will be sent with |isAfterJavaScript| set to true. Return</font>
+  <font color="green">// true if the keyboard event was handled or false to allow continued handling</font>
+  <font color="green">// of the event by the renderer.</font>
+  <font color="green">///</font>
+  <font color="green">/*--cef()--*/</font>
+  virtual <font color="blue">bool</font> OnKeyEvent<font color="black">(</font>CefRefPtr<font color="black">&#60;</font>CefBrowser<font color="black">&#62;</font> browser,
+                          KeyEventType type,
+                          <font color="blue">int</font> code,
+                          <font color="blue">int</font> modifiers,
+                          <font color="blue">bool</font> isSystemKey,
+                          <font color="blue">bool</font> isAfterJavaScript<font color="black">)</font> <font color="black">{</font> <font color="blue">return</font> <font color="blue">false</font>; <font color="black">}</font>
+<font color="black">}</font>;
+
+<font color="blue">#endif</font>  <font color="green">// CEF_INCLUDE_CEF_KEYBOARD_HANDLER_H_</font>
+
+</PRE>
+</BODY>
+</HTML>

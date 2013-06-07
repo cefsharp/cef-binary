@@ -1,0 +1,102 @@
+<HTML>
+<HEAD>
+<TITLE>
+cef_nplugin_types.h
+</TITLE>
+</HEAD>
+<BODY>
+<PRE>
+<font color="green">// Copyright (c) 2011 Marshall A. Greenblatt. All rights reserved.</font>
+<font color="green">//</font>
+<font color="green">// Redistribution and use in source and binary forms, with or without</font>
+<font color="green">// modification, are permitted provided that the following conditions are</font>
+<font color="green">// met:</font>
+<font color="green">//</font>
+<font color="green">//    * Redistributions of source code must retain the above copyright</font>
+<font color="green">// notice, this list of conditions and the following disclaimer.</font>
+<font color="green">//    * Redistributions in binary form must reproduce the above</font>
+<font color="green">// copyright notice, this list of conditions and the following disclaimer</font>
+<font color="green">// in the documentation and/or other materials provided with the</font>
+<font color="green">// distribution.</font>
+<font color="green">//    * Neither the name of Google Inc. nor the name Chromium Embedded</font>
+<font color="green">// Framework nor the names of its contributors may be used to endorse</font>
+<font color="green">// or promote products derived from this software without specific prior</font>
+<font color="green">// written permission.</font>
+<font color="green">//</font>
+<font color="green">// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS</font>
+<font color="green">// "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT</font>
+<font color="green">// LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR</font>
+<font color="green">// A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT</font>
+<font color="green">// OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,</font>
+<font color="green">// SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT</font>
+<font color="green">// LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,</font>
+<font color="green">// DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY</font>
+<font color="green">// THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT</font>
+<font color="green">// (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE</font>
+<font color="green">// OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.</font>
+
+
+<font color="blue">#ifndef</font> CEF_INCLUDE_INTERNAL_CEF_NPLUGIN_TYPES_H_
+<font color="blue">#define</font> CEF_INCLUDE_INTERNAL_CEF_NPLUGIN_TYPES_H_
+<font color="blue">#pragma</font> once
+
+<font color="blue">#include</font> <font color="maroon">"include/internal/cef_export.h"</font>
+<font color="blue">#include</font> <font color="maroon">"include/internal/cef_string.h"</font>
+<font color="blue">#include</font> <font color="maroon">"third_party/npapi/bindings/npapi.h"</font>
+<font color="blue">#include</font> <font color="maroon">"third_party/npapi/bindings/nphostapi.h"</font>
+
+<font color="blue">#ifdef</font> __cplusplus
+<font color="blue">extern</font> <font color="maroon">"C"</font> <font color="black">{</font>
+<font color="blue">#endif</font>
+
+<font color="green">// Netscape plugins are normally built at separate DLLs that are loaded by the</font>
+<font color="green">// browser when needed.  This interface supports the creation of plugins that</font>
+<font color="green">// are an embedded component of the application.  Embedded plugins built using</font>
+<font color="green">// this interface use the same Netscape Plugin API as DLL-based plugins.</font>
+<font color="green">// See https://developer.mozilla.org/En/Gecko_Plugin_API_Reference for complete</font>
+<font color="green">// documentation on how to use the Netscape Plugin API.</font>
+
+<font color="green">// This structure provides attribute information and entry point functions for</font>
+<font color="green">// a plugin.</font>
+<font color="blue">typedef</font> <font color="blue">struct</font> _cef_plugin_info_t <font color="black">{</font>
+  <font color="green">// The unique name that identifies the plugin.</font>
+  cef_string_t unique_name;
+
+  <font color="green">// The friendly display name of the plugin.</font>
+  cef_string_t display_name;
+
+  <font color="green">// The version string of the plugin.</font>
+  cef_string_t version;
+
+  <font color="green">// A description of the plugin.</font>
+  cef_string_t description;
+
+  <font color="green">// A pipe (|) delimited list of mime type values that the plugin supports.</font>
+  cef_string_t mime_types;
+
+  <font color="green">// A pipe (|) delimited list of extension values. Each value is associated</font>
+  <font color="green">// with the mime type value at the same position. Multiple file extensions</font>
+  <font color="green">// for the same mime type may be delimited with commas (,).</font>
+  cef_string_t file_extensions;
+
+  <font color="green">// A pipe (|) delimited list of description values. Each value is associated</font>
+  <font color="green">// with the mime type value at the same position.</font>
+  cef_string_t type_descriptions;
+
+  <font color="green">// Entry point function pointers.</font>
+<font color="blue">#if</font> <font color="black">!</font>defined<font color="black">(</font>OS_POSIX<font color="black">)</font> <font color="black">|</font><font color="black">|</font> defined<font color="black">(</font>OS_MACOSX<font color="black">)</font>
+  NP_GetEntryPointsFunc np_getentrypoints;
+<font color="blue">#endif</font>
+  NP_InitializeFunc np_initialize;
+  NP_ShutdownFunc np_shutdown;
+<font color="black">}</font> cef_plugin_info_t;
+
+<font color="blue">#ifdef</font> __cplusplus
+<font color="black">}</font>
+<font color="blue">#endif</font>
+
+<font color="blue">#endif</font>  <font color="green">// CEF_INCLUDE_INTERNAL_CEF_NPLUGIN_TYPES_H_</font>
+
+</PRE>
+</BODY>
+</HTML>

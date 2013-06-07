@@ -1,0 +1,109 @@
+<HTML>
+<HEAD>
+<TITLE>
+cef_string_map.h
+</TITLE>
+</HEAD>
+<BODY>
+<PRE>
+<font color="green">// Copyright (c) 2009 Marshall A. Greenblatt. All rights reserved.</font>
+<font color="green">//</font>
+<font color="green">// Redistribution and use in source and binary forms, with or without</font>
+<font color="green">// modification, are permitted provided that the following conditions are</font>
+<font color="green">// met:</font>
+<font color="green">//</font>
+<font color="green">//    * Redistributions of source code must retain the above copyright</font>
+<font color="green">// notice, this list of conditions and the following disclaimer.</font>
+<font color="green">//    * Redistributions in binary form must reproduce the above</font>
+<font color="green">// copyright notice, this list of conditions and the following disclaimer</font>
+<font color="green">// in the documentation and/or other materials provided with the</font>
+<font color="green">// distribution.</font>
+<font color="green">//    * Neither the name of Google Inc. nor the name Chromium Embedded</font>
+<font color="green">// Framework nor the names of its contributors may be used to endorse</font>
+<font color="green">// or promote products derived from this software without specific prior</font>
+<font color="green">// written permission.</font>
+<font color="green">//</font>
+<font color="green">// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS</font>
+<font color="green">// "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT</font>
+<font color="green">// LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR</font>
+<font color="green">// A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT</font>
+<font color="green">// OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,</font>
+<font color="green">// SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT</font>
+<font color="green">// LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,</font>
+<font color="green">// DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY</font>
+<font color="green">// THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT</font>
+<font color="green">// (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE</font>
+<font color="green">// OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.</font>
+
+<font color="blue">#ifndef</font> CEF_INCLUDE_INTERNAL_CEF_STRING_MAP_H_
+<font color="blue">#define</font> CEF_INCLUDE_INTERNAL_CEF_STRING_MAP_H_
+<font color="blue">#pragma</font> once
+
+<font color="blue">#include</font> <font color="maroon">"include/internal/cef_export.h"</font>
+<font color="blue">#include</font> <font color="maroon">"include/internal/cef_string.h"</font>
+
+<font color="blue">#ifdef</font> __cplusplus
+<font color="blue">extern</font> <font color="maroon">"C"</font> <font color="black">{</font>
+<font color="blue">#endif</font>
+
+<font color="green">///</font>
+<font color="green">// CEF string maps are a set of key/value string pairs.</font>
+<font color="green">///</font>
+<font color="blue">typedef</font> <font color="blue">void</font><font color="black">*</font> cef_string_map_t;
+
+<font color="green">///</font>
+<font color="green">// Allocate a new string map.</font>
+<font color="green">///</font>
+CEF_EXPORT cef_string_map_t cef_string_map_alloc<font color="black">(</font><font color="black">)</font>;
+
+<font color="green">///</font>
+<font color="green">// Return the number of elements in the string map.</font>
+<font color="green">///</font>
+CEF_EXPORT <font color="blue">int</font> cef_string_map_size<font color="black">(</font>cef_string_map_t map<font color="black">)</font>;
+
+<font color="green">///</font>
+<font color="green">// Return the value assigned to the specified key.</font>
+<font color="green">///</font>
+CEF_EXPORT <font color="blue">int</font> cef_string_map_find<font color="black">(</font>cef_string_map_t map,
+                                   <font color="blue">const</font> cef_string_t<font color="black">*</font> key,
+                                   cef_string_t<font color="black">*</font> value<font color="black">)</font>;
+
+<font color="green">///</font>
+<font color="green">// Return the key at the specified zero-based string map index.</font>
+<font color="green">///</font>
+CEF_EXPORT <font color="blue">int</font> cef_string_map_key<font color="black">(</font>cef_string_map_t map, <font color="blue">int</font> index,
+                                  cef_string_t<font color="black">*</font> key<font color="black">)</font>;
+
+<font color="green">///</font>
+<font color="green">// Return the value at the specified zero-based string map index.</font>
+<font color="green">///</font>
+CEF_EXPORT <font color="blue">int</font> cef_string_map_value<font color="black">(</font>cef_string_map_t map, <font color="blue">int</font> index,
+                                    cef_string_t<font color="black">*</font> value<font color="black">)</font>;
+
+<font color="green">///</font>
+<font color="green">// Append a new key/value pair at the end of the string map.</font>
+<font color="green">///</font>
+CEF_EXPORT <font color="blue">int</font> cef_string_map_append<font color="black">(</font>cef_string_map_t map,
+                                     <font color="blue">const</font> cef_string_t<font color="black">*</font> key,
+                                     <font color="blue">const</font> cef_string_t<font color="black">*</font> value<font color="black">)</font>;
+
+<font color="green">///</font>
+<font color="green">// Clear the string map.</font>
+<font color="green">///</font>
+CEF_EXPORT <font color="blue">void</font> cef_string_map_clear<font color="black">(</font>cef_string_map_t map<font color="black">)</font>;
+
+<font color="green">///</font>
+<font color="green">// Free the string map.</font>
+<font color="green">///</font>
+CEF_EXPORT <font color="blue">void</font> cef_string_map_free<font color="black">(</font>cef_string_map_t map<font color="black">)</font>;
+
+
+<font color="blue">#ifdef</font> __cplusplus
+<font color="black">}</font>
+<font color="blue">#endif</font>
+
+<font color="blue">#endif</font>  <font color="green">// CEF_INCLUDE_INTERNAL_CEF_STRING_MAP_H_</font>
+
+</PRE>
+</BODY>
+</HTML>

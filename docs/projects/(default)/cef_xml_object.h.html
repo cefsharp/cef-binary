@@ -1,0 +1,200 @@
+<HTML>
+<HEAD>
+<TITLE>
+cef_xml_object.h
+</TITLE>
+</HEAD>
+<BODY>
+<PRE>
+<font color="green">// Copyright (c) 2011 Marshall A. Greenblatt. All rights reserved.</font>
+<font color="green">//</font>
+<font color="green">// Redistribution and use in source and binary forms, with or without</font>
+<font color="green">// modification, are permitted provided that the following conditions are</font>
+<font color="green">// met:</font>
+<font color="green">//</font>
+<font color="green">//    * Redistributions of source code must retain the above copyright</font>
+<font color="green">// notice, this list of conditions and the following disclaimer.</font>
+<font color="green">//    * Redistributions in binary form must reproduce the above</font>
+<font color="green">// copyright notice, this list of conditions and the following disclaimer</font>
+<font color="green">// in the documentation and/or other materials provided with the</font>
+<font color="green">// distribution.</font>
+<font color="green">//    * Neither the name of Google Inc. nor the name Chromium Embedded</font>
+<font color="green">// Framework nor the names of its contributors may be used to endorse</font>
+<font color="green">// or promote products derived from this software without specific prior</font>
+<font color="green">// written permission.</font>
+<font color="green">//</font>
+<font color="green">// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS</font>
+<font color="green">// "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT</font>
+<font color="green">// LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR</font>
+<font color="green">// A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT</font>
+<font color="green">// OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,</font>
+<font color="green">// SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT</font>
+<font color="green">// LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,</font>
+<font color="green">// DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY</font>
+<font color="green">// THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT</font>
+<font color="green">// (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE</font>
+<font color="green">// OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.</font>
+<font color="green">//</font>
+<font color="green">// ---------------------------------------------------------------------------</font>
+<font color="green">//</font>
+<font color="green">// The contents of this file are only available to applications that link</font>
+<font color="green">// against the libcef_dll_wrapper target.</font>
+<font color="green">//</font>
+
+<font color="blue">#ifndef</font> CEF_INCLUDE_WRAPPER_CEF_XML_OBJECT_H_
+<font color="blue">#define</font> CEF_INCLUDE_WRAPPER_CEF_XML_OBJECT_H_
+<font color="blue">#pragma</font> once
+
+<font color="blue">#include</font> <font color="maroon">"include/cef_base.h"</font>
+<font color="blue">#include</font> <font color="maroon">"include/cef_xml_reader.h"</font>
+<font color="blue">#include</font> <font color="maroon">&#60;map&#62;</font>
+<font color="blue">#include</font> <font color="maroon">&#60;vector&#62;</font>
+
+<font color="blue">class</font> CefStreamReader;
+
+<font color="green">///</font>
+<font color="green">// Thread safe class for representing XML data as a structured object. This</font>
+<font color="green">// class should not be used with large XML documents because all data will be</font>
+<font color="green">// resident in memory at the same time. This implementation supports a</font>
+<font color="green">// restricted set of XML features:</font>
+<font color="green">// &#60;pre&#62;</font>
+<font color="green">// (1) Processing instructions, whitespace and comments are ignored.</font>
+<font color="green">// (2) Elements and attributes must always be referenced using the fully</font>
+<font color="green">//     qualified name (ie, namespace:localname).</font>
+<font color="green">// (3) Empty elements (&#60;a/&#62;) and elements with zero-length values (&#60;a&#62;&#60;/a&#62;)</font>
+<font color="green">//     are considered the same.</font>
+<font color="green">// (4) Element nodes are considered part of a value if:</font>
+<font color="green">//     (a) The element node follows a non-element node at the same depth</font>
+<font color="green">//         (see 5), or</font>
+<font color="green">//     (b) The element node does not have a namespace and the parent node does.</font>
+<font color="green">// (5) Mixed node types at the same depth are combined into a single element</font>
+<font color="green">//     value as follows:</font>
+<font color="green">//     (a) All node values are concatenated to form a single string value.</font>
+<font color="green">//     (b) Entity reference nodes are resolved to the corresponding entity</font>
+<font color="green">//         value.</font>
+<font color="green">//     (c) Element nodes are represented by their outer XML string.</font>
+<font color="green">// &#60;/pre&#62;</font>
+<font color="green">///</font>
+<font color="blue">class</font> CefXmlObject <font color="black">:</font> <font color="blue">public</font> CefBase <font color="black">{</font>
+ <font color="blue">public</font><font color="black">:</font>
+  <font color="blue">typedef</font> std<font color="black">:</font><font color="black">:</font>vector<font color="black">&#60;</font>CefRefPtr<font color="black">&#60;</font>CefXmlObject<font color="black">&#62;</font> <font color="black">&#62;</font> ObjectVector;
+  <font color="blue">typedef</font> std<font color="black">:</font><font color="black">:</font>map<font color="black">&#60;</font>CefString, CefString <font color="black">&#62;</font> AttributeMap;
+
+  <font color="green">///</font>
+  <font color="green">// Create a new object with the specified name. An object name must always be</font>
+  <font color="green">// at least one character long.</font>
+  <font color="green">///</font>
+  explicit CefXmlObject<font color="black">(</font><font color="blue">const</font> CefString<font color="black">&</font> <font color="blue">name</font><font color="black">)</font>;
+  virtual ~CefXmlObject<font color="black">(</font><font color="black">)</font>;
+
+  <font color="green">///</font>
+  <font color="green">// Load the contents of the specified XML stream into this object.  The</font>
+  <font color="green">// existing children and attributes, if any, will first be cleared.</font>
+  <font color="green">///</font>
+  <font color="blue">bool</font> Load<font color="black">(</font>CefRefPtr<font color="black">&#60;</font>CefStreamReader<font color="black">&#62;</font> stream,
+            CefXmlReader<font color="black">:</font><font color="black">:</font>EncodingType encodingType,
+            <font color="blue">const</font> CefString<font color="black">&</font> URI, CefString<font color="black">*</font> loadError<font color="black">)</font>;
+
+  <font color="green">///</font>
+  <font color="green">// Set the name, children and attributes of this object to a duplicate of the</font>
+  <font color="green">// specified object's contents. The existing children and attributes, if any,</font>
+  <font color="green">// will first be cleared.</font>
+  <font color="green">///</font>
+  <font color="blue">void</font> Set<font color="black">(</font>CefRefPtr<font color="black">&#60;</font>CefXmlObject<font color="black">&#62;</font> object<font color="black">)</font>;
+
+  <font color="green">///</font>
+  <font color="green">// Append a duplicate of the children and attributes of the specified object</font>
+  <font color="green">// to this object. If |overwriteAttributes| is true then any attributes in</font>
+  <font color="green">// this object that also exist in the specified object will be overwritten</font>
+  <font color="green">// with the new values. The name of this object is not changed.</font>
+  <font color="green">///</font>
+  <font color="blue">void</font> Append<font color="black">(</font>CefRefPtr<font color="black">&#60;</font>CefXmlObject<font color="black">&#62;</font> object, <font color="blue">bool</font> overwriteAttributes<font color="black">)</font>;
+
+  <font color="green">///</font>
+  <font color="green">// Return a new object with the same name, children and attributes as this</font>
+  <font color="green">// object. The parent of the new object will be NULL.</font>
+  <font color="green">///</font>
+  CefRefPtr<font color="black">&#60;</font>CefXmlObject<font color="black">&#62;</font> Duplicate<font color="black">(</font><font color="black">)</font>;
+
+  <font color="green">///</font>
+  <font color="green">// Clears this object's children and attributes. The name and parenting of</font>
+  <font color="green">// this object are not changed.</font>
+  <font color="green">///</font>
+  <font color="blue">void</font> Clear<font color="black">(</font><font color="black">)</font>;
+
+  <font color="green">///</font>
+  <font color="green">// Access the object's name. An object name must always be at least one</font>
+  <font color="green">// character long.</font>
+  <font color="green">///</font>
+  CefString GetName<font color="black">(</font><font color="black">)</font>;
+  <font color="blue">bool</font> SetName<font color="black">(</font><font color="blue">const</font> CefString<font color="black">&</font> <font color="blue">name</font><font color="black">)</font>;
+
+  <font color="green">///</font>
+  <font color="green">// Access the object's parent. The parent can be NULL if this object has not</font>
+  <font color="green">// been added as the child on another object.</font>
+  <font color="green">///</font>
+  <font color="blue">bool</font> HasParent<font color="black">(</font><font color="black">)</font>;
+  CefRefPtr<font color="black">&#60;</font>CefXmlObject<font color="black">&#62;</font> GetParent<font color="black">(</font><font color="black">)</font>;
+
+  <font color="green">///</font>
+  <font color="green">// Access the object's value. An object cannot have a value if it also has</font>
+  <font color="green">// children. Attempting to set the value while children exist will fail.</font>
+  <font color="green">///</font>
+  <font color="blue">bool</font> HasValue<font color="black">(</font><font color="black">)</font>;
+  CefString GetValue<font color="black">(</font><font color="black">)</font>;
+  <font color="blue">bool</font> SetValue<font color="black">(</font><font color="blue">const</font> CefString<font color="black">&</font> value<font color="black">)</font>;
+
+  <font color="green">///</font>
+  <font color="green">// Access the object's attributes. Attributes must have unique names.</font>
+  <font color="green">///</font>
+  <font color="blue">bool</font> HasAttributes<font color="black">(</font><font color="black">)</font>;
+  size_t GetAttributeCount<font color="black">(</font><font color="black">)</font>;
+  <font color="blue">bool</font> HasAttribute<font color="black">(</font><font color="blue">const</font> CefString<font color="black">&</font> <font color="blue">name</font><font color="black">)</font>;
+  CefString GetAttributeValue<font color="black">(</font><font color="blue">const</font> CefString<font color="black">&</font> <font color="blue">name</font><font color="black">)</font>;
+  <font color="blue">bool</font> SetAttributeValue<font color="black">(</font><font color="blue">const</font> CefString<font color="black">&</font> <font color="blue">name</font>, <font color="blue">const</font> CefString<font color="black">&</font> value<font color="black">)</font>;
+  size_t GetAttributes<font color="black">(</font>AttributeMap<font color="black">&</font> attributes<font color="black">)</font>;
+  <font color="blue">void</font> ClearAttributes<font color="black">(</font><font color="black">)</font>;
+
+  <font color="green">///</font>
+  <font color="green">// Access the object's children. Each object can only have one parent so</font>
+  <font color="green">// attempting to add an object that already has a parent will fail. Removing a</font>
+  <font color="green">// child will set the child's parent to NULL. Adding a child will set the</font>
+  <font color="green">// child's parent to this object. This object's value, if any, will be cleared</font>
+  <font color="green">// if a child is added.</font>
+  <font color="green">///</font>
+  <font color="blue">bool</font> HasChildren<font color="black">(</font><font color="black">)</font>;
+  size_t GetChildCount<font color="black">(</font><font color="black">)</font>;
+  <font color="blue">bool</font> HasChild<font color="black">(</font>CefRefPtr<font color="black">&#60;</font>CefXmlObject<font color="black">&#62;</font> child<font color="black">)</font>;
+  <font color="blue">bool</font> AddChild<font color="black">(</font>CefRefPtr<font color="black">&#60;</font>CefXmlObject<font color="black">&#62;</font> child<font color="black">)</font>;
+  <font color="blue">bool</font> RemoveChild<font color="black">(</font>CefRefPtr<font color="black">&#60;</font>CefXmlObject<font color="black">&#62;</font> child<font color="black">)</font>;
+  size_t GetChildren<font color="black">(</font>ObjectVector<font color="black">&</font> children<font color="black">)</font>;
+  <font color="blue">void</font> ClearChildren<font color="black">(</font><font color="black">)</font>;
+
+  <font color="green">///</font>
+  <font color="green">// Find the first child with the specified name.</font>
+  <font color="green">///</font>
+  CefRefPtr<font color="black">&#60;</font>CefXmlObject<font color="black">&#62;</font> FindChild<font color="black">(</font><font color="blue">const</font> CefString<font color="black">&</font> <font color="blue">name</font><font color="black">)</font>;
+
+  <font color="green">///</font>
+  <font color="green">// Find all children with the specified name.</font>
+  <font color="green">///</font>
+  size_t FindChildren<font color="black">(</font><font color="blue">const</font> CefString<font color="black">&</font> <font color="blue">name</font>, ObjectVector<font color="black">&</font> children<font color="black">)</font>;
+
+ <font color="blue">private</font><font color="black">:</font>
+  <font color="blue">void</font> SetParent<font color="black">(</font>CefXmlObject<font color="black">*</font> parent<font color="black">)</font>;
+
+  CefString name_;
+  CefXmlObject<font color="black">*</font> parent_;
+  CefString value_;
+  AttributeMap attributes_;
+  ObjectVector children_;
+
+  IMPLEMENT_REFCOUNTING<font color="black">(</font>CefXmlObject<font color="black">)</font>;
+  IMPLEMENT_LOCKING<font color="black">(</font>CefXmlObject<font color="black">)</font>;
+<font color="black">}</font>;
+
+<font color="blue">#endif</font>  <font color="green">// CEF_INCLUDE_WRAPPER_CEF_XML_OBJECT_H_</font>
+
+</PRE>
+</BODY>
+</HTML>

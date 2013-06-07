@@ -1,0 +1,172 @@
+<HTML>
+<HEAD>
+<TITLE>
+cef_command_line.h
+</TITLE>
+</HEAD>
+<BODY>
+<PRE>
+<font color="green">// Copyright (c) 2011 Marshall A. Greenblatt. All rights reserved.</font>
+<font color="green">//</font>
+<font color="green">// Redistribution and use in source and binary forms, with or without</font>
+<font color="green">// modification, are permitted provided that the following conditions are</font>
+<font color="green">// met:</font>
+<font color="green">//</font>
+<font color="green">//    * Redistributions of source code must retain the above copyright</font>
+<font color="green">// notice, this list of conditions and the following disclaimer.</font>
+<font color="green">//    * Redistributions in binary form must reproduce the above</font>
+<font color="green">// copyright notice, this list of conditions and the following disclaimer</font>
+<font color="green">// in the documentation and/or other materials provided with the</font>
+<font color="green">// distribution.</font>
+<font color="green">//    * Neither the name of Google Inc. nor the name Chromium Embedded</font>
+<font color="green">// Framework nor the names of its contributors may be used to endorse</font>
+<font color="green">// or promote products derived from this software without specific prior</font>
+<font color="green">// written permission.</font>
+<font color="green">//</font>
+<font color="green">// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS</font>
+<font color="green">// "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT</font>
+<font color="green">// LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR</font>
+<font color="green">// A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT</font>
+<font color="green">// OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,</font>
+<font color="green">// SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT</font>
+<font color="green">// LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,</font>
+<font color="green">// DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY</font>
+<font color="green">// THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT</font>
+<font color="green">// (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE</font>
+<font color="green">// OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.</font>
+<font color="green">//</font>
+<font color="green">// ---------------------------------------------------------------------------</font>
+<font color="green">//</font>
+<font color="green">// The contents of this file must follow a specific format in order to</font>
+<font color="green">// support the CEF translator tool. See the translator.README.txt file in the</font>
+<font color="green">// tools directory for more information.</font>
+<font color="green">//</font>
+
+<font color="blue">#ifndef</font> CEF_INCLUDE_CEF_COMMAND_LINE_H_
+<font color="blue">#define</font> CEF_INCLUDE_CEF_COMMAND_LINE_H_
+<font color="blue">#pragma</font> once
+
+<font color="blue">#include</font> <font color="maroon">"include/cef_base.h"</font>
+<font color="blue">#include</font> <font color="maroon">&#60;map&#62;</font>
+<font color="blue">#include</font> <font color="maroon">&#60;vector&#62;</font>
+
+<font color="green">///</font>
+<font color="green">// Class used to create and/or parse command line arguments. Arguments with</font>
+<font color="green">// '--', '-' and, on Windows, '/' prefixes are considered switches. Switches</font>
+<font color="green">// will always precede any arguments without switch prefixes. Switches can</font>
+<font color="green">// optionally have a value specified using the '=' delimiter (e.g.</font>
+<font color="green">// "-switch=value"). An argument of "--" will terminate switch parsing with all</font>
+<font color="green">// subsequent tokens, regardless of prefix, being interpreted as non-switch</font>
+<font color="green">// arguments. Switch names are considered case-insensitive. This class can be</font>
+<font color="green">// used before CefInitialize() is called.</font>
+<font color="green">///</font>
+<font color="green">/*--cef(source=library,no_debugct_check)--*/</font>
+<font color="blue">class</font> CefCommandLine <font color="black">:</font> <font color="blue">public</font> virtual CefBase <font color="black">{</font>
+ <font color="blue">public</font><font color="black">:</font>
+  <font color="blue">typedef</font> std<font color="black">:</font><font color="black">:</font>vector<font color="black">&#60;</font>CefString<font color="black">&#62;</font> ArgumentList;
+  <font color="blue">typedef</font> std<font color="black">:</font><font color="black">:</font>map<font color="black">&#60;</font>CefString, CefString<font color="black">&#62;</font> SwitchMap;
+
+  <font color="green">///</font>
+  <font color="green">// Create a new CefCommandLine instance.</font>
+  <font color="green">///</font>
+  <font color="green">/*--cef(revision_check)--*/</font>
+  <font color="blue">static</font> CefRefPtr<font color="black">&#60;</font>CefCommandLine<font color="black">&#62;</font> CreateCommandLine<font color="black">(</font><font color="black">)</font>;
+
+  <font color="green">///</font>
+  <font color="green">// Initialize the command line with the specified |argc| and |argv| values.</font>
+  <font color="green">// The first argument must be the name of the program. This method is only</font>
+  <font color="green">// supported on non-Windows platforms.</font>
+  <font color="green">///</font>
+  <font color="green">/*--cef()--*/</font>
+  virtual <font color="blue">void</font> InitFromArgv<font color="black">(</font><font color="blue">int</font> argc, <font color="blue">const</font> <font color="blue">char</font><font color="black">*</font> <font color="blue">const</font><font color="black">*</font> argv<font color="black">)</font> <font color="black">=</font><font color="maroon">0</font>;
+
+  <font color="green">///</font>
+  <font color="green">// Initialize the command line with the string returned by calling</font>
+  <font color="green">// GetCommandLineW(). This method is only supported on Windows.</font>
+  <font color="green">///</font>
+  <font color="green">/*--cef()--*/</font>
+  virtual <font color="blue">void</font> InitFromString<font color="black">(</font><font color="blue">const</font> CefString<font color="black">&</font> command_line<font color="black">)</font> <font color="black">=</font><font color="maroon">0</font>;
+
+  <font color="green">///</font>
+  <font color="green">// Constructs and returns the represented command line string. Use this method</font>
+  <font color="green">// cautiously because quoting behavior is unclear.</font>
+  <font color="green">///</font>
+  <font color="green">/*--cef()--*/</font>
+  virtual CefString GetCommandLineString<font color="black">(</font><font color="black">)</font> <font color="black">=</font><font color="maroon">0</font>;
+
+  <font color="green">///</font>
+  <font color="green">// Get the program part of the command line string (the first item).</font>
+  <font color="green">///</font>
+  <font color="green">/*--cef()--*/</font>
+  virtual CefString GetProgram<font color="black">(</font><font color="black">)</font> <font color="black">=</font><font color="maroon">0</font>;
+
+  <font color="green">///</font>
+  <font color="green">// Set the program part of the command line string (the first item).</font>
+  <font color="green">///</font>
+  <font color="green">/*--cef()--*/</font>
+  virtual <font color="blue">void</font> SetProgram<font color="black">(</font><font color="blue">const</font> CefString<font color="black">&</font> program<font color="black">)</font> <font color="black">=</font><font color="maroon">0</font>;
+
+  <font color="green">///</font>
+  <font color="green">// Returns true if the command line has switches.</font>
+  <font color="green">///</font>
+  <font color="green">/*--cef()--*/</font>
+  virtual <font color="blue">bool</font> HasSwitches<font color="black">(</font><font color="black">)</font> <font color="black">=</font><font color="maroon">0</font>;
+
+  <font color="green">///</font>
+  <font color="green">// Returns true if the command line contains the given switch.</font>
+  <font color="green">///</font>
+  <font color="green">/*--cef()--*/</font>
+  virtual <font color="blue">bool</font> HasSwitch<font color="black">(</font><font color="blue">const</font> CefString<font color="black">&</font> <font color="blue">name</font><font color="black">)</font> <font color="black">=</font><font color="maroon">0</font>;
+
+  <font color="green">///</font>
+  <font color="green">// Returns the value associated with the given switch. If the switch has no</font>
+  <font color="green">// value or isn't present this method returns the empty string.</font>
+  <font color="green">///</font>
+  <font color="green">/*--cef()--*/</font>
+  virtual CefString GetSwitchValue<font color="black">(</font><font color="blue">const</font> CefString<font color="black">&</font> <font color="blue">name</font><font color="black">)</font> <font color="black">=</font><font color="maroon">0</font>;
+
+  <font color="green">///</font>
+  <font color="green">// Returns the map of switch names and values. If a switch has no value an</font>
+  <font color="green">// empty string is returned.</font>
+  <font color="green">///</font>
+  <font color="green">/*--cef()--*/</font>
+  virtual <font color="blue">void</font> GetSwitches<font color="black">(</font>SwitchMap<font color="black">&</font> switches<font color="black">)</font> <font color="black">=</font><font color="maroon">0</font>;
+
+  <font color="green">///</font>
+  <font color="green">// Add a switch to the end of the command line. If the switch has no value</font>
+  <font color="green">// pass an empty value string.</font>
+  <font color="green">///</font>
+  <font color="green">/*--cef()--*/</font>
+  virtual <font color="blue">void</font> AppendSwitch<font color="black">(</font><font color="blue">const</font> CefString<font color="black">&</font> <font color="blue">name</font><font color="black">)</font> <font color="black">=</font><font color="maroon">0</font>;
+
+  <font color="green">///</font>
+  <font color="green">// Add a switch with the specified value to the end of the command line.</font>
+  <font color="green">///</font>
+  <font color="green">/*--cef()--*/</font>
+  virtual <font color="blue">void</font> AppendSwitchWithValue<font color="black">(</font><font color="blue">const</font> CefString<font color="black">&</font> <font color="blue">name</font>,
+                                     <font color="blue">const</font> CefString<font color="black">&</font> value<font color="black">)</font> <font color="black">=</font><font color="maroon">0</font>;
+
+  <font color="green">///</font>
+  <font color="green">// True if there are remaining command line arguments.</font>
+  <font color="green">///</font>
+  <font color="green">/*--cef()--*/</font>
+  virtual <font color="blue">bool</font> HasArguments<font color="black">(</font><font color="black">)</font> <font color="black">=</font><font color="maroon">0</font>;
+
+  <font color="green">///</font>
+  <font color="green">// Get the remaining command line arguments.</font>
+  <font color="green">///</font>
+  <font color="green">/*--cef()--*/</font>
+  virtual <font color="blue">void</font> GetArguments<font color="black">(</font>ArgumentList<font color="black">&</font> arguments<font color="black">)</font> <font color="black">=</font><font color="maroon">0</font>;
+
+  <font color="green">///</font>
+  <font color="green">// Add an argument to the end of the command line.</font>
+  <font color="green">///</font>
+  <font color="green">/*--cef()--*/</font>
+  virtual <font color="blue">void</font> AppendArgument<font color="black">(</font><font color="blue">const</font> CefString<font color="black">&</font> argument<font color="black">)</font> <font color="black">=</font><font color="maroon">0</font>;
+<font color="black">}</font>;
+
+<font color="blue">#endif</font>  <font color="green">// CEF_INCLUDE_CEF_COMMAND_LINE_H_</font>
+
+</PRE>
+</BODY>
+</HTML>

@@ -1,0 +1,122 @@
+<HTML>
+<HEAD>
+<TITLE>
+cef_types_win.h
+</TITLE>
+</HEAD>
+<BODY>
+<PRE>
+<font color="green">// Copyright (c) 2009 Marshall A. Greenblatt. All rights reserved.</font>
+<font color="green">//</font>
+<font color="green">// Redistribution and use in source and binary forms, with or without</font>
+<font color="green">// modification, are permitted provided that the following conditions are</font>
+<font color="green">// met:</font>
+<font color="green">//</font>
+<font color="green">//    * Redistributions of source code must retain the above copyright</font>
+<font color="green">// notice, this list of conditions and the following disclaimer.</font>
+<font color="green">//    * Redistributions in binary form must reproduce the above</font>
+<font color="green">// copyright notice, this list of conditions and the following disclaimer</font>
+<font color="green">// in the documentation and/or other materials provided with the</font>
+<font color="green">// distribution.</font>
+<font color="green">//    * Neither the name of Google Inc. nor the name Chromium Embedded</font>
+<font color="green">// Framework nor the names of its contributors may be used to endorse</font>
+<font color="green">// or promote products derived from this software without specific prior</font>
+<font color="green">// written permission.</font>
+<font color="green">//</font>
+<font color="green">// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS</font>
+<font color="green">// "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT</font>
+<font color="green">// LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR</font>
+<font color="green">// A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT</font>
+<font color="green">// OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,</font>
+<font color="green">// SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT</font>
+<font color="green">// LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,</font>
+<font color="green">// DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY</font>
+<font color="green">// THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT</font>
+<font color="green">// (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE</font>
+<font color="green">// OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.</font>
+
+
+<font color="blue">#ifndef</font> CEF_INCLUDE_INTERNAL_CEF_TYPES_WIN_H_
+<font color="blue">#define</font> CEF_INCLUDE_INTERNAL_CEF_TYPES_WIN_H_
+<font color="blue">#pragma</font> once
+
+<font color="blue">#include</font> <font color="maroon">"include/internal/cef_build.h"</font>
+
+<font color="blue">#if</font> defined<font color="black">(</font>OS_WIN<font color="black">)</font>
+<font color="blue">#include</font> <font color="maroon">&#60;windows.h&#62;</font>
+<font color="blue">#include</font> <font color="maroon">"include/internal/cef_string.h"</font>
+
+<font color="blue">#ifdef</font> __cplusplus
+<font color="blue">extern</font> <font color="maroon">"C"</font> <font color="black">{</font>
+<font color="blue">#endif</font>
+
+<font color="green">// Window handle.</font>
+<font color="blue">#define</font> cef_window_handle_t HWND
+<font color="blue">#define</font> cef_cursor_handle_t HCURSOR
+
+<font color="green">///</font>
+<font color="green">// Supported graphics implementations.</font>
+<font color="green">///</font>
+<font color="blue">enum</font> cef_graphics_implementation_t <font color="black">{</font>
+  ANGLE_IN_PROCESS <font color="black">=</font> <font color="maroon">0</font>,
+  ANGLE_IN_PROCESS_COMMAND_BUFFER,
+  DESKTOP_IN_PROCESS,
+  DESKTOP_IN_PROCESS_COMMAND_BUFFER,
+<font color="black">}</font>;
+
+<font color="green">///</font>
+<font color="green">// Class representing window information.</font>
+<font color="green">///</font>
+<font color="blue">typedef</font> <font color="blue">struct</font> _cef_window_info_t <font color="black">{</font>
+  <font color="green">// Standard parameters required by CreateWindowEx()</font>
+  DWORD m_dwExStyle;
+  cef_string_t m_windowName;
+  DWORD m_dwStyle;
+  <font color="blue">int</font> m_x;
+  <font color="blue">int</font> m_y;
+  <font color="blue">int</font> m_nWidth;
+  <font color="blue">int</font> m_nHeight;
+  cef_window_handle_t m_hWndParent;
+  HMENU m_hMenu;
+
+  <font color="green">// If window rendering is disabled no browser window will be created. Set</font>
+  <font color="green">// |m_hWndParent| to the window that will act as the parent for popup menus,</font>
+  <font color="green">// dialog boxes, etc.</font>
+  BOOL m_bWindowRenderingDisabled;
+
+  <font color="green">// Set to true to enable transparent painting.</font>
+  BOOL m_bTransparentPainting;
+
+  <font color="green">// Handle for the new browser window.</font>
+  cef_window_handle_t m_hWnd;
+<font color="black">}</font> cef_window_info_t;
+
+<font color="green">///</font>
+<font color="green">// Class representing print context information.</font>
+<font color="green">///</font>
+<font color="blue">typedef</font> <font color="blue">struct</font> _cef_print_info_t <font color="black">{</font>
+  HDC m_hDC;
+  RECT m_Rect;
+  <font color="blue">double</font> m_Scale;
+<font color="black">}</font> cef_print_info_t;
+
+<font color="green">///</font>
+<font color="green">// Class representing key information.</font>
+<font color="green">///</font>
+<font color="blue">typedef</font> <font color="blue">struct</font> _cef_key_info_t <font color="black">{</font>
+  <font color="blue">int</font> key;
+  BOOL sysChar;
+  BOOL imeChar;
+<font color="black">}</font> cef_key_info_t;
+
+<font color="blue">#ifdef</font> __cplusplus
+<font color="black">}</font>
+<font color="blue">#endif</font>
+
+<font color="blue">#endif</font>  <font color="green">// OS_WIN</font>
+
+<font color="blue">#endif</font>  <font color="green">// CEF_INCLUDE_INTERNAL_CEF_TYPES_WIN_H_</font>
+
+</PRE>
+</BODY>
+</HTML>

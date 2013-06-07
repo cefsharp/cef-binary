@@ -1,0 +1,114 @@
+<HTML>
+<HEAD>
+<TITLE>
+cef_origin_whitelist.h
+</TITLE>
+</HEAD>
+<BODY>
+<PRE>
+<font color="green">// Copyright (c) 2011 Marshall A. Greenblatt. All rights reserved.</font>
+<font color="green">//</font>
+<font color="green">// Redistribution and use in source and binary forms, with or without</font>
+<font color="green">// modification, are permitted provided that the following conditions are</font>
+<font color="green">// met:</font>
+<font color="green">//</font>
+<font color="green">//    * Redistributions of source code must retain the above copyright</font>
+<font color="green">// notice, this list of conditions and the following disclaimer.</font>
+<font color="green">//    * Redistributions in binary form must reproduce the above</font>
+<font color="green">// copyright notice, this list of conditions and the following disclaimer</font>
+<font color="green">// in the documentation and/or other materials provided with the</font>
+<font color="green">// distribution.</font>
+<font color="green">//    * Neither the name of Google Inc. nor the name Chromium Embedded</font>
+<font color="green">// Framework nor the names of its contributors may be used to endorse</font>
+<font color="green">// or promote products derived from this software without specific prior</font>
+<font color="green">// written permission.</font>
+<font color="green">//</font>
+<font color="green">// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS</font>
+<font color="green">// "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT</font>
+<font color="green">// LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR</font>
+<font color="green">// A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT</font>
+<font color="green">// OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,</font>
+<font color="green">// SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT</font>
+<font color="green">// LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,</font>
+<font color="green">// DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY</font>
+<font color="green">// THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT</font>
+<font color="green">// (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE</font>
+<font color="green">// OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.</font>
+<font color="green">//</font>
+<font color="green">// ---------------------------------------------------------------------------</font>
+<font color="green">//</font>
+<font color="green">// The contents of this file must follow a specific format in order to</font>
+<font color="green">// support the CEF translator tool. See the translator.README.txt file in the</font>
+<font color="green">// tools directory for more information.</font>
+<font color="green">//</font>
+
+<font color="blue">#ifndef</font> CEF_INCLUDE_CEF_ORIGIN_WHITELIST_H_
+<font color="blue">#define</font> CEF_INCLUDE_CEF_ORIGIN_WHITELIST_H_
+<font color="blue">#pragma</font> once
+
+<font color="blue">#include</font> <font color="maroon">"include/cef_base.h"</font>
+
+
+<font color="green">///</font>
+<font color="green">// Add an entry to the cross-origin access whitelist.</font>
+<font color="green">//</font>
+<font color="green">// The same-origin policy restricts how scripts hosted from different origins</font>
+<font color="green">// (scheme + domain + port) can communicate. By default, scripts can only access</font>
+<font color="green">// resources with the same origin. Scripts hosted on the HTTP and HTTPS schemes</font>
+<font color="green">// (but no other schemes) can use the "Access-Control-Allow-Origin" header to</font>
+<font color="green">// allow cross-origin requests. For example, https://source.example.com can make</font>
+<font color="green">// XMLHttpRequest requests on http://target.example.com if the</font>
+<font color="green">// http://target.example.com request returns an "Access-Control-Allow-Origin:</font>
+<font color="green">// https://source.example.com" response header.</font>
+<font color="green">//</font>
+<font color="green">// Scripts in separate frames or iframes and hosted from the same protocol and</font>
+<font color="green">// domain suffix can execute cross-origin JavaScript if both pages set the</font>
+<font color="green">// document.domain value to the same domain suffix. For example,</font>
+<font color="green">// scheme://foo.example.com and scheme://bar.example.com can communicate using</font>
+<font color="green">// JavaScript if both domains set document.domain="example.com".</font>
+<font color="green">//</font>
+<font color="green">// This method is used to allow access to origins that would otherwise violate</font>
+<font color="green">// the same-origin policy. Scripts hosted underneath the fully qualified</font>
+<font color="green">// |source_origin| URL (like http://www.example.com) will be allowed access to</font>
+<font color="green">// all resources hosted on the specified |target_protocol| and |target_domain|.</font>
+<font color="green">// If |target_domain| is non-empty and |allow_target_subdomains| if false only</font>
+<font color="green">// exact domain matches will be allowed. If |target_domain| is non-empty and</font>
+<font color="green">// |allow_target_subdomains| is true sub-domain matches will be allowed. If</font>
+<font color="green">// |target_domain| is empty and |allow_target_subdomains| if true all domains</font>
+<font color="green">// and IP addresses will be allowed.</font>
+<font color="green">//</font>
+<font color="green">// This method cannot be used to bypass the restrictions on local or display</font>
+<font color="green">// isolated schemes. See the comments on CefRegisterCustomScheme for more</font>
+<font color="green">// information.</font>
+<font color="green">//</font>
+<font color="green">// This function may be called on any thread. Returns false if |source_origin|</font>
+<font color="green">// is invalid or the whitelist cannot be accessed.</font>
+<font color="green">///</font>
+<font color="green">/*--cef(optional_param=target_domain)--*/</font>
+<font color="blue">bool</font> CefAddCrossOriginWhitelistEntry<font color="black">(</font><font color="blue">const</font> CefString<font color="black">&</font> source_origin,
+                                     <font color="blue">const</font> CefString<font color="black">&</font> target_protocol,
+                                     <font color="blue">const</font> CefString<font color="black">&</font> target_domain,
+                                     <font color="blue">bool</font> allow_target_subdomains<font color="black">)</font>;
+
+<font color="green">///</font>
+<font color="green">// Remove an entry from the cross-origin access whitelist. Returns false if</font>
+<font color="green">// |source_origin| is invalid or the whitelist cannot be accessed.</font>
+<font color="green">///</font>
+<font color="green">/*--cef(optional_param=target_domain)--*/</font>
+<font color="blue">bool</font> CefRemoveCrossOriginWhitelistEntry<font color="black">(</font><font color="blue">const</font> CefString<font color="black">&</font> source_origin,
+                                        <font color="blue">const</font> CefString<font color="black">&</font> target_protocol,
+                                        <font color="blue">const</font> CefString<font color="black">&</font> target_domain,
+                                        <font color="blue">bool</font> allow_target_subdomains<font color="black">)</font>;
+
+<font color="green">///</font>
+<font color="green">// Remove all entries from the cross-origin access whitelist. Returns false if</font>
+<font color="green">// the whitelist cannot be accessed.</font>
+<font color="green">///</font>
+<font color="green">/*--cef()--*/</font>
+<font color="blue">bool</font> CefClearCrossOriginWhitelist<font color="black">(</font><font color="black">)</font>;
+
+<font color="blue">#endif</font>  <font color="green">// CEF_INCLUDE_CEF_ORIGIN_WHITELIST_H_</font>
+
+</PRE>
+</BODY>
+</HTML>
