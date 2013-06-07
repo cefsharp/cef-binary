@@ -1,0 +1,5 @@
+*.sdf
+*.suo
+*.user
+debug.log
+_ReSharper*
