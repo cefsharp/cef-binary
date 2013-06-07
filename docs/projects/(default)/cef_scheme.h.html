@@ -1,0 +1,243 @@
+<HTML>
+<HEAD>
+<TITLE>
+cef_scheme.h
+</TITLE>
+</HEAD>
+<BODY>
+<PRE>
+<font color="green">// Copyright (c) 2011 Marshall A. Greenblatt. All rights reserved.</font>
+<font color="green">//</font>
+<font color="green">// Redistribution and use in source and binary forms, with or without</font>
+<font color="green">// modification, are permitted provided that the following conditions are</font>
+<font color="green">// met:</font>
+<font color="green">//</font>
+<font color="green">//    * Redistributions of source code must retain the above copyright</font>
+<font color="green">// notice, this list of conditions and the following disclaimer.</font>
+<font color="green">//    * Redistributions in binary form must reproduce the above</font>
+<font color="green">// copyright notice, this list of conditions and the following disclaimer</font>
+<font color="green">// in the documentation and/or other materials provided with the</font>
+<font color="green">// distribution.</font>
+<font color="green">//    * Neither the name of Google Inc. nor the name Chromium Embedded</font>
+<font color="green">// Framework nor the names of its contributors may be used to endorse</font>
+<font color="green">// or promote products derived from this software without specific prior</font>
+<font color="green">// written permission.</font>
+<font color="green">//</font>
+<font color="green">// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS</font>
+<font color="green">// "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT</font>
+<font color="green">// LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR</font>
+<font color="green">// A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT</font>
+<font color="green">// OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,</font>
+<font color="green">// SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT</font>
+<font color="green">// LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,</font>
+<font color="green">// DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY</font>
+<font color="green">// THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT</font>
+<font color="green">// (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE</font>
+<font color="green">// OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.</font>
+<font color="green">//</font>
+<font color="green">// ---------------------------------------------------------------------------</font>
+<font color="green">//</font>
+<font color="green">// The contents of this file must follow a specific format in order to</font>
+<font color="green">// support the CEF translator tool. See the translator.README.txt file in the</font>
+<font color="green">// tools directory for more information.</font>
+<font color="green">//</font>
+
+<font color="blue">#ifndef</font> CEF_INCLUDE_CEF_SCHEME_H_
+<font color="blue">#define</font> CEF_INCLUDE_CEF_SCHEME_H_
+<font color="blue">#pragma</font> once
+
+<font color="blue">#include</font> <font color="maroon">"include/cef_base.h"</font>
+<font color="blue">#include</font> <font color="maroon">"include/cef_browser.h"</font>
+<font color="blue">#include</font> <font color="maroon">"include/cef_response.h"</font>
+<font color="blue">#include</font> <font color="maroon">"include/cef_request.h"</font>
+
+<font color="blue">class</font> CefSchemeHandler;
+<font color="blue">class</font> CefSchemeHandlerFactory;
+
+<font color="green">///</font>
+<font color="green">// Register a scheme handler factory for the specified |scheme_name| and</font>
+<font color="green">// optional |domain_name|. An empty |domain_name| value for a standard scheme</font>
+<font color="green">// will cause the factory to match all domain names. The |domain_name| value</font>
+<font color="green">// will be ignored for non-standard schemes. If |scheme_name| is a built-in</font>
+<font color="green">// scheme and no handler is returned by |factory| then the built-in scheme</font>
+<font color="green">// handler factory will be called. If |scheme_name| is a custom scheme the</font>
+<font color="green">// CefRegisterCustomScheme() function should be called for that scheme.</font>
+<font color="green">// This function may be called multiple times to change or remove the factory</font>
+<font color="green">// that matches the specified |scheme_name| and optional |domain_name|.</font>
+<font color="green">// Returns false if an error occurs. This function may be called on any thread.</font>
+<font color="green">///</font>
+<font color="green">/*--cef(optional_param=domain_name,optional_param=factory)--*/</font>
+<font color="blue">bool</font> CefRegisterSchemeHandlerFactory<font color="black">(</font><font color="blue">const</font> CefString<font color="black">&</font> scheme_name,
+                                    <font color="blue">const</font> CefString<font color="black">&</font> domain_name,
+                                    CefRefPtr<font color="black">&#60;</font>CefSchemeHandlerFactory<font color="black">&#62;</font> factory<font color="black">)</font>;
+
+<font color="green">///</font>
+<font color="green">// Clear all registered scheme handler factories. Returns false on error. This</font>
+<font color="green">// function may be called on any thread.</font>
+<font color="green">///</font>
+<font color="green">/*--cef()--*/</font>
+<font color="blue">bool</font> CefClearSchemeHandlerFactories<font color="black">(</font><font color="black">)</font>;
+
+
+<font color="green">///</font>
+<font color="green">// Class that manages custom scheme registrations.</font>
+<font color="green">///</font>
+<font color="green">/*--cef(source=library)--*/</font>
+<font color="blue">class</font> CefSchemeRegistrar <font color="black">:</font> <font color="blue">public</font> virtual CefBase <font color="black">{</font>
+ <font color="blue">public</font><font color="black">:</font>
+  <font color="green">///</font>
+  <font color="green">// Register a custom scheme. This method should not be called for the built-in</font>
+  <font color="green">// HTTP, HTTPS, FILE, FTP, ABOUT and DATA schemes.</font>
+  <font color="green">//</font>
+  <font color="green">// If |is_standard| is true the scheme will be treated as a standard scheme.</font>
+  <font color="green">// Standard schemes are subject to URL canonicalization and parsing rules as</font>
+  <font color="green">// defined in the Common Internet Scheme Syntax RFC 1738 Section 3.1 available</font>
+  <font color="green">// at http://www.ietf.org/rfc/rfc1738.txt</font>
+  <font color="green">//</font>
+  <font color="green">// In particular, the syntax for standard scheme URLs must be of the form:</font>
+  <font color="green">// &#60;pre&#62;</font>
+  <font color="green">//  [scheme]://[username]:[password]@[host]:[port]/[url-path]</font>
+  <font color="green">// &#60;/pre&#62;</font>
+  <font color="green">// Standard scheme URLs must have a host component that is a fully qualified</font>
+  <font color="green">// domain name as defined in Section 3.5 of RFC 1034 [13] and Section 2.1 of</font>
+  <font color="green">// RFC 1123. These URLs will be canonicalized to "scheme://host/path" in the</font>
+  <font color="green">// simplest case and "scheme://username:password@host:port/path" in the most</font>
+  <font color="green">// explicit case. For example, "scheme:host/path" and "scheme:///host/path"</font>
+  <font color="green">// will both be canonicalized to "scheme://host/path". The origin of a</font>
+  <font color="green">// standard scheme URL is the combination of scheme, host and port (i.e.,</font>
+  <font color="green">// "scheme://host:port" in the most explicit case).</font>
+  <font color="green">//</font>
+  <font color="green">// For non-standard scheme URLs only the "scheme:" component is parsed and</font>
+  <font color="green">// canonicalized. The remainder of the URL will be passed to the handler</font>
+  <font color="green">// as-is. For example, "scheme:///some%20text" will remain the same.</font>
+  <font color="green">// Non-standard scheme URLs cannot be used as a target for form submission.</font>
+  <font color="green">//</font>
+  <font color="green">// If |is_local| is true the scheme will be treated as local (i.e., with the</font>
+  <font color="green">// same security rules as those applied to "file" URLs). Normal pages cannot</font>
+  <font color="green">// link to or access local URLs. Also, by default, local URLs can only perform</font>
+  <font color="green">// XMLHttpRequest calls to the same URL (origin + path) that originated the</font>
+  <font color="green">// request. To allow XMLHttpRequest calls from a local URL to other URLs with</font>
+  <font color="green">// the same origin set the CefSettings.file_access_from_file_urls_allowed</font>
+  <font color="green">// value to true. To allow XMLHttpRequest calls from a local URL to all</font>
+  <font color="green">// origins set the CefSettings.universal_access_from_file_urls_allowed value</font>
+  <font color="green">// to true.</font>
+  <font color="green">//</font>
+  <font color="green">// If |is_display_isolated| is true the scheme will be treated as display-</font>
+  <font color="green">// isolated. This means that pages cannot display these URLs unless they are</font>
+  <font color="green">// from the same scheme. For example, pages in another origin cannot create</font>
+  <font color="green">// iframes or hyperlinks to URLs with this scheme.</font>
+  <font color="green">//</font>
+  <font color="green">// This function may be called on any thread. It should only be called once</font>
+  <font color="green">// per unique |scheme_name| value. If |scheme_name| is already registered or</font>
+  <font color="green">// if an error occurs this method will return false.</font>
+  <font color="green">///</font>
+  <font color="green">/*--cef()--*/</font>
+  virtual <font color="blue">bool</font> AddCustomScheme<font color="black">(</font><font color="blue">const</font> CefString<font color="black">&</font> scheme_name,
+                               <font color="blue">bool</font> is_standard,
+                               <font color="blue">bool</font> is_local,
+                               <font color="blue">bool</font> is_display_isolated<font color="black">)</font> <font color="black">=</font><font color="maroon">0</font>;
+<font color="black">}</font>;
+
+
+<font color="green">///</font>
+<font color="green">// Class that creates CefSchemeHandler instances. The methods of this class will</font>
+<font color="green">// always be called on the IO thread.</font>
+<font color="green">///</font>
+<font color="green">/*--cef(source=client)--*/</font>
+<font color="blue">class</font> CefSchemeHandlerFactory <font color="black">:</font> <font color="blue">public</font> virtual CefBase <font color="black">{</font>
+ <font color="blue">public</font><font color="black">:</font>
+  <font color="green">///</font>
+  <font color="green">// Return a new scheme handler instance to handle the request. |browser| will</font>
+  <font color="green">// be the browser window that initiated the request. If the request was</font>
+  <font color="green">// initiated using the CefWebURLRequest API |browser| will be NULL. The</font>
+  <font color="green">// |request| object passed to this method will not contain cookie data.</font>
+  <font color="green">///</font>
+  <font color="green">/*--cef(optional_param=browser)--*/</font>
+  virtual CefRefPtr<font color="black">&#60;</font>CefSchemeHandler<font color="black">&#62;</font> Create<font color="black">(</font>CefRefPtr<font color="black">&#60;</font>CefBrowser<font color="black">&#62;</font> browser,
+                                             <font color="blue">const</font> CefString<font color="black">&</font> scheme_name,
+                                             CefRefPtr<font color="black">&#60;</font>CefRequest<font color="black">&#62;</font> request<font color="black">)</font> <font color="black">=</font><font color="maroon">0</font>;
+<font color="black">}</font>;
+
+<font color="green">///</font>
+<font color="green">// Class used to facilitate asynchronous responses to custom scheme handler</font>
+<font color="green">// requests. The methods of this class may be called on any thread.</font>
+<font color="green">///</font>
+<font color="green">/*--cef(source=library)--*/</font>
+<font color="blue">class</font> CefSchemeHandlerCallback <font color="black">:</font> <font color="blue">public</font> virtual CefBase <font color="black">{</font>
+ <font color="blue">public</font><font color="black">:</font>
+  <font color="green">///</font>
+  <font color="green">// Notify that header information is now available for retrieval.</font>
+  <font color="green">///</font>
+  <font color="green">/*--cef()--*/</font>
+  virtual <font color="blue">void</font> HeadersAvailable<font color="black">(</font><font color="black">)</font> <font color="black">=</font><font color="maroon">0</font>;
+
+  <font color="green">///</font>
+  <font color="green">// Notify that response data is now available for reading.</font>
+  <font color="green">///</font>
+  <font color="green">/*--cef()--*/</font>
+  virtual <font color="blue">void</font> BytesAvailable<font color="black">(</font><font color="black">)</font> <font color="black">=</font><font color="maroon">0</font>;
+
+  <font color="green">///</font>
+  <font color="green">// Cancel processing of the request.</font>
+  <font color="green">///</font>
+  <font color="green">/*--cef()--*/</font>
+  virtual <font color="blue">void</font> Cancel<font color="black">(</font><font color="black">)</font> <font color="black">=</font><font color="maroon">0</font>;
+<font color="black">}</font>;
+
+<font color="green">///</font>
+<font color="green">// Class used to implement a custom scheme handler interface. The methods of</font>
+<font color="green">// this class will always be called on the IO thread.</font>
+<font color="green">///</font>
+<font color="green">/*--cef(source=client)--*/</font>
+<font color="blue">class</font> CefSchemeHandler <font color="black">:</font> <font color="blue">public</font> virtual CefBase <font color="black">{</font>
+ <font color="blue">public</font><font color="black">:</font>
+  <font color="green">///</font>
+  <font color="green">// Begin processing the request. To handle the request return true and call</font>
+  <font color="green">// HeadersAvailable() once the response header information is available</font>
+  <font color="green">// (HeadersAvailable() can also be called from inside this method if header</font>
+  <font color="green">// information is available immediately). To cancel the request return false.</font>
+  <font color="green">///</font>
+  <font color="green">/*--cef()--*/</font>
+  virtual <font color="blue">bool</font> ProcessRequest<font color="black">(</font>CefRefPtr<font color="black">&#60;</font>CefRequest<font color="black">&#62;</font> request,
+                              CefRefPtr<font color="black">&#60;</font>CefSchemeHandlerCallback<font color="black">&#62;</font> callback<font color="black">)</font> <font color="black">=</font><font color="maroon">0</font>;
+
+  <font color="green">///</font>
+  <font color="green">// Retrieve response header information. If the response length is not known</font>
+  <font color="green">// set |response_length| to -1 and ReadResponse() will be called until it</font>
+  <font color="green">// returns false. If the response length is known set |response_length|</font>
+  <font color="green">// to a positive value and ReadResponse() will be called until it returns</font>
+  <font color="green">// false or the specified number of bytes have been read. Use the |response|</font>
+  <font color="green">// object to set the mime type, http status code and other optional header</font>
+  <font color="green">// values. To redirect the request to a new URL set |redirectUrl| to the new</font>
+  <font color="green">// URL.</font>
+  <font color="green">///</font>
+  <font color="green">/*--cef()--*/</font>
+  virtual <font color="blue">void</font> GetResponseHeaders<font color="black">(</font>CefRefPtr<font color="black">&#60;</font>CefResponse<font color="black">&#62;</font> response,
+                                  int64<font color="black">&</font> response_length,
+                                  CefString<font color="black">&</font> redirectUrl<font color="black">)</font> <font color="black">=</font><font color="maroon">0</font>;
+
+  <font color="green">///</font>
+  <font color="green">// Read response data. If data is available immediately copy up to</font>
+  <font color="green">// |bytes_to_read| bytes into |data_out|, set |bytes_read| to the number of</font>
+  <font color="green">// bytes copied, and return true. To read the data at a later time set</font>
+  <font color="green">// |bytes_read| to 0, return true and call BytesAvailable() when the data is</font>
+  <font color="green">// available. To indicate response completion return false.</font>
+  <font color="green">///</font>
+  <font color="green">/*--cef()--*/</font>
+  virtual <font color="blue">bool</font> ReadResponse<font color="black">(</font><font color="blue">void</font><font color="black">*</font> data_out,
+                            <font color="blue">int</font> bytes_to_read,
+                            <font color="blue">int</font><font color="black">&</font> bytes_read,
+                            CefRefPtr<font color="black">&#60;</font>CefSchemeHandlerCallback<font color="black">&#62;</font> callback<font color="black">)</font> <font color="black">=</font><font color="maroon">0</font>;
+
+  <font color="green">///</font>
+  <font color="green">// Request processing has been canceled.</font>
+  <font color="green">///</font>
+  <font color="green">/*--cef()--*/</font>
+  virtual <font color="blue">void</font> Cancel<font color="black">(</font><font color="black">)</font> <font color="black">=</font><font color="maroon">0</font>;
+<font color="black">}</font>;
+
+<font color="blue">#endif</font>  <font color="green">// CEF_INCLUDE_CEF_SCHEME_H_</font>
+
+</PRE>
+</BODY>
+</HTML>

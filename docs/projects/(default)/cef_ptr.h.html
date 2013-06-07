@@ -1,0 +1,211 @@
+<HTML>
+<HEAD>
+<TITLE>
+cef_ptr.h
+</TITLE>
+</HEAD>
+<BODY>
+<PRE>
+<font color="green">// Copyright (c) 2008 Marshall A. Greenblatt. Portions Copyright (c)</font>
+<font color="green">// 2006-2008 Google Inc. All rights reserved.</font>
+<font color="green">//</font>
+<font color="green">// Redistribution and use in source and binary forms, with or without</font>
+<font color="green">// modification, are permitted provided that the following conditions are</font>
+<font color="green">// met:</font>
+<font color="green">//</font>
+<font color="green">//    * Redistributions of source code must retain the above copyright</font>
+<font color="green">// notice, this list of conditions and the following disclaimer.</font>
+<font color="green">//    * Redistributions in binary form must reproduce the above</font>
+<font color="green">// copyright notice, this list of conditions and the following disclaimer</font>
+<font color="green">// in the documentation and/or other materials provided with the</font>
+<font color="green">// distribution.</font>
+<font color="green">//    * Neither the name of Google Inc. nor the name Chromium Embedded</font>
+<font color="green">// Framework nor the names of its contributors may be used to endorse</font>
+<font color="green">// or promote products derived from this software without specific prior</font>
+<font color="green">// written permission.</font>
+<font color="green">//</font>
+<font color="green">// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS</font>
+<font color="green">// "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT</font>
+<font color="green">// LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR</font>
+<font color="green">// A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT</font>
+<font color="green">// OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,</font>
+<font color="green">// SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT</font>
+<font color="green">// LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,</font>
+<font color="green">// DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY</font>
+<font color="green">// THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT</font>
+<font color="green">// (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE</font>
+<font color="green">// OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.</font>
+
+
+<font color="blue">#ifndef</font> CEF_INCLUDE_INTERNAL_CEF_PTR_H_
+<font color="blue">#define</font> CEF_INCLUDE_INTERNAL_CEF_PTR_H_
+<font color="blue">#pragma</font> once
+
+<font color="blue">#include</font> <font color="maroon">&#60;stddef.h&#62;</font>
+
+<font color="green">///</font>
+<font color="green">// Smart pointer implementation borrowed from base/ref_counted.h</font>
+<font color="green">// &#60;p&#62;</font>
+<font color="green">// A smart pointer class for reference counted objects.  Use this class instead</font>
+<font color="green">// of calling AddRef and Release manually on a reference counted object to</font>
+<font color="green">// avoid common memory leaks caused by forgetting to Release an object</font>
+<font color="green">// reference.  Sample usage:</font>
+<font color="green">// &#60;pre&#62;</font>
+<font color="green">//   class MyFoo : public CefBase {</font>
+<font color="green">//    ...</font>
+<font color="green">//   };</font>
+<font color="green">//</font>
+<font color="green">//   void some_function() {</font>
+<font color="green">//     // The MyFoo object that |foo| represents starts with a single</font>
+<font color="green">//     // reference.</font>
+<font color="green">//     CefRefPtr&lt;MyFoo&gt; foo = new MyFoo();</font>
+<font color="green">//     foo-&gt;Method(param);</font>
+<font color="green">//     // |foo| is released when this function returns</font>
+<font color="green">//   }</font>
+<font color="green">//</font>
+<font color="green">//   void some_other_function() {</font>
+<font color="green">//     CefRefPtr&lt;MyFoo&gt; foo = new MyFoo();</font>
+<font color="green">//     ...</font>
+<font color="green">//     foo = NULL;  // explicitly releases |foo|</font>
+<font color="green">//     ...</font>
+<font color="green">//     if (foo)</font>
+<font color="green">//       foo-&gt;Method(param);</font>
+<font color="green">//   }</font>
+<font color="green">// &#60;/pre&#62;</font>
+<font color="green">// The above examples show how CefRefPtr&lt;T&gt; acts like a pointer to T.</font>
+<font color="green">// Given two CefRefPtr&lt;T&gt; classes, it is also possible to exchange</font>
+<font color="green">// references between the two objects, like so:</font>
+<font color="green">// &#60;pre&#62;</font>
+<font color="green">//   {</font>
+<font color="green">//     CefRefPtr&lt;MyFoo&gt; a = new MyFoo();</font>
+<font color="green">//     CefRefPtr&lt;MyFoo&gt; b;</font>
+<font color="green">//</font>
+<font color="green">//     b.swap(a);</font>
+<font color="green">//     // now, |b| references the MyFoo object, and |a| references NULL.</font>
+<font color="green">//   }</font>
+<font color="green">// &#60;/pre&#62;</font>
+<font color="green">// To make both |a| and |b| in the above example reference the same MyFoo</font>
+<font color="green">// object, simply use the assignment operator:</font>
+<font color="green">// &#60;pre&#62;</font>
+<font color="green">//   {</font>
+<font color="green">//     CefRefPtr&lt;MyFoo&gt; a = new MyFoo();</font>
+<font color="green">//     CefRefPtr&lt;MyFoo&gt; b;</font>
+<font color="green">//</font>
+<font color="green">//     b = a;</font>
+<font color="green">//     // now, |a| and |b| each own a reference to the same MyFoo object.</font>
+<font color="green">//     // the reference count of the underlying MyFoo object will be 2.</font>
+<font color="green">//   }</font>
+<font color="green">// &#60;/pre&#62;</font>
+<font color="green">// Reference counted objects can also be passed as function parameters and</font>
+<font color="green">// used as function return values:</font>
+<font color="green">// &#60;pre&#62;</font>
+<font color="green">//   void some_func_with_param(CefRefPtr&lt;MyFoo&gt; param) {</font>
+<font color="green">//     // A reference is added to the MyFoo object that |param| represents</font>
+<font color="green">//     // during the scope of some_func_with_param() and released when</font>
+<font color="green">//     // some_func_with_param() goes out of scope.</font>
+<font color="green">//   }</font>
+<font color="green">//</font>
+<font color="green">//   CefRefPtr&lt;MyFoo&gt; some_func_with_retval() {</font>
+<font color="green">//     // The MyFoo object that |foox| represents starts with a single</font>
+<font color="green">//     // reference.</font>
+<font color="green">//     CefRefPtr&lt;MyFoo&gt; foox = new MyFoo();</font>
+<font color="green">//</font>
+<font color="green">//     // Creating the return value adds an additional reference.</font>
+<font color="green">//     return foox;</font>
+<font color="green">//</font>
+<font color="green">//     // When some_func_with_retval() goes out of scope the original |foox|</font>
+<font color="green">//     // reference is released.</font>
+<font color="green">//   }</font>
+<font color="green">//</font>
+<font color="green">//   void and_another_function() {</font>
+<font color="green">//     CefRefPtr&lt;MyFoo&gt; foo = new MyFoo();</font>
+<font color="green">//</font>
+<font color="green">//     // pass |foo| as a parameter.</font>
+<font color="green">//     some_function(foo);</font>
+<font color="green">//</font>
+<font color="green">//     CefRefPtr&lt;MyFoo&gt; foo2 = some_func_with_retval();</font>
+<font color="green">//     // Now, since we kept a reference to the some_func_with_retval() return</font>
+<font color="green">//     // value, |foo2| is the only class pointing to the MyFoo object created</font>
+<font color="green">//     in some_func_with_retval(), and it has a reference count of 1.</font>
+<font color="green">//</font>
+<font color="green">//     some_func_with_retval();</font>
+<font color="green">//     // Now, since we didn't keep a reference to the some_func_with_retval()</font>
+<font color="green">//     // return value, the MyFoo object created in some_func_with_retval()</font>
+<font color="green">//     // will automatically be released.</font>
+<font color="green">//   }</font>
+<font color="green">// &#60;/pre&#62;</font>
+<font color="green">// And in standard containers:</font>
+<font color="green">// &#60;pre&#62;</font>
+<font color="green">//   {</font>
+<font color="green">//      // Create a vector that holds MyFoo objects.</font>
+<font color="green">//      std::vector&lt;CefRefPtr&lt;MyFoo&gt; &gt; MyFooVec;</font>
+<font color="green">//</font>
+<font color="green">//     // The MyFoo object that |foo| represents starts with a single</font>
+<font color="green">//     // reference.</font>
+<font color="green">//     CefRefPtr&lt;MyFoo&gt; foo = new MyFoo();</font>
+<font color="green">//</font>
+<font color="green">//     // When the MyFoo object is added to |MyFooVec| the reference count</font>
+<font color="green">//     // is increased to 2.</font>
+<font color="green">//     MyFooVec.push_back(foo);</font>
+<font color="green">//   }</font>
+<font color="green">// &#60;/pre&#62;</font>
+<font color="green">// &#60;/p&#62;</font>
+<font color="green">///</font>
+<font color="blue">template</font> <font color="black">&#60;</font><font color="blue">class</font> T<font color="black">&#62;</font>
+<font color="blue">class</font> CefRefPtr <font color="black">{</font>
+ <font color="blue">public</font><font color="black">:</font>
+  CefRefPtr<font color="black">(</font><font color="black">)</font> <font color="black">:</font> ptr_<font color="black">(</font>NULL<font color="black">)</font> <font color="black">{</font>
+  <font color="black">}</font>
+
+  CefRefPtr<font color="black">(</font>T<font color="black">*</font> p<font color="black">)</font> <font color="black">:</font> ptr_<font color="black">(</font>p<font color="black">)</font> <font color="black">{</font>  <font color="green">// NOLINT(runtime/explicit)</font>
+    <font color="blue">if</font> <font color="black">(</font>ptr_<font color="black">)</font>
+      ptr_<font color="black">-</font><font color="black">&#62;</font>AddRef<font color="black">(</font><font color="black">)</font>;
+  <font color="black">}</font>
+
+  CefRefPtr<font color="black">(</font><font color="blue">const</font> CefRefPtr<font color="black">&#60;</font>T<font color="black">&#62;</font><font color="black">&</font> r<font color="black">)</font> <font color="black">:</font> ptr_<font color="black">(</font>r.ptr_<font color="black">)</font> <font color="black">{</font>
+    <font color="blue">if</font> <font color="black">(</font>ptr_<font color="black">)</font>
+      ptr_<font color="black">-</font><font color="black">&#62;</font>AddRef<font color="black">(</font><font color="black">)</font>;
+  <font color="black">}</font>
+
+  ~CefRefPtr<font color="black">(</font><font color="black">)</font> <font color="black">{</font>
+    <font color="blue">if</font> <font color="black">(</font>ptr_<font color="black">)</font>
+      ptr_<font color="black">-</font><font color="black">&#62;</font>Release<font color="black">(</font><font color="black">)</font>;
+  <font color="black">}</font>
+
+  T<font color="black">*</font> get<font color="black">(</font><font color="black">)</font> <font color="blue">const</font> <font color="black">{</font> <font color="blue">return</font> ptr_; <font color="black">}</font>
+  <font color="blue">operator</font> T<font color="black">*</font><font color="black">(</font><font color="black">)</font> <font color="blue">const</font> <font color="black">{</font> <font color="blue">return</font> ptr_; <font color="black">}</font>
+  T<font color="black">*</font> <font color="blue">operator</font><font color="black">-</font><font color="black">&#62;</font><font color="black">(</font><font color="black">)</font> <font color="blue">const</font> <font color="black">{</font> <font color="blue">return</font> ptr_; <font color="black">}</font>
+
+  CefRefPtr<font color="black">&#60;</font>T<font color="black">&#62;</font><font color="black">&</font> <font color="blue">operator</font><font color="black">=</font><font color="black">(</font>T<font color="black">*</font> p<font color="black">)</font> <font color="black">{</font>
+    <font color="green">// AddRef first so that self assignment should work</font>
+    <font color="blue">if</font> <font color="black">(</font>p<font color="black">)</font>
+      p<font color="black">-</font><font color="black">&#62;</font>AddRef<font color="black">(</font><font color="black">)</font>;
+    <font color="blue">if</font> <font color="black">(</font>ptr_ <font color="black">)</font>
+      ptr_ <font color="black">-</font><font color="black">&#62;</font>Release<font color="black">(</font><font color="black">)</font>;
+    ptr_ <font color="black">=</font> p;
+    <font color="blue">return</font> <font color="black">*</font><font color="blue">this</font>;
+  <font color="black">}</font>
+
+  CefRefPtr<font color="black">&#60;</font>T<font color="black">&#62;</font><font color="black">&</font> <font color="blue">operator</font><font color="black">=</font><font color="black">(</font><font color="blue">const</font> CefRefPtr<font color="black">&#60;</font>T<font color="black">&#62;</font><font color="black">&</font> r<font color="black">)</font> <font color="black">{</font>
+    <font color="blue">return</font> <font color="black">*</font><font color="blue">this</font> <font color="black">=</font> r.ptr_;
+  <font color="black">}</font>
+
+  <font color="blue">void</font> swap<font color="black">(</font>T<font color="black">*</font><font color="black">*</font> pp<font color="black">)</font> <font color="black">{</font>
+    T<font color="black">*</font> p <font color="black">=</font> ptr_;
+    ptr_ <font color="black">=</font> <font color="black">*</font>pp;
+    <font color="black">*</font>pp <font color="black">=</font> p;
+  <font color="black">}</font>
+
+  <font color="blue">void</font> swap<font color="black">(</font>CefRefPtr<font color="black">&#60;</font>T<font color="black">&#62;</font><font color="black">&</font> r<font color="black">)</font> <font color="black">{</font>
+    swap<font color="black">(</font><font color="black">&</font>r.ptr_<font color="black">)</font>;  <font color="green">// NOLINT(build/include_what_you_use)</font>
+  <font color="black">}</font>
+
+ <font color="blue">private</font><font color="black">:</font>
+  T<font color="black">*</font> ptr_;
+<font color="black">}</font>;
+
+<font color="blue">#endif</font>  <font color="green">// CEF_INCLUDE_INTERNAL_CEF_PTR_H_</font>
+
+</PRE>
+</BODY>
+</HTML>

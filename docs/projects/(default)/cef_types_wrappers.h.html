@@ -1,0 +1,700 @@
+<HTML>
+<HEAD>
+<TITLE>
+cef_types_wrappers.h
+</TITLE>
+</HEAD>
+<BODY>
+<PRE>
+<font color="green">// Copyright (c) 2011 Marshall A. Greenblatt. All rights reserved.</font>
+<font color="green">//</font>
+<font color="green">// Redistribution and use in source and binary forms, with or without</font>
+<font color="green">// modification, are permitted provided that the following conditions are</font>
+<font color="green">// met:</font>
+<font color="green">//</font>
+<font color="green">//    * Redistributions of source code must retain the above copyright</font>
+<font color="green">// notice, this list of conditions and the following disclaimer.</font>
+<font color="green">//    * Redistributions in binary form must reproduce the above</font>
+<font color="green">// copyright notice, this list of conditions and the following disclaimer</font>
+<font color="green">// in the documentation and/or other materials provided with the</font>
+<font color="green">// distribution.</font>
+<font color="green">//    * Neither the name of Google Inc. nor the name Chromium Embedded</font>
+<font color="green">// Framework nor the names of its contributors may be used to endorse</font>
+<font color="green">// or promote products derived from this software without specific prior</font>
+<font color="green">// written permission.</font>
+<font color="green">//</font>
+<font color="green">// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS</font>
+<font color="green">// "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT</font>
+<font color="green">// LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR</font>
+<font color="green">// A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT</font>
+<font color="green">// OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,</font>
+<font color="green">// SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT</font>
+<font color="green">// LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,</font>
+<font color="green">// DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY</font>
+<font color="green">// THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT</font>
+<font color="green">// (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE</font>
+<font color="green">// OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.</font>
+
+<font color="blue">#ifndef</font> CEF_INCLUDE_INTERNAL_CEF_TYPES_WRAPPERS_H_
+<font color="blue">#define</font> CEF_INCLUDE_INTERNAL_CEF_TYPES_WRAPPERS_H_
+<font color="blue">#pragma</font> once
+
+<font color="blue">#include</font> <font color="maroon">"include/internal/cef_string.h"</font>
+<font color="blue">#include</font> <font color="maroon">"include/internal/cef_string_list.h"</font>
+<font color="blue">#include</font> <font color="maroon">"include/internal/cef_types.h"</font>
+
+<font color="green">///</font>
+<font color="green">// Template class that provides common functionality for CEF structure wrapping.</font>
+<font color="green">///</font>
+<font color="blue">template</font> <font color="black">&#60;</font><font color="blue">class</font> traits<font color="black">&#62;</font>
+<font color="blue">class</font> CefStructBase <font color="black">:</font> <font color="blue">public</font> traits<font color="black">:</font><font color="black">:</font>struct_type <font color="black">{</font>
+ <font color="blue">public</font><font color="black">:</font>
+  <font color="blue">typedef</font> typename traits<font color="black">:</font><font color="black">:</font>struct_type struct_type;
+
+  CefStructBase<font color="black">(</font><font color="black">)</font> <font color="black">:</font> attached_to_<font color="black">(</font>NULL<font color="black">)</font> <font color="black">{</font>
+    Init<font color="black">(</font><font color="black">)</font>;
+  <font color="black">}</font>
+  virtual ~CefStructBase<font color="black">(</font><font color="black">)</font> <font color="black">{</font>
+    <font color="green">// Only clear this object's data if it isn't currently attached to a</font>
+    <font color="green">// structure.</font>
+    <font color="blue">if</font> <font color="black">(</font><font color="black">!</font>attached_to_<font color="black">)</font>
+      Clear<font color="black">(</font><font color="blue">this</font><font color="black">)</font>;
+  <font color="black">}</font>
+
+  CefStructBase<font color="black">(</font><font color="blue">const</font> CefStructBase<font color="black">&</font> r<font color="black">)</font> <font color="black">{</font>
+    Init<font color="black">(</font><font color="black">)</font>;
+    <font color="black">*</font><font color="blue">this</font> <font color="black">=</font> r;
+  <font color="black">}</font>
+  CefStructBase<font color="black">(</font><font color="blue">const</font> struct_type<font color="black">&</font> r<font color="black">)</font> <font color="black">{</font>  <font color="green">// NOLINT(runtime/explicit)</font>
+    Init<font color="black">(</font><font color="black">)</font>;
+    <font color="black">*</font><font color="blue">this</font> <font color="black">=</font> r;
+  <font color="black">}</font>
+
+  <font color="green">///</font>
+  <font color="green">// Clear this object's values.</font>
+  <font color="green">///</font>
+  <font color="blue">void</font> Reset<font color="black">(</font><font color="black">)</font> <font color="black">{</font>
+    Clear<font color="black">(</font><font color="blue">this</font><font color="black">)</font>;
+    Init<font color="black">(</font><font color="black">)</font>;
+  <font color="black">}</font>
+
+  <font color="green">///</font>
+  <font color="green">// Attach to the source structure's existing values. DetachTo() can be called</font>
+  <font color="green">// to insert the values back into the existing structure.</font>
+  <font color="green">///</font>
+  <font color="blue">void</font> AttachTo<font color="black">(</font>struct_type<font color="black">&</font> source<font color="black">)</font> <font color="black">{</font>
+    <font color="green">// Only clear this object's data if it isn't currently attached to a</font>
+    <font color="green">// structure.</font>
+    <font color="blue">if</font> <font color="black">(</font><font color="black">!</font>attached_to_<font color="black">)</font>
+      Clear<font color="black">(</font><font color="blue">this</font><font color="black">)</font>;
+
+    <font color="green">// This object is now attached to the new structure.</font>
+    attached_to_ <font color="black">=</font> <font color="black">&</font>source;
+
+    <font color="green">// Transfer ownership of the values from the source structure.</font>
+    memcpy<font color="black">(</font>static_cast<font color="black">&#60;</font>struct_type<font color="black">*</font><font color="black">&#62;</font><font color="black">(</font><font color="blue">this</font><font color="black">)</font>, <font color="black">&</font>source, <font color="blue">sizeof</font><font color="black">(</font>struct_type<font color="black">)</font><font color="black">)</font>;
+  <font color="black">}</font>
+
+  <font color="green">///</font>
+  <font color="green">// Relinquish ownership of values to the target structure.</font>
+  <font color="green">///</font>
+  <font color="blue">void</font> DetachTo<font color="black">(</font>struct_type<font color="black">&</font> target<font color="black">)</font> <font color="black">{</font>
+    <font color="blue">if</font> <font color="black">(</font>attached_to_ <font color="black">!</font><font color="black">=</font> <font color="black">&</font>target<font color="black">)</font> <font color="black">{</font>
+      <font color="green">// Clear the target structure's values only if we are not currently</font>
+      <font color="green">// attached to that structure.</font>
+      Clear<font color="black">(</font><font color="black">&</font>target<font color="black">)</font>;
+    <font color="black">}</font>
+
+    <font color="green">// Transfer ownership of the values to the target structure.</font>
+    memcpy<font color="black">(</font><font color="black">&</font>target, static_cast<font color="black">&#60;</font>struct_type<font color="black">*</font><font color="black">&#62;</font><font color="black">(</font><font color="blue">this</font><font color="black">)</font>, <font color="blue">sizeof</font><font color="black">(</font>struct_type<font color="black">)</font><font color="black">)</font>;
+
+    <font color="green">// Remove the references from this object.</font>
+    Init<font color="black">(</font><font color="black">)</font>;
+  <font color="black">}</font>
+
+  <font color="green">///</font>
+  <font color="green">// Set this object's values. If |copy| is true the source structure's values</font>
+  <font color="green">// will be copied instead of referenced.</font>
+  <font color="green">///</font>
+  <font color="blue">void</font> Set<font color="black">(</font><font color="blue">const</font> struct_type<font color="black">&</font> source, <font color="blue">bool</font> copy<font color="black">)</font> <font color="black">{</font>
+    traits<font color="black">:</font><font color="black">:</font>set<font color="black">(</font><font color="black">&</font>source, <font color="blue">this</font>, copy<font color="black">)</font>;
+  <font color="black">}</font>
+
+  CefStructBase<font color="black">&</font> <font color="blue">operator</font><font color="black">=</font><font color="black">(</font><font color="blue">const</font> CefStructBase<font color="black">&</font> s<font color="black">)</font> <font color="black">{</font>
+    <font color="blue">return</font> <font color="blue">operator</font><font color="black">=</font><font color="black">(</font>static_cast<font color="black">&#60;</font><font color="blue">const</font> struct_type<font color="black">&</font><font color="black">&#62;</font><font color="black">(</font>s<font color="black">)</font><font color="black">)</font>;
+  <font color="black">}</font>
+
+  CefStructBase<font color="black">&</font> <font color="blue">operator</font><font color="black">=</font><font color="black">(</font><font color="blue">const</font> struct_type<font color="black">&</font> s<font color="black">)</font> <font color="black">{</font>
+    Set<font color="black">(</font>s, <font color="blue">true</font><font color="black">)</font>;
+    <font color="blue">return</font> <font color="black">*</font><font color="blue">this</font>;
+  <font color="black">}</font>
+
+ <font color="blue">protected</font><font color="black">:</font>
+  <font color="blue">void</font> Init<font color="black">(</font><font color="black">)</font> <font color="black">{</font>
+    memset<font color="black">(</font>static_cast<font color="black">&#60;</font>struct_type<font color="black">*</font><font color="black">&#62;</font><font color="black">(</font><font color="blue">this</font><font color="black">)</font>, <font color="maroon">0</font>, <font color="blue">sizeof</font><font color="black">(</font>struct_type<font color="black">)</font><font color="black">)</font>;
+    attached_to_ <font color="black">=</font> NULL;
+    traits<font color="black">:</font><font color="black">:</font>init<font color="black">(</font><font color="blue">this</font><font color="black">)</font>;
+  <font color="black">}</font>
+
+  <font color="blue">static</font> <font color="blue">void</font> Clear<font color="black">(</font>struct_type<font color="black">*</font> s<font color="black">)</font> <font color="black">{</font> traits<font color="black">:</font><font color="black">:</font>clear<font color="black">(</font>s<font color="black">)</font>; <font color="black">}</font>
+
+  struct_type<font color="black">*</font> attached_to_;
+<font color="black">}</font>;
+
+
+<font color="blue">struct</font> CefRectTraits <font color="black">{</font>
+  <font color="blue">typedef</font> cef_rect_t struct_type;
+
+  <font color="blue">static</font> <font color="blue">inline</font> <font color="blue">void</font> init<font color="black">(</font>struct_type<font color="black">*</font> s<font color="black">)</font> <font color="black">{</font><font color="black">}</font>
+  <font color="blue">static</font> <font color="blue">inline</font> <font color="blue">void</font> clear<font color="black">(</font>struct_type<font color="black">*</font> s<font color="black">)</font> <font color="black">{</font><font color="black">}</font>
+
+  <font color="blue">static</font> <font color="blue">inline</font> <font color="blue">void</font> set<font color="black">(</font><font color="blue">const</font> struct_type<font color="black">*</font> src, struct_type<font color="black">*</font> target,
+      <font color="blue">bool</font> copy<font color="black">)</font> <font color="black">{</font>
+    <font color="black">*</font>target <font color="black">=</font> <font color="black">*</font>src;
+  <font color="black">}</font>
+<font color="black">}</font>;
+
+<font color="green">///</font>
+<font color="green">// Class representing a rectangle.</font>
+<font color="green">///</font>
+<font color="blue">class</font> CefRect <font color="black">:</font> <font color="blue">public</font> CefStructBase<font color="black">&#60;</font>CefRectTraits<font color="black">&#62;</font> <font color="black">{</font>
+ <font color="blue">public</font><font color="black">:</font>
+  <font color="blue">typedef</font> CefStructBase<font color="black">&#60;</font>CefRectTraits<font color="black">&#62;</font> parent;
+
+  CefRect<font color="black">(</font><font color="black">)</font> <font color="black">:</font> parent<font color="black">(</font><font color="black">)</font> <font color="black">{</font><font color="black">}</font>
+  CefRect<font color="black">(</font><font color="blue">const</font> cef_rect_t<font color="black">&</font> r<font color="black">)</font> <font color="black">:</font> parent<font color="black">(</font>r<font color="black">)</font> <font color="black">{</font><font color="black">}</font>  <font color="green">// NOLINT(runtime/explicit)</font>
+  CefRect<font color="black">(</font><font color="blue">const</font> CefRect<font color="black">&</font> r<font color="black">)</font> <font color="black">:</font> parent<font color="black">(</font>r<font color="black">)</font> <font color="black">{</font><font color="black">}</font>  <font color="green">// NOLINT(runtime/explicit)</font>
+  CefRect<font color="black">(</font><font color="blue">int</font> x, <font color="blue">int</font> y, <font color="blue">int</font> width, <font color="blue">int</font> height<font color="black">)</font> <font color="black">:</font> parent<font color="black">(</font><font color="black">)</font> <font color="black">{</font>
+    Set<font color="black">(</font>x, y, width, height<font color="black">)</font>;
+  <font color="black">}</font>
+
+  <font color="blue">bool</font> IsEmpty<font color="black">(</font><font color="black">)</font> <font color="blue">const</font> <font color="black">{</font> <font color="blue">return</font> width <font color="black">&#60;</font><font color="black">=</font> <font color="maroon">0</font> <font color="black">|</font><font color="black">|</font> height <font color="black">&#60;</font><font color="black">=</font> <font color="maroon">0</font>; <font color="black">}</font>
+  <font color="blue">void</font> Set<font color="black">(</font><font color="blue">int</font> x, <font color="blue">int</font> y, <font color="blue">int</font> width, <font color="blue">int</font> height<font color="black">)</font> <font color="black">{</font>
+    <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>x <font color="black">=</font> x, <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>y <font color="black">=</font> y, <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>width <font color="black">=</font> width, <font color="blue">this</font><font color="black">-</font><font color="black">&#62;</font>height <font color="black">=</font> height;
+  <font color="black">}</font>
+<font color="black">}</font>;
+
+<font color="blue">inline</font> <font color="blue">bool</font> <font color="blue">operator</font><font color="black">=</font><font color="black">=</font><font color="black">(</font><font color="blue">const</font> CefRect<font color="black">&</font> a, <font color="blue">const</font> CefRect<font color="black">&</font> b<font color="black">)</font> <font color="black">{</font>
+  <font color="blue">return</font> a.x <font color="black">=</font><font color="black">=</font> b.x <font color="black">&</font><font color="black">&</font> a.y <font color="black">=</font><font color="black">=</font> b.y <font color="black">&</font><font color="black">&</font> a.width <font color="black">=</font><font color="black">=</font> b.width <font color="black">&</font><font color="black">&</font> a.height <font color="black">=</font><font color="black">=</font> b.height;
+<font color="black">}</font>
+
+<font color="blue">inline</font> <font color="blue">bool</font> <font color="blue">operator</font><font color="black">!</font><font color="black">=</font><font color="black">(</font><font color="blue">const</font> CefRect<font color="black">&</font> a, <font color="blue">const</font> CefRect<font color="black">&</font> b<font color="black">)</font> <font color="black">{</font>
+  <font color="blue">return</font> <font color="black">!</font><font color="black">(</font>a <font color="black">=</font><font color="black">=</font> b<font color="black">)</font>;
+<font color="black">}</font>
+
+
+<font color="blue">struct</font> CefPrintOptionsTraits <font color="black">{</font>
+  <font color="blue">typedef</font> cef_print_options_t struct_type;
+
+  <font color="blue">static</font> <font color="blue">inline</font> <font color="blue">void</font> init<font color="black">(</font>struct_type<font color="black">*</font> s<font color="black">)</font> <font color="black">{</font><font color="black">}</font>
+  <font color="blue">static</font> <font color="blue">inline</font> <font color="blue">void</font> clear<font color="black">(</font>struct_type<font color="black">*</font> s<font color="black">)</font> <font color="black">{</font><font color="black">}</font>
+
+  <font color="blue">static</font> <font color="blue">inline</font> <font color="blue">void</font> set<font color="black">(</font><font color="blue">const</font> struct_type<font color="black">*</font> src, struct_type<font color="black">*</font> target,
+      <font color="blue">bool</font> copy<font color="black">)</font> <font color="black">{</font>
+    <font color="black">*</font>target <font color="black">=</font> <font color="black">*</font>src;
+  <font color="black">}</font>
+<font color="black">}</font>;
+
+<font color="green">///</font>
+<font color="green">// Class representing print options.</font>
+<font color="green">///</font>
+<font color="blue">typedef</font> CefStructBase<font color="black">&#60;</font>CefPrintOptionsTraits<font color="black">&#62;</font> CefPrintOptions;
+
+
+
+<font color="blue">struct</font> CefPopupFeaturesTraits <font color="black">{</font>
+  <font color="blue">typedef</font> cef_popup_features_t struct_type;
+
+  <font color="blue">static</font> <font color="blue">inline</font> <font color="blue">void</font> init<font color="black">(</font>struct_type<font color="black">*</font> s<font color="black">)</font> <font color="black">{</font>
+    s<font color="black">-</font><font color="black">&#62;</font>menuBarVisible <font color="black">=</font> <font color="blue">true</font>;
+    s<font color="black">-</font><font color="black">&#62;</font>statusBarVisible <font color="black">=</font> <font color="blue">true</font>;
+    s<font color="black">-</font><font color="black">&#62;</font>toolBarVisible <font color="black">=</font> <font color="blue">true</font>;
+    s<font color="black">-</font><font color="black">&#62;</font>locationBarVisible <font color="black">=</font> <font color="blue">true</font>;
+    s<font color="black">-</font><font color="black">&#62;</font>scrollbarsVisible <font color="black">=</font> <font color="blue">true</font>;
+    s<font color="black">-</font><font color="black">&#62;</font>resizable <font color="black">=</font> <font color="blue">true</font>;
+  <font color="black">}</font>
+
+  <font color="blue">static</font> <font color="blue">inline</font> <font color="blue">void</font> clear<font color="black">(</font>struct_type<font color="black">*</font> s<font color="black">)</font> <font color="black">{</font>
+    <font color="blue">if</font> <font color="black">(</font>s<font color="black">-</font><font color="black">&#62;</font>additionalFeatures<font color="black">)</font>
+      cef_string_list_free<font color="black">(</font>s<font color="black">-</font><font color="black">&#62;</font>additionalFeatures<font color="black">)</font>;
+  <font color="black">}</font>
+
+  <font color="blue">static</font> <font color="blue">inline</font> <font color="blue">void</font> set<font color="black">(</font><font color="blue">const</font> struct_type<font color="black">*</font> src, struct_type<font color="black">*</font> target,
+      <font color="blue">bool</font> copy<font color="black">)</font> <font color="black">{</font>
+    <font color="blue">if</font> <font color="black">(</font>target<font color="black">-</font><font color="black">&#62;</font>additionalFeatures<font color="black">)</font>
+      cef_string_list_free<font color="black">(</font>target<font color="black">-</font><font color="black">&#62;</font>additionalFeatures<font color="black">)</font>;
+    target<font color="black">-</font><font color="black">&#62;</font>additionalFeatures <font color="black">=</font> src<font color="black">-</font><font color="black">&#62;</font>additionalFeatures ?
+        cef_string_list_copy<font color="black">(</font>src<font color="black">-</font><font color="black">&#62;</font>additionalFeatures<font color="black">)</font> <font color="black">:</font> NULL;
+
+    target<font color="black">-</font><font color="black">&#62;</font>x <font color="black">=</font> src<font color="black">-</font><font color="black">&#62;</font>x;
+    target<font color="black">-</font><font color="black">&#62;</font>xSet <font color="black">=</font> src<font color="black">-</font><font color="black">&#62;</font>xSet;
+    target<font color="black">-</font><font color="black">&#62;</font>y <font color="black">=</font> src<font color="black">-</font><font color="black">&#62;</font>y;
+    target<font color="black">-</font><font color="black">&#62;</font>ySet <font color="black">=</font> src<font color="black">-</font><font color="black">&#62;</font>ySet;
+    target<font color="black">-</font><font color="black">&#62;</font>width <font color="black">=</font> src<font color="black">-</font><font color="black">&#62;</font>width;
+    target<font color="black">-</font><font color="black">&#62;</font>widthSet <font color="black">=</font> src<font color="black">-</font><font color="black">&#62;</font>widthSet;
+    target<font color="black">-</font><font color="black">&#62;</font>height <font color="black">=</font> src<font color="black">-</font><font color="black">&#62;</font>height;
+    target<font color="black">-</font><font color="black">&#62;</font>heightSet <font color="black">=</font> src<font color="black">-</font><font color="black">&#62;</font>heightSet;
+    target<font color="black">-</font><font color="black">&#62;</font>menuBarVisible <font color="black">=</font> src<font color="black">-</font><font color="black">&#62;</font>menuBarVisible;
+    target<font color="black">-</font><font color="black">&#62;</font>statusBarVisible <font color="black">=</font> src<font color="black">-</font><font color="black">&#62;</font>statusBarVisible;
+    target<font color="black">-</font><font color="black">&#62;</font>toolBarVisible <font color="black">=</font> src<font color="black">-</font><font color="black">&#62;</font>toolBarVisible;
+    target<font color="black">-</font><font color="black">&#62;</font>locationBarVisible <font color="black">=</font> src<font color="black">-</font><font color="black">&#62;</font>locationBarVisible;
+    target<font color="black">-</font><font color="black">&#62;</font>scrollbarsVisible <font color="black">=</font> src<font color="black">-</font><font color="black">&#62;</font>scrollbarsVisible;
+    target<font color="black">-</font><font color="black">&#62;</font>resizable <font color="black">=</font> src<font color="black">-</font><font color="black">&#62;</font>resizable;
+    target<font color="black">-</font><font color="black">&#62;</font>fullscreen <font color="black">=</font> src<font color="black">-</font><font color="black">&#62;</font>fullscreen;
+    target<font color="black">-</font><font color="black">&#62;</font>dialog <font color="black">=</font> src<font color="black">-</font><font color="black">&#62;</font>dialog;
+  <font color="black">}</font>
+<font color="black">}</font>;
+
+<font color="green">///</font>
+<font color="green">// Class representing popup window features.</font>
+<font color="green">///</font>
+<font color="blue">typedef</font> CefStructBase<font color="black">&#60;</font>CefPopupFeaturesTraits<font color="black">&#62;</font> CefPopupFeatures;
+
+
+<font color="blue">struct</font> CefSettingsTraits <font color="black">{</font>
+  <font color="blue">typedef</font> cef_settings_t struct_type;
+
+  <font color="blue">static</font> <font color="blue">inline</font> <font color="blue">void</font> init<font color="black">(</font>struct_type<font color="black">*</font> s<font color="black">)</font> <font color="black">{</font>
+    s<font color="black">-</font><font color="black">&#62;</font>size <font color="black">=</font> <font color="blue">sizeof</font><font color="black">(</font>struct_type<font color="black">)</font>;
+  <font color="black">}</font>
+
+  <font color="blue">static</font> <font color="blue">inline</font> <font color="blue">void</font> clear<font color="black">(</font>struct_type<font color="black">*</font> s<font color="black">)</font> <font color="black">{</font>
+    cef_string_clear<font color="black">(</font><font color="black">&</font>s<font color="black">-</font><font color="black">&#62;</font>cache_path<font color="black">)</font>;
+    cef_string_clear<font color="black">(</font><font color="black">&</font>s<font color="black">-</font><font color="black">&#62;</font>user_agent<font color="black">)</font>;
+    cef_string_clear<font color="black">(</font><font color="black">&</font>s<font color="black">-</font><font color="black">&#62;</font>product_version<font color="black">)</font>;
+    cef_string_clear<font color="black">(</font><font color="black">&</font>s<font color="black">-</font><font color="black">&#62;</font>locale<font color="black">)</font>;
+    <font color="blue">if</font> <font color="black">(</font>s<font color="black">-</font><font color="black">&#62;</font>extra_plugin_paths<font color="black">)</font>
+      cef_string_list_free<font color="black">(</font>s<font color="black">-</font><font color="black">&#62;</font>extra_plugin_paths<font color="black">)</font>;
+    cef_string_clear<font color="black">(</font><font color="black">&</font>s<font color="black">-</font><font color="black">&#62;</font>log_file<font color="black">)</font>;
+    cef_string_clear<font color="black">(</font><font color="black">&</font>s<font color="black">-</font><font color="black">&#62;</font>javascript_flags<font color="black">)</font>;
+    cef_string_clear<font color="black">(</font><font color="black">&</font>s<font color="black">-</font><font color="black">&#62;</font>resources_dir_path<font color="black">)</font>;
+    cef_string_clear<font color="black">(</font><font color="black">&</font>s<font color="black">-</font><font color="black">&#62;</font>locales_dir_path<font color="black">)</font>;
+  <font color="black">}</font>
+
+  <font color="blue">static</font> <font color="blue">inline</font> <font color="blue">void</font> set<font color="black">(</font><font color="blue">const</font> struct_type<font color="black">*</font> src, struct_type<font color="black">*</font> target,
+      <font color="blue">bool</font> copy<font color="black">)</font> <font color="black">{</font>
+    target<font color="black">-</font><font color="black">&#62;</font>multi_threaded_message_loop <font color="black">=</font> src<font color="black">-</font><font color="black">&#62;</font>multi_threaded_message_loop;
+
+    cef_string_set<font color="black">(</font>src<font color="black">-</font><font color="black">&#62;</font>cache_path.str, src<font color="black">-</font><font color="black">&#62;</font>cache_path.length,
+        <font color="black">&</font>target<font color="black">-</font><font color="black">&#62;</font>cache_path, copy<font color="black">)</font>;
+    cef_string_set<font color="black">(</font>src<font color="black">-</font><font color="black">&#62;</font>user_agent.str, src<font color="black">-</font><font color="black">&#62;</font>user_agent.length,
+        <font color="black">&</font>target<font color="black">-</font><font color="black">&#62;</font>user_agent, copy<font color="black">)</font>;
+    cef_string_set<font color="black">(</font>src<font color="black">-</font><font color="black">&#62;</font>product_version.str, src<font color="black">-</font><font color="black">&#62;</font>product_version.length,
+        <font color="black">&</font>target<font color="black">-</font><font color="black">&#62;</font>product_version, copy<font color="black">)</font>;
+    cef_string_set<font color="black">(</font>src<font color="black">-</font><font color="black">&#62;</font>locale.str, src<font color="black">-</font><font color="black">&#62;</font>locale.length, <font color="black">&</font>target<font color="black">-</font><font color="black">&#62;</font>locale, copy<font color="black">)</font>;
+
+    <font color="blue">if</font> <font color="black">(</font>target<font color="black">-</font><font color="black">&#62;</font>extra_plugin_paths<font color="black">)</font>
+      cef_string_list_free<font color="black">(</font>target<font color="black">-</font><font color="black">&#62;</font>extra_plugin_paths<font color="black">)</font>;
+    target<font color="black">-</font><font color="black">&#62;</font>extra_plugin_paths <font color="black">=</font> src<font color="black">-</font><font color="black">&#62;</font>extra_plugin_paths ?
+        cef_string_list_copy<font color="black">(</font>src<font color="black">-</font><font color="black">&#62;</font>extra_plugin_paths<font color="black">)</font> <font color="black">:</font> NULL;
+
+    cef_string_set<font color="black">(</font>src<font color="black">-</font><font color="black">&#62;</font>log_file.str, src<font color="black">-</font><font color="black">&#62;</font>log_file.length, <font color="black">&</font>target<font color="black">-</font><font color="black">&#62;</font>log_file,
+        copy<font color="black">)</font>;
+    target<font color="black">-</font><font color="black">&#62;</font>log_severity <font color="black">=</font> src<font color="black">-</font><font color="black">&#62;</font>log_severity;
+    target<font color="black">-</font><font color="black">&#62;</font>release_dcheck_enabled <font color="black">=</font> src<font color="black">-</font><font color="black">&#62;</font>release_dcheck_enabled;
+    target<font color="black">-</font><font color="black">&#62;</font>graphics_implementation <font color="black">=</font> src<font color="black">-</font><font color="black">&#62;</font>graphics_implementation;
+    target<font color="black">-</font><font color="black">&#62;</font>local_storage_quota <font color="black">=</font> src<font color="black">-</font><font color="black">&#62;</font>local_storage_quota;
+    target<font color="black">-</font><font color="black">&#62;</font>session_storage_quota <font color="black">=</font> src<font color="black">-</font><font color="black">&#62;</font>session_storage_quota;
+    cef_string_set<font color="black">(</font>src<font color="black">-</font><font color="black">&#62;</font>javascript_flags.str, src<font color="black">-</font><font color="black">&#62;</font>javascript_flags.length,
+        <font color="black">&</font>target<font color="black">-</font><font color="black">&#62;</font>javascript_flags, copy<font color="black">)</font>;
+
+<font color="blue">#if</font> defined<font color="black">(</font>OS_WIN<font color="black">)</font>
+    target<font color="black">-</font><font color="black">&#62;</font>auto_detect_proxy_settings_enabled <font color="black">=</font>
+        src<font color="black">-</font><font color="black">&#62;</font>auto_detect_proxy_settings_enabled;
+<font color="blue">#endif</font>
+
+    cef_string_set<font color="black">(</font>src<font color="black">-</font><font color="black">&#62;</font>resources_dir_path.str, src<font color="black">-</font><font color="black">&#62;</font>resources_dir_path.length,
+        <font color="black">&</font>target<font color="black">-</font><font color="black">&#62;</font>resources_dir_path, copy<font color="black">)</font>;
+    cef_string_set<font color="black">(</font>src<font color="black">-</font><font color="black">&#62;</font>locales_dir_path.str, src<font color="black">-</font><font color="black">&#62;</font>locales_dir_path.length,
+        <font color="black">&</font>target<font color="black">-</font><font color="black">&#62;</font>locales_dir_path, copy<font color="black">)</font>;
+    target<font color="black">-</font><font color="black">&#62;</font>pack_loading_disabled <font color="black">=</font> src<font color="black">-</font><font color="black">&#62;</font>pack_loading_disabled;
+    target<font color="black">-</font><font color="black">&#62;</font>uncaught_exception_stack_size <font color="black">=</font> src<font color="black">-</font><font color="black">&#62;</font>uncaught_exception_stack_size;
+    target<font color="black">-</font><font color="black">&#62;</font>context_safety_implementation <font color="black">=</font> src<font color="black">-</font><font color="black">&#62;</font>context_safety_implementation;
+  <font color="black">}</font>
+<font color="black">}</font>;
+
+<font color="green">///</font>
+<font color="green">// Class representing initialization settings.</font>
+<font color="green">///</font>
+<font color="blue">typedef</font> CefStructBase<font color="black">&#60;</font>CefSettingsTraits<font color="black">&#62;</font> CefSettings;
+
+
+<font color="blue">struct</font> CefBrowserSettingsTraits <font color="black">{</font>
+  <font color="blue">typedef</font> cef_browser_settings_t struct_type;
+
+  <font color="blue">static</font> <font color="blue">inline</font> <font color="blue">void</font> init<font color="black">(</font>struct_type<font color="black">*</font> s<font color="black">)</font> <font color="black">{</font>
+    s<font color="black">-</font><font color="black">&#62;</font>size <font color="black">=</font> <font color="blue">sizeof</font><font color="black">(</font>struct_type<font color="black">)</font>;
+  <font color="black">}</font>
+
+  <font color="blue">static</font> <font color="blue">inline</font> <font color="blue">void</font> clear<font color="black">(</font>struct_type<font color="black">*</font> s<font color="black">)</font> <font color="black">{</font>
+    cef_string_clear<font color="black">(</font><font color="black">&</font>s<font color="black">-</font><font color="black">&#62;</font>standard_font_family<font color="black">)</font>;
+    cef_string_clear<font color="black">(</font><font color="black">&</font>s<font color="black">-</font><font color="black">&#62;</font>fixed_font_family<font color="black">)</font>;
+    cef_string_clear<font color="black">(</font><font color="black">&</font>s<font color="black">-</font><font color="black">&#62;</font>serif_font_family<font color="black">)</font>;
+    cef_string_clear<font color="black">(</font><font color="black">&</font>s<font color="black">-</font><font color="black">&#62;</font>sans_serif_font_family<font color="black">)</font>;
+    cef_string_clear<font color="black">(</font><font color="black">&</font>s<font color="black">-</font><font color="black">&#62;</font>cursive_font_family<font color="black">)</font>;
+    cef_string_clear<font color="black">(</font><font color="black">&</font>s<font color="black">-</font><font color="black">&#62;</font>fantasy_font_family<font color="black">)</font>;
+    cef_string_clear<font color="black">(</font><font color="black">&</font>s<font color="black">-</font><font color="black">&#62;</font>default_encoding<font color="black">)</font>;
+    cef_string_clear<font color="black">(</font><font color="black">&</font>s<font color="black">-</font><font color="black">&#62;</font>user_style_sheet_location<font color="black">)</font>;
+  <font color="black">}</font>
+
+  <font color="blue">static</font> <font color="blue">inline</font> <font color="blue">void</font> set<font color="black">(</font><font color="blue">const</font> struct_type<font color="black">*</font> src, struct_type<font color="black">*</font> target,
+      <font color="blue">bool</font> copy<font color="black">)</font> <font color="black">{</font>
+    target<font color="black">-</font><font color="black">&#62;</font>drag_drop_disabled <font color="black">=</font> src<font color="black">-</font><font color="black">&#62;</font>drag_drop_disabled;
+    target<font color="black">-</font><font color="black">&#62;</font>load_drops_disabled <font color="black">=</font> src<font color="black">-</font><font color="black">&#62;</font>load_drops_disabled;
+    target<font color="black">-</font><font color="black">&#62;</font>history_disabled <font color="black">=</font> src<font color="black">-</font><font color="black">&#62;</font>history_disabled;
+    target<font color="black">-</font><font color="black">&#62;</font>animation_frame_rate <font color="black">=</font> src<font color="black">-</font><font color="black">&#62;</font>animation_frame_rate;
+
+    cef_string_set<font color="black">(</font>src<font color="black">-</font><font color="black">&#62;</font>standard_font_family.str,
+        src<font color="black">-</font><font color="black">&#62;</font>standard_font_family.length, <font color="black">&</font>target<font color="black">-</font><font color="black">&#62;</font>standard_font_family, copy<font color="black">)</font>;
+    cef_string_set<font color="black">(</font>src<font color="black">-</font><font color="black">&#62;</font>fixed_font_family.str, src<font color="black">-</font><font color="black">&#62;</font>fixed_font_family.length,
+        <font color="black">&</font>target<font color="black">-</font><font color="black">&#62;</font>fixed_font_family, copy<font color="black">)</font>;
+    cef_string_set<font color="black">(</font>src<font color="black">-</font><font color="black">&#62;</font>serif_font_family.str, src<font color="black">-</font><font color="black">&#62;</font>serif_font_family.length,
+        <font color="black">&</font>target<font color="black">-</font><font color="black">&#62;</font>serif_font_family, copy<font color="black">)</font>;
+    cef_string_set<font color="black">(</font>src<font color="black">-</font><font color="black">&#62;</font>sans_serif_font_family.str,
+        src<font color="black">-</font><font color="black">&#62;</font>sans_serif_font_family.length, <font color="black">&</font>target<font color="black">-</font><font color="black">&#62;</font>sans_serif_font_family,
+        copy<font color="black">)</font>;
+    cef_string_set<font color="black">(</font>src<font color="black">-</font><font color="black">&#62;</font>cursive_font_family.str,
+        src<font color="black">-</font><font color="black">&#62;</font>cursive_font_family.length, <font color="black">&</font>target<font color="black">-</font><font color="black">&#62;</font>cursive_font_family, copy<font color="black">)</font>;
+    cef_string_set<font color="black">(</font>src<font color="black">-</font><font color="black">&#62;</font>fantasy_font_family.str,
+        src<font color="black">-</font><font color="black">&#62;</font>fantasy_font_family.length, <font color="black">&</font>target<font color="black">-</font><font color="black">&#62;</font>fantasy_font_family, copy<font color="black">)</font>;
+
+    target<font color="black">-</font><font color="black">&#62;</font>default_font_size <font color="black">=</font> src<font color="black">-</font><font color="black">&#62;</font>default_font_size;
+    target<font color="black">-</font><font color="black">&#62;</font>default_fixed_font_size <font color="black">=</font> src<font color="black">-</font><font color="black">&#62;</font>default_fixed_font_size;
+    target<font color="black">-</font><font color="black">&#62;</font>minimum_font_size <font color="black">=</font> src<font color="black">-</font><font color="black">&#62;</font>minimum_font_size;
+    target<font color="black">-</font><font color="black">&#62;</font>minimum_logical_font_size <font color="black">=</font> src<font color="black">-</font><font color="black">&#62;</font>minimum_logical_font_size;
+    target<font color="black">-</font><font color="black">&#62;</font>remote_fonts_disabled <font color="black">=</font> src<font color="black">-</font><font color="black">&#62;</font>remote_fonts_disabled;
+
+    cef_string_set<font color="black">(</font>src<font color="black">-</font><font color="black">&#62;</font>default_encoding.str, src<font color="black">-</font><font color="black">&#62;</font>default_encoding.length,
+        <font color="black">&</font>target<font color="black">-</font><font color="black">&#62;</font>default_encoding, copy<font color="black">)</font>;
+
+    target<font color="black">-</font><font color="black">&#62;</font>encoding_detector_enabled <font color="black">=</font> src<font color="black">-</font><font color="black">&#62;</font>encoding_detector_enabled;
+    target<font color="black">-</font><font color="black">&#62;</font>javascript_disabled <font color="black">=</font> src<font color="black">-</font><font color="black">&#62;</font>javascript_disabled;
+    target<font color="black">-</font><font color="black">&#62;</font>javascript_open_windows_disallowed <font color="black">=</font>
+        src<font color="black">-</font><font color="black">&#62;</font>javascript_open_windows_disallowed;
+    target<font color="black">-</font><font color="black">&#62;</font>javascript_close_windows_disallowed <font color="black">=</font>
+        src<font color="black">-</font><font color="black">&#62;</font>javascript_close_windows_disallowed;
+    target<font color="black">-</font><font color="black">&#62;</font>javascript_access_clipboard_disallowed <font color="black">=</font>
+        src<font color="black">-</font><font color="black">&#62;</font>javascript_access_clipboard_disallowed;
+    target<font color="black">-</font><font color="black">&#62;</font>dom_paste_disabled <font color="black">=</font> src<font color="black">-</font><font color="black">&#62;</font>dom_paste_disabled;
+    target<font color="black">-</font><font color="black">&#62;</font>caret_browsing_enabled <font color="black">=</font> src<font color="black">-</font><font color="black">&#62;</font>caret_browsing_enabled;
+    target<font color="black">-</font><font color="black">&#62;</font>java_disabled <font color="black">=</font> src<font color="black">-</font><font color="black">&#62;</font>java_disabled;
+    target<font color="black">-</font><font color="black">&#62;</font>plugins_disabled <font color="black">=</font> src<font color="black">-</font><font color="black">&#62;</font>plugins_disabled;
+    target<font color="black">-</font><font color="black">&#62;</font>universal_access_from_file_urls_allowed <font color="black">=</font>
+        src<font color="black">-</font><font color="black">&#62;</font>universal_access_from_file_urls_allowed;
+    target<font color="black">-</font><font color="black">&#62;</font>file_access_from_file_urls_allowed <font color="black">=</font>
+        src<font color="black">-</font><font color="black">&#62;</font>file_access_from_file_urls_allowed;
+    target<font color="black">-</font><font color="black">&#62;</font>web_security_disabled <font color="black">=</font> src<font color="black">-</font><font color="black">&#62;</font>web_security_disabled;
+    target<font color="black">-</font><font color="black">&#62;</font>xss_auditor_enabled <font color="black">=</font> src<font color="black">-</font><font color="black">&#62;</font>xss_auditor_enabled;
+    target<font color="black">-</font><font color="black">&#62;</font>image_load_disabled <font color="black">=</font> src<font color="black">-</font><font color="black">&#62;</font>image_load_disabled;
+    target<font color="black">-</font><font color="black">&#62;</font>shrink_standalone_images_to_fit <font color="black">=</font>
+        src<font color="black">-</font><font color="black">&#62;</font>shrink_standalone_images_to_fit;
+    target<font color="black">-</font><font color="black">&#62;</font>site_specific_quirks_disabled <font color="black">=</font> src<font color="black">-</font><font color="black">&#62;</font>site_specific_quirks_disabled;
+    target<font color="black">-</font><font color="black">&#62;</font>text_area_resize_disabled <font color="black">=</font> src<font color="black">-</font><font color="black">&#62;</font>text_area_resize_disabled;
+    target<font color="black">-</font><font color="black">&#62;</font>page_cache_disabled <font color="black">=</font> src<font color="black">-</font><font color="black">&#62;</font>page_cache_disabled;
+    target<font color="black">-</font><font color="black">&#62;</font>tab_to_links_disabled <font color="black">=</font> src<font color="black">-</font><font color="black">&#62;</font>tab_to_links_disabled;
+    target<font color="black">-</font><font color="black">&#62;</font>hyperlink_auditing_disabled <font color="black">=</font> src<font color="black">-</font><font color="black">&#62;</font>hyperlink_auditing_disabled;
+    target<font color="black">-</font><font color="black">&#62;</font>user_style_sheet_enabled <font color="black">=</font> src<font color="black">-</font><font color="black">&#62;</font>user_style_sheet_enabled;
+
+    cef_string_set<font color="black">(</font>src<font color="black">-</font><font color="black">&#62;</font>user_style_sheet_location.str,
+        src<font color="black">-</font><font color="black">&#62;</font>user_style_sheet_location.length,
+        <font color="black">&</font>target<font color="black">-</font><font color="black">&#62;</font>user_style_sheet_location, copy<font color="black">)</font>;
+
+    target<font color="black">-</font><font color="black">&#62;</font>author_and_user_styles_disabled <font color="black">=</font>
+        src<font color="black">-</font><font color="black">&#62;</font>author_and_user_styles_disabled;
+    target<font color="black">-</font><font color="black">&#62;</font>local_storage_disabled <font color="black">=</font> src<font color="black">-</font><font color="black">&#62;</font>local_storage_disabled;
+    target<font color="black">-</font><font color="black">&#62;</font>databases_disabled <font color="black">=</font> src<font color="black">-</font><font color="black">&#62;</font>databases_disabled;
+    target<font color="black">-</font><font color="black">&#62;</font>application_cache_disabled <font color="black">=</font> src<font color="black">-</font><font color="black">&#62;</font>application_cache_disabled;
+    target<font color="black">-</font><font color="black">&#62;</font>webgl_disabled <font color="black">=</font> src<font color="black">-</font><font color="black">&#62;</font>webgl_disabled;
+    target<font color="black">-</font><font color="black">&#62;</font>accelerated_compositing_enabled <font color="black">=</font>
+        src<font color="black">-</font><font color="black">&#62;</font>accelerated_compositing_enabled;
+    target<font color="black">-</font><font color="black">&#62;</font>accelerated_layers_disabled <font color="black">=</font> src<font color="black">-</font><font color="black">&#62;</font>accelerated_layers_disabled;
+    target<font color="black">-</font><font color="black">&#62;</font>accelerated_video_disabled <font color="black">=</font> src<font color="black">-</font><font color="black">&#62;</font>accelerated_video_disabled;
+    target<font color="black">-</font><font color="black">&#62;</font>accelerated_2d_canvas_disabled <font color="black">=</font>
+        src<font color="black">-</font><font color="black">&#62;</font>accelerated_2d_canvas_disabled;
+    target<font color="black">-</font><font color="black">&#62;</font>accelerated_painting_disabled <font color="black">=</font> src<font color="black">-</font><font color="black">&#62;</font>accelerated_painting_disabled;
+    target<font color="black">-</font><font color="black">&#62;</font>accelerated_filters_disabled <font color="black">=</font> src<font color="black">-</font><font color="black">&#62;</font>accelerated_filters_disabled;
+    target<font color="black">-</font><font color="black">&#62;</font>accelerated_plugins_disabled <font color="black">=</font> src<font color="black">-</font><font color="black">&#62;</font>accelerated_plugins_disabled;
+    target<font color="black">-</font><font color="black">&#62;</font>developer_tools_disabled <font color="black">=</font> src<font color="black">-</font><font color="black">&#62;</font>developer_tools_disabled;
+    target<font color="black">-</font><font color="black">&#62;</font>fullscreen_enabled <font color="black">=</font> src<font color="black">-</font><font color="black">&#62;</font>fullscreen_enabled;
+  <font color="black">}</font>
+<font color="black">}</font>;
+
+<font color="green">///</font>
+<font color="green">// Class representing browser initialization settings.</font>
+<font color="green">///</font>
+<font color="blue">typedef</font> CefStructBase<font color="black">&#60;</font>CefBrowserSettingsTraits<font color="black">&#62;</font> CefBrowserSettings;
+
+
+<font color="blue">struct</font> CefURLPartsTraits <font color="black">{</font>
+  <font color="blue">typedef</font> cef_urlparts_t struct_type;
+
+  <font color="blue">static</font> <font color="blue">inline</font> <font color="blue">void</font> init<font color="black">(</font>struct_type<font color="black">*</font> s<font color="black">)</font> <font color="black">{</font><font color="black">}</font>
+
+  <font color="blue">static</font> <font color="blue">inline</font> <font color="blue">void</font> clear<font color="black">(</font>struct_type<font color="black">*</font> s<font color="black">)</font> <font color="black">{</font>
+    cef_string_clear<font color="black">(</font><font color="black">&</font>s<font color="black">-</font><font color="black">&#62;</font>spec<font color="black">)</font>;
+    cef_string_clear<font color="black">(</font><font color="black">&</font>s<font color="black">-</font><font color="black">&#62;</font>scheme<font color="black">)</font>;
+    cef_string_clear<font color="black">(</font><font color="black">&</font>s<font color="black">-</font><font color="black">&#62;</font>username<font color="black">)</font>;
+    cef_string_clear<font color="black">(</font><font color="black">&</font>s<font color="black">-</font><font color="black">&#62;</font>password<font color="black">)</font>;
+    cef_string_clear<font color="black">(</font><font color="black">&</font>s<font color="black">-</font><font color="black">&#62;</font>host<font color="black">)</font>;
+    cef_string_clear<font color="black">(</font><font color="black">&</font>s<font color="black">-</font><font color="black">&#62;</font>port<font color="black">)</font>;
+    cef_string_clear<font color="black">(</font><font color="black">&</font>s<font color="black">-</font><font color="black">&#62;</font>path<font color="black">)</font>;
+    cef_string_clear<font color="black">(</font><font color="black">&</font>s<font color="black">-</font><font color="black">&#62;</font>query<font color="black">)</font>;
+  <font color="black">}</font>
+
+  <font color="blue">static</font> <font color="blue">inline</font> <font color="blue">void</font> set<font color="black">(</font><font color="blue">const</font> struct_type<font color="black">*</font> src, struct_type<font color="black">*</font> target,
+      <font color="blue">bool</font> copy<font color="black">)</font> <font color="black">{</font>
+    cef_string_set<font color="black">(</font>src<font color="black">-</font><font color="black">&#62;</font>spec.str, src<font color="black">-</font><font color="black">&#62;</font>spec.length, <font color="black">&</font>target<font color="black">-</font><font color="black">&#62;</font>spec, copy<font color="black">)</font>;
+    cef_string_set<font color="black">(</font>src<font color="black">-</font><font color="black">&#62;</font>scheme.str, src<font color="black">-</font><font color="black">&#62;</font>scheme.length, <font color="black">&</font>target<font color="black">-</font><font color="black">&#62;</font>scheme, copy<font color="black">)</font>;
+    cef_string_set<font color="black">(</font>src<font color="black">-</font><font color="black">&#62;</font>username.str, src<font color="black">-</font><font color="black">&#62;</font>username.length, <font color="black">&</font>target<font color="black">-</font><font color="black">&#62;</font>username,
+        copy<font color="black">)</font>;
+    cef_string_set<font color="black">(</font>src<font color="black">-</font><font color="black">&#62;</font>password.str, src<font color="black">-</font><font color="black">&#62;</font>password.length, <font color="black">&</font>target<font color="black">-</font><font color="black">&#62;</font>password,
+        copy<font color="black">)</font>;
+    cef_string_set<font color="black">(</font>src<font color="black">-</font><font color="black">&#62;</font>host.str, src<font color="black">-</font><font color="black">&#62;</font>host.length, <font color="black">&</font>target<font color="black">-</font><font color="black">&#62;</font>host, copy<font color="black">)</font>;
+    cef_string_set<font color="black">(</font>src<font color="black">-</font><font color="black">&#62;</font>port.str, src<font color="black">-</font><font color="black">&#62;</font>port.length, <font color="black">&</font>target<font color="black">-</font><font color="black">&#62;</font>port, copy<font color="black">)</font>;
+    cef_string_set<font color="black">(</font>src<font color="black">-</font><font color="black">&#62;</font>path.str, src<font color="black">-</font><font color="black">&#62;</font>path.length, <font color="black">&</font>target<font color="black">-</font><font color="black">&#62;</font>path, copy<font color="black">)</font>;
+    cef_string_set<font color="black">(</font>src<font color="black">-</font><font color="black">&#62;</font>query.str, src<font color="black">-</font><font color="black">&#62;</font>query.length, <font color="black">&</font>target<font color="black">-</font><font color="black">&#62;</font>query, copy<font color="black">)</font>;
+  <font color="black">}</font>
+<font color="black">}</font>;
+
+<font color="green">///</font>
+<font color="green">// Class representing a URL's component parts.</font>
+<font color="green">///</font>
+<font color="blue">typedef</font> CefStructBase<font color="black">&#60;</font>CefURLPartsTraits<font color="black">&#62;</font> CefURLParts;
+
+
+<font color="blue">struct</font> CefTimeTraits <font color="black">{</font>
+  <font color="blue">typedef</font> cef_time_t struct_type;
+
+  <font color="blue">static</font> <font color="blue">inline</font> <font color="blue">void</font> init<font color="black">(</font>struct_type<font color="black">*</font> s<font color="black">)</font> <font color="black">{</font><font color="black">}</font>
+
+  <font color="blue">static</font> <font color="blue">inline</font> <font color="blue">void</font> clear<font color="black">(</font>struct_type<font color="black">*</font> s<font color="black">)</font> <font color="black">{</font><font color="black">}</font>
+
+  <font color="blue">static</font> <font color="blue">inline</font> <font color="blue">void</font> set<font color="black">(</font><font color="blue">const</font> struct_type<font color="black">*</font> src, struct_type<font color="black">*</font> target,
+      <font color="blue">bool</font> copy<font color="black">)</font> <font color="black">{</font>
+    <font color="black">*</font>target <font color="black">=</font> <font color="black">*</font>src;
+  <font color="black">}</font>
+<font color="black">}</font>;
+
+<font color="green">///</font>
+<font color="green">// Class representing a time.</font>
+<font color="green">///</font>
+<font color="blue">class</font> CefTime <font color="black">:</font> <font color="blue">public</font> CefStructBase<font color="black">&#60;</font>CefTimeTraits<font color="black">&#62;</font> <font color="black">{</font>
+ <font color="blue">public</font><font color="black">:</font>
+  <font color="blue">typedef</font> CefStructBase<font color="black">&#60;</font>CefTimeTraits<font color="black">&#62;</font> parent;
+
+  CefTime<font color="black">(</font><font color="black">)</font> <font color="black">:</font> parent<font color="black">(</font><font color="black">)</font> <font color="black">{</font><font color="black">}</font>
+  CefTime<font color="black">(</font><font color="blue">const</font> cef_time_t<font color="black">&</font> r<font color="black">)</font> <font color="black">:</font> parent<font color="black">(</font>r<font color="black">)</font> <font color="black">{</font><font color="black">}</font>  <font color="green">// NOLINT(runtime/explicit)</font>
+  CefTime<font color="black">(</font><font color="blue">const</font> CefTime<font color="black">&</font> r<font color="black">)</font> <font color="black">:</font> parent<font color="black">(</font>r<font color="black">)</font> <font color="black">{</font><font color="black">}</font>  <font color="green">// NOLINT(runtime/explicit)</font>
+  explicit CefTime<font color="black">(</font>time_t r<font color="black">)</font> <font color="black">:</font> parent<font color="black">(</font><font color="black">)</font> <font color="black">{</font> SetTimeT<font color="black">(</font>r<font color="black">)</font>; <font color="black">}</font>
+  explicit CefTime<font color="black">(</font><font color="blue">double</font> r<font color="black">)</font> <font color="black">:</font> parent<font color="black">(</font><font color="black">)</font> <font color="black">{</font> SetDoubleT<font color="black">(</font>r<font color="black">)</font>; <font color="black">}</font>
+
+  <font color="green">// Converts to/from time_t.</font>
+  <font color="blue">void</font> SetTimeT<font color="black">(</font>time_t r<font color="black">)</font> <font color="black">{</font>
+    cef_time_from_timet<font color="black">(</font>r, <font color="blue">this</font><font color="black">)</font>;
+  <font color="black">}</font>
+  time_t GetTimeT<font color="black">(</font><font color="black">)</font> <font color="blue">const</font> <font color="black">{</font>
+    time_t time <font color="black">=</font> <font color="maroon">0</font>;
+    cef_time_to_timet<font color="black">(</font><font color="blue">this</font>, <font color="black">&</font>time<font color="black">)</font>;
+    <font color="blue">return</font> time;
+  <font color="black">}</font>
+
+  <font color="green">// Converts to/from a double which is the number of seconds since epoch</font>
+  <font color="green">// (Jan 1, 1970). Webkit uses this format to represent time. A value of 0</font>
+  <font color="green">// means "not initialized".</font>
+  <font color="blue">void</font> SetDoubleT<font color="black">(</font><font color="blue">double</font> r<font color="black">)</font> <font color="black">{</font>
+    cef_time_from_doublet<font color="black">(</font>r, <font color="blue">this</font><font color="black">)</font>;
+  <font color="black">}</font>
+  <font color="blue">double</font> GetDoubleT<font color="black">(</font><font color="black">)</font> <font color="blue">const</font> <font color="black">{</font>
+    <font color="blue">double</font> time <font color="black">=</font> <font color="maroon">0</font>;
+    cef_time_to_doublet<font color="black">(</font><font color="blue">this</font>, <font color="black">&</font>time<font color="black">)</font>;
+    <font color="blue">return</font> time;
+  <font color="black">}</font>
+
+  <font color="green">// Set this object to now.</font>
+  <font color="blue">void</font> Now<font color="black">(</font><font color="black">)</font> <font color="black">{</font>
+    cef_time_now<font color="black">(</font><font color="blue">this</font><font color="black">)</font>;
+  <font color="black">}</font>
+
+  <font color="green">// Return the delta between this object and |other| in milliseconds.</font>
+  <font color="blue">long</font> <font color="blue">long</font> Delta<font color="black">(</font><font color="blue">const</font> CefTime<font color="black">&</font> other<font color="black">)</font> <font color="black">{</font>
+    <font color="blue">long</font> <font color="blue">long</font> delta <font color="black">=</font> <font color="maroon">0</font>;
+    cef_time_delta<font color="black">(</font><font color="blue">this</font>, <font color="black">&</font>other, <font color="black">&</font>delta<font color="black">)</font>;
+    <font color="blue">return</font> delta;
+  <font color="black">}</font>
+<font color="black">}</font>;
+
+
+<font color="blue">struct</font> CefCookieTraits <font color="black">{</font>
+  <font color="blue">typedef</font> cef_cookie_t struct_type;
+
+  <font color="blue">static</font> <font color="blue">inline</font> <font color="blue">void</font> init<font color="black">(</font>struct_type<font color="black">*</font> s<font color="black">)</font> <font color="black">{</font><font color="black">}</font>
+
+  <font color="blue">static</font> <font color="blue">inline</font> <font color="blue">void</font> clear<font color="black">(</font>struct_type<font color="black">*</font> s<font color="black">)</font> <font color="black">{</font>
+    cef_string_clear<font color="black">(</font><font color="black">&</font>s<font color="black">-</font><font color="black">&#62;</font><font color="blue">name</font><font color="black">)</font>;
+    cef_string_clear<font color="black">(</font><font color="black">&</font>s<font color="black">-</font><font color="black">&#62;</font>value<font color="black">)</font>;
+    cef_string_clear<font color="black">(</font><font color="black">&</font>s<font color="black">-</font><font color="black">&#62;</font>domain<font color="black">)</font>;
+    cef_string_clear<font color="black">(</font><font color="black">&</font>s<font color="black">-</font><font color="black">&#62;</font>path<font color="black">)</font>;
+  <font color="black">}</font>
+
+  <font color="blue">static</font> <font color="blue">inline</font> <font color="blue">void</font> set<font color="black">(</font><font color="blue">const</font> struct_type<font color="black">*</font> src, struct_type<font color="black">*</font> target,
+      <font color="blue">bool</font> copy<font color="black">)</font> <font color="black">{</font>
+    cef_string_set<font color="black">(</font>src<font color="black">-</font><font color="black">&#62;</font><font color="blue">name</font>.str, src<font color="black">-</font><font color="black">&#62;</font><font color="blue">name</font>.length, <font color="black">&</font>target<font color="black">-</font><font color="black">&#62;</font><font color="blue">name</font>, copy<font color="black">)</font>;
+    cef_string_set<font color="black">(</font>src<font color="black">-</font><font color="black">&#62;</font>value.str, src<font color="black">-</font><font color="black">&#62;</font>value.length, <font color="black">&</font>target<font color="black">-</font><font color="black">&#62;</font>value, copy<font color="black">)</font>;
+    cef_string_set<font color="black">(</font>src<font color="black">-</font><font color="black">&#62;</font>domain.str, src<font color="black">-</font><font color="black">&#62;</font>domain.length, <font color="black">&</font>target<font color="black">-</font><font color="black">&#62;</font>domain, copy<font color="black">)</font>;
+    cef_string_set<font color="black">(</font>src<font color="black">-</font><font color="black">&#62;</font>path.str, src<font color="black">-</font><font color="black">&#62;</font>path.length, <font color="black">&</font>target<font color="black">-</font><font color="black">&#62;</font>path, copy<font color="black">)</font>;
+    target<font color="black">-</font><font color="black">&#62;</font>secure <font color="black">=</font> src<font color="black">-</font><font color="black">&#62;</font>secure;
+    target<font color="black">-</font><font color="black">&#62;</font>httponly <font color="black">=</font> src<font color="black">-</font><font color="black">&#62;</font>httponly;
+    target<font color="black">-</font><font color="black">&#62;</font>creation <font color="black">=</font> src<font color="black">-</font><font color="black">&#62;</font>creation;
+    target<font color="black">-</font><font color="black">&#62;</font>last_access <font color="black">=</font> src<font color="black">-</font><font color="black">&#62;</font>last_access;
+    target<font color="black">-</font><font color="black">&#62;</font>has_expires <font color="black">=</font> src<font color="black">-</font><font color="black">&#62;</font>has_expires;
+    target<font color="black">-</font><font color="black">&#62;</font>expires <font color="black">=</font> src<font color="black">-</font><font color="black">&#62;</font>expires;
+  <font color="black">}</font>
+<font color="black">}</font>;
+
+<font color="green">///</font>
+<font color="green">// Class representing a cookie.</font>
+<font color="green">///</font>
+<font color="blue">typedef</font> CefStructBase<font color="black">&#60;</font>CefCookieTraits<font color="black">&#62;</font> CefCookie;
+
+
+<font color="blue">struct</font> CefMenuInfoTraits <font color="black">{</font>
+  <font color="blue">typedef</font> cef_menu_info_t struct_type;
+
+  <font color="blue">static</font> <font color="blue">inline</font> <font color="blue">void</font> init<font color="black">(</font>struct_type<font color="black">*</font> s<font color="black">)</font> <font color="black">{</font><font color="black">}</font>
+
+  <font color="blue">static</font> <font color="blue">inline</font> <font color="blue">void</font> clear<font color="black">(</font>struct_type<font color="black">*</font> s<font color="black">)</font> <font color="black">{</font>
+    cef_string_clear<font color="black">(</font><font color="black">&</font>s<font color="black">-</font><font color="black">&#62;</font>linkUrl<font color="black">)</font>;
+    cef_string_clear<font color="black">(</font><font color="black">&</font>s<font color="black">-</font><font color="black">&#62;</font>imageUrl<font color="black">)</font>;
+    cef_string_clear<font color="black">(</font><font color="black">&</font>s<font color="black">-</font><font color="black">&#62;</font>pageUrl<font color="black">)</font>;
+    cef_string_clear<font color="black">(</font><font color="black">&</font>s<font color="black">-</font><font color="black">&#62;</font>frameUrl<font color="black">)</font>;
+    cef_string_clear<font color="black">(</font><font color="black">&</font>s<font color="black">-</font><font color="black">&#62;</font>selectionText<font color="black">)</font>;
+    cef_string_clear<font color="black">(</font><font color="black">&</font>s<font color="black">-</font><font color="black">&#62;</font>misspelledWord<font color="black">)</font>;
+    cef_string_clear<font color="black">(</font><font color="black">&</font>s<font color="black">-</font><font color="black">&#62;</font>securityInfo<font color="black">)</font>;
+  <font color="black">}</font>
+
+  <font color="blue">static</font> <font color="blue">inline</font> <font color="blue">void</font> set<font color="black">(</font><font color="blue">const</font> struct_type<font color="black">*</font> src, struct_type<font color="black">*</font> target,
+      <font color="blue">bool</font> copy<font color="black">)</font> <font color="black">{</font>
+    target<font color="black">-</font><font color="black">&#62;</font>typeFlags <font color="black">=</font> src<font color="black">-</font><font color="black">&#62;</font>typeFlags;
+    target<font color="black">-</font><font color="black">&#62;</font>x <font color="black">=</font> src<font color="black">-</font><font color="black">&#62;</font>x;
+    target<font color="black">-</font><font color="black">&#62;</font>y <font color="black">=</font> src<font color="black">-</font><font color="black">&#62;</font>y;
+
+    cef_string_set<font color="black">(</font>src<font color="black">-</font><font color="black">&#62;</font>linkUrl.str, src<font color="black">-</font><font color="black">&#62;</font>linkUrl.length,
+        <font color="black">&</font>target<font color="black">-</font><font color="black">&#62;</font>linkUrl, copy<font color="black">)</font>;
+    cef_string_set<font color="black">(</font>src<font color="black">-</font><font color="black">&#62;</font>imageUrl.str, src<font color="black">-</font><font color="black">&#62;</font>imageUrl.length,
+        <font color="black">&</font>target<font color="black">-</font><font color="black">&#62;</font>imageUrl, copy<font color="black">)</font>;
+    cef_string_set<font color="black">(</font>src<font color="black">-</font><font color="black">&#62;</font>pageUrl.str, src<font color="black">-</font><font color="black">&#62;</font>pageUrl.length,
+        <font color="black">&</font>target<font color="black">-</font><font color="black">&#62;</font>pageUrl, copy<font color="black">)</font>;
+    cef_string_set<font color="black">(</font>src<font color="black">-</font><font color="black">&#62;</font>frameUrl.str, src<font color="black">-</font><font color="black">&#62;</font>frameUrl.length,
+        <font color="black">&</font>target<font color="black">-</font><font color="black">&#62;</font>frameUrl, copy<font color="black">)</font>;
+    cef_string_set<font color="black">(</font>src<font color="black">-</font><font color="black">&#62;</font>selectionText.str, src<font color="black">-</font><font color="black">&#62;</font>selectionText.length,
+        <font color="black">&</font>target<font color="black">-</font><font color="black">&#62;</font>selectionText, copy<font color="black">)</font>;
+    cef_string_set<font color="black">(</font>src<font color="black">-</font><font color="black">&#62;</font>misspelledWord.str, src<font color="black">-</font><font color="black">&#62;</font>misspelledWord.length,
+        <font color="black">&</font>target<font color="black">-</font><font color="black">&#62;</font>misspelledWord, copy<font color="black">)</font>;
+    cef_string_set<font color="black">(</font>src<font color="black">-</font><font color="black">&#62;</font>securityInfo.str, src<font color="black">-</font><font color="black">&#62;</font>securityInfo.length,
+        <font color="black">&</font>target<font color="black">-</font><font color="black">&#62;</font>securityInfo, copy<font color="black">)</font>;
+
+    target<font color="black">-</font><font color="black">&#62;</font>editFlags <font color="black">=</font> src<font color="black">-</font><font color="black">&#62;</font>editFlags;
+  <font color="black">}</font>
+<font color="black">}</font>;
+
+<font color="green">///</font>
+<font color="green">// Class representing menu info.</font>
+<font color="green">///</font>
+<font color="blue">typedef</font> CefStructBase<font color="black">&#60;</font>CefMenuInfoTraits<font color="black">&#62;</font> CefMenuInfo;
+
+
+<font color="blue">struct</font> CefProxyInfoTraits <font color="black">{</font>
+  <font color="blue">typedef</font> cef_proxy_info_t struct_type;
+
+  <font color="blue">static</font> <font color="blue">inline</font> <font color="blue">void</font> init<font color="black">(</font>struct_type<font color="black">*</font> s<font color="black">)</font> <font color="black">{</font><font color="black">}</font>
+
+  <font color="blue">static</font> <font color="blue">inline</font> <font color="blue">void</font> clear<font color="black">(</font>struct_type<font color="black">*</font> s<font color="black">)</font> <font color="black">{</font>
+    cef_string_clear<font color="black">(</font><font color="black">&</font>s<font color="black">-</font><font color="black">&#62;</font>proxyList<font color="black">)</font>;
+  <font color="black">}</font>
+
+  <font color="blue">static</font> <font color="blue">inline</font> <font color="blue">void</font> set<font color="black">(</font><font color="blue">const</font> struct_type<font color="black">*</font> src, struct_type<font color="black">*</font> target,
+      <font color="blue">bool</font> copy<font color="black">)</font> <font color="black">{</font>
+    target<font color="black">-</font><font color="black">&#62;</font>proxyType <font color="black">=</font> src<font color="black">-</font><font color="black">&#62;</font>proxyType;
+    cef_string_set<font color="black">(</font>src<font color="black">-</font><font color="black">&#62;</font>proxyList.str, src<font color="black">-</font><font color="black">&#62;</font>proxyList.length,
+        <font color="black">&</font>target<font color="black">-</font><font color="black">&#62;</font>proxyList, copy<font color="black">)</font>;
+  <font color="black">}</font>
+<font color="black">}</font>;
+
+<font color="green">///</font>
+<font color="green">// Class representing the results of proxy resolution.</font>
+<font color="green">///</font>
+<font color="blue">class</font> CefProxyInfo <font color="black">:</font> <font color="blue">public</font> CefStructBase<font color="black">&#60;</font>CefProxyInfoTraits<font color="black">&#62;</font> <font color="black">{</font>
+ <font color="blue">public</font><font color="black">:</font>
+  <font color="green">///</font>
+  <font color="green">// Use a direction connection instead of a proxy.</font>
+  <font color="green">///</font>
+  <font color="blue">void</font> UseDirect<font color="black">(</font><font color="black">)</font> <font color="black">{</font>
+    proxyType <font color="black">=</font> CEF_PROXY_TYPE_DIRECT;
+  <font color="black">}</font>
+
+  <font color="green">///</font>
+  <font color="green">// Use one or more named proxy servers specified in WinHTTP format. Each proxy</font>
+  <font color="green">// server is of the form:</font>
+  <font color="green">//</font>
+  <font color="green">// [&#60;scheme&#62;"://"]&#60;server&#62;[":"&#60;port&#62;]</font>
+  <font color="green">//</font>
+  <font color="green">// Multiple values may be separated by semicolons or whitespace. For example,</font>
+  <font color="green">// "foo1:80;foo2:80".</font>
+  <font color="green">///</font>
+  <font color="blue">void</font> UseNamedProxy<font color="black">(</font><font color="blue">const</font> CefString<font color="black">&</font> proxy_uri_list<font color="black">)</font> <font color="black">{</font>
+    proxyType <font color="black">=</font> CEF_PROXY_TYPE_NAMED;
+    <font color="black">(</font>CefString<font color="black">(</font><font color="black">&</font>proxyList<font color="black">)</font><font color="black">)</font> <font color="black">=</font> proxy_uri_list;
+  <font color="black">}</font>
+
+  <font color="green">///</font>
+  <font color="green">// Use one or more named proxy servers specified in PAC script format. For</font>
+  <font color="green">// example, "PROXY foobar:99; SOCKS fml:2; DIRECT".</font>
+  <font color="green">///</font>
+  <font color="blue">void</font> UsePacString<font color="black">(</font><font color="blue">const</font> CefString<font color="black">&</font> pac_string<font color="black">)</font> <font color="black">{</font>
+    proxyType <font color="black">=</font> CEF_PROXY_TYPE_PAC_STRING;
+    <font color="black">(</font>CefString<font color="black">(</font><font color="black">&</font>proxyList<font color="black">)</font><font color="black">)</font> <font color="black">=</font> pac_string;
+  <font color="black">}</font>
+
+  <font color="blue">bool</font> IsDirect<font color="black">(</font><font color="black">)</font> <font color="blue">const</font> <font color="black">{</font> <font color="blue">return</font> proxyType <font color="black">=</font><font color="black">=</font> CEF_PROXY_TYPE_DIRECT; <font color="black">}</font>
+  <font color="blue">bool</font> IsNamedProxy<font color="black">(</font><font color="black">)</font> <font color="blue">const</font> <font color="black">{</font> <font color="blue">return</font> proxyType <font color="black">=</font><font color="black">=</font> CEF_PROXY_TYPE_NAMED; <font color="black">}</font>
+  <font color="blue">bool</font> IsPacString<font color="black">(</font><font color="black">)</font> <font color="blue">const</font> <font color="black">{</font> <font color="blue">return</font> proxyType <font color="black">=</font><font color="black">=</font> CEF_PROXY_TYPE_PAC_STRING; <font color="black">}</font>
+
+  CefString ProxyList<font color="black">(</font><font color="black">)</font> <font color="blue">const</font> <font color="black">{</font> <font color="blue">return</font> CefString<font color="black">(</font><font color="black">&</font>proxyList<font color="black">)</font>; <font color="black">}</font>
+<font color="black">}</font>;
+
+
+<font color="blue">struct</font> CefGeopositionTraits <font color="black">{</font>
+  <font color="blue">typedef</font> cef_geoposition_t struct_type;
+
+  <font color="blue">static</font> <font color="blue">inline</font> <font color="blue">void</font> init<font color="black">(</font>struct_type<font color="black">*</font> s<font color="black">)</font> <font color="black">{</font><font color="black">}</font>
+
+  <font color="blue">static</font> <font color="blue">inline</font> <font color="blue">void</font> clear<font color="black">(</font>struct_type<font color="black">*</font> s<font color="black">)</font> <font color="black">{</font>
+    cef_string_clear<font color="black">(</font><font color="black">&</font>s<font color="black">-</font><font color="black">&#62;</font>error_message<font color="black">)</font>;
+  <font color="black">}</font>
+
+  <font color="blue">static</font> <font color="blue">inline</font> <font color="blue">void</font> set<font color="black">(</font><font color="blue">const</font> struct_type<font color="black">*</font> src, struct_type<font color="black">*</font> target,
+      <font color="blue">bool</font> copy<font color="black">)</font> <font color="black">{</font>
+    target<font color="black">-</font><font color="black">&#62;</font>latitude <font color="black">=</font> src<font color="black">-</font><font color="black">&#62;</font>latitude;
+    target<font color="black">-</font><font color="black">&#62;</font>longitude <font color="black">=</font> src<font color="black">-</font><font color="black">&#62;</font>longitude;
+    target<font color="black">-</font><font color="black">&#62;</font>altitude <font color="black">=</font> src<font color="black">-</font><font color="black">&#62;</font>altitude;
+    target<font color="black">-</font><font color="black">&#62;</font>accuracy <font color="black">=</font> src<font color="black">-</font><font color="black">&#62;</font>accuracy;
+    target<font color="black">-</font><font color="black">&#62;</font>altitude_accuracy <font color="black">=</font> src<font color="black">-</font><font color="black">&#62;</font>altitude_accuracy;
+    target<font color="black">-</font><font color="black">&#62;</font>heading <font color="black">=</font> src<font color="black">-</font><font color="black">&#62;</font>heading;
+    target<font color="black">-</font><font color="black">&#62;</font>speed <font color="black">=</font> src<font color="black">-</font><font color="black">&#62;</font>speed;
+    target<font color="black">-</font><font color="black">&#62;</font>timestamp <font color="black">=</font> src<font color="black">-</font><font color="black">&#62;</font>timestamp;
+    target<font color="black">-</font><font color="black">&#62;</font>error_code <font color="black">=</font> src<font color="black">-</font><font color="black">&#62;</font>error_code;
+    cef_string_set<font color="black">(</font>src<font color="black">-</font><font color="black">&#62;</font>error_message.str, src<font color="black">-</font><font color="black">&#62;</font>error_message.length,
+        <font color="black">&</font>target<font color="black">-</font><font color="black">&#62;</font>error_message, copy<font color="black">)</font>;
+  <font color="black">}</font>
+<font color="black">}</font>;
+
+<font color="green">///</font>
+<font color="green">// Class representing a geoposition.</font>
+<font color="green">///</font>
+<font color="blue">typedef</font> CefStructBase<font color="black">&#60;</font>CefGeopositionTraits<font color="black">&#62;</font> CefGeoposition;
+
+<font color="blue">#endif</font>  <font color="green">// CEF_INCLUDE_INTERNAL_CEF_TYPES_WRAPPERS_H_</font>
+
+</PRE>
+</BODY>
+</HTML>

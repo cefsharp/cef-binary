@@ -1,0 +1,724 @@
+<HTML>
+<HEAD>
+<TITLE>
+cef_string_wrappers.h
+</TITLE>
+</HEAD>
+<BODY>
+<PRE>
+<font color="green">// Copyright (c) 2010 Marshall A. Greenblatt. All rights reserved.</font>
+<font color="green">//</font>
+<font color="green">// Redistribution and use in source and binary forms, with or without</font>
+<font color="green">// modification, are permitted provided that the following conditions are</font>
+<font color="green">// met:</font>
+<font color="green">//</font>
+<font color="green">//    * Redistributions of source code must retain the above copyright</font>
+<font color="green">// notice, this list of conditions and the following disclaimer.</font>
+<font color="green">//    * Redistributions in binary form must reproduce the above</font>
+<font color="green">// copyright notice, this list of conditions and the following disclaimer</font>
+<font color="green">// in the documentation and/or other materials provided with the</font>
+<font color="green">// distribution.</font>
+<font color="green">//    * Neither the name of Google Inc. nor the name Chromium Embedded</font>
+<font color="green">// Framework nor the names of its contributors may be used to endorse</font>
+<font color="green">// or promote products derived from this software without specific prior</font>
+<font color="green">// written permission.</font>
+<font color="green">//</font>
+<font color="green">// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS</font>
+<font color="green">// "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT</font>
+<font color="green">// LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR</font>
+<font color="green">// A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT</font>
+<font color="green">// OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,</font>
+<font color="green">// SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT</font>
+<font color="green">// LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,</font>
+<font color="green">// DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY</font>
+<font color="green">// THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT</font>
+<font color="green">// (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE</font>
+<font color="green">// OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.</font>
+
+<font color="blue">#ifndef</font> CEF_INCLUDE_INTERNAL_CEF_STRING_WRAPPERS_H_
+<font color="blue">#define</font> CEF_INCLUDE_INTERNAL_CEF_STRING_WRAPPERS_H_
+<font color="blue">#pragma</font> once
+
+<font color="blue">#include</font> <font color="maroon">&#60;memory.h&#62;</font>
+<font color="blue">#include</font> <font color="maroon">&#60;string&#62;</font>
+<font color="blue">#include</font> <font color="maroon">"include/internal/cef_string_types.h"</font>
+
+<font color="blue">#ifdef</font> BUILDING_CEF_SHARED
+<font color="blue">#include</font> <font color="maroon">"base/string16.h"</font>
+<font color="blue">#endif</font>
+
+
+<font color="green">///</font>
+<font color="green">// Traits implementation for wide character strings.</font>
+<font color="green">///</font>
+<font color="blue">struct</font> CefStringTraitsWide <font color="black">{</font>
+  <font color="blue">typedef</font> wchar_t char_type;
+  <font color="blue">typedef</font> cef_string_wide_t struct_type;
+  <font color="blue">typedef</font> cef_string_userfree_wide_t userfree_struct_type;
+
+  <font color="blue">static</font> <font color="blue">inline</font> <font color="blue">void</font> clear<font color="black">(</font>struct_type <font color="black">*</font>s<font color="black">)</font> <font color="black">{</font> cef_string_wide_clear<font color="black">(</font>s<font color="black">)</font>; <font color="black">}</font>
+  <font color="blue">static</font> <font color="blue">inline</font> <font color="blue">int</font> set<font color="black">(</font><font color="blue">const</font> char_type<font color="black">*</font> src, size_t src_size,
+                        struct_type<font color="black">*</font> output, <font color="blue">int</font> copy<font color="black">)</font> <font color="black">{</font>
+    <font color="blue">return</font> cef_string_wide_set<font color="black">(</font>src, src_size, output, copy<font color="black">)</font>;
+  <font color="black">}</font>
+  <font color="blue">static</font> <font color="blue">inline</font> <font color="blue">int</font> compare<font color="black">(</font><font color="blue">const</font> struct_type<font color="black">*</font> s1, <font color="blue">const</font> struct_type<font color="black">*</font> s2<font color="black">)</font> <font color="black">{</font>
+    <font color="blue">return</font> cef_string_wide_cmp<font color="black">(</font>s1, s2<font color="black">)</font>;
+  <font color="black">}</font>
+  <font color="blue">static</font> <font color="blue">inline</font> userfree_struct_type userfree_alloc<font color="black">(</font><font color="black">)</font> <font color="black">{</font>
+    <font color="blue">return</font> cef_string_userfree_wide_alloc<font color="black">(</font><font color="black">)</font>;
+  <font color="black">}</font>
+  <font color="blue">static</font> <font color="blue">inline</font> <font color="blue">void</font> userfree_free<font color="black">(</font>userfree_struct_type ufs<font color="black">)</font> <font color="black">{</font>
+    <font color="blue">return</font> cef_string_userfree_wide_free<font color="black">(</font>ufs<font color="black">)</font>;
+  <font color="black">}</font>
+
+  <font color="green">// Conversion methods.</font>
+  <font color="blue">static</font> <font color="blue">inline</font> <font color="blue">bool</font> from_ascii<font color="black">(</font><font color="blue">const</font> <font color="blue">char</font><font color="black">*</font> str, size_t len, struct_type <font color="black">*</font>s<font color="black">)</font> <font color="black">{</font>
+    <font color="blue">return</font> cef_string_ascii_to_wide<font color="black">(</font>str, len, s<font color="black">)</font> ? <font color="blue">true</font> <font color="black">:</font> <font color="blue">false</font>;
+  <font color="black">}</font>
+  <font color="blue">static</font> <font color="blue">inline</font> std<font color="black">:</font><font color="black">:</font>string to_string<font color="black">(</font><font color="blue">const</font> struct_type <font color="black">*</font>s<font color="black">)</font> <font color="black">{</font>
+    cef_string_utf8_t cstr;
+    memset<font color="black">(</font><font color="black">&</font>cstr, <font color="maroon">0</font>, <font color="blue">sizeof</font><font color="black">(</font>cstr<font color="black">)</font><font color="black">)</font>;
+    cef_string_wide_to_utf8<font color="black">(</font>s<font color="black">-</font><font color="black">&#62;</font>str, s<font color="black">-</font><font color="black">&#62;</font>length, <font color="black">&</font>cstr<font color="black">)</font>;
+    std<font color="black">:</font><font color="black">:</font>string str;
+    <font color="blue">if</font> <font color="black">(</font>cstr.length <font color="black">&#62;</font> <font color="maroon">0</font><font color="black">)</font>
+      str <font color="black">=</font> std<font color="black">:</font><font color="black">:</font>string<font color="black">(</font>cstr.str, cstr.length<font color="black">)</font>;
+    cef_string_utf8_clear<font color="black">(</font><font color="black">&</font>cstr<font color="black">)</font>;
+    <font color="blue">return</font> str;
+  <font color="black">}</font>
+  <font color="blue">static</font> <font color="blue">inline</font> <font color="blue">bool</font> from_string<font color="black">(</font><font color="blue">const</font> std<font color="black">:</font><font color="black">:</font>string<font color="black">&</font> str, struct_type <font color="black">*</font>s<font color="black">)</font> <font color="black">{</font>
+    <font color="blue">return</font> cef_string_utf8_to_wide<font color="black">(</font>str.c_str<font color="black">(</font><font color="black">)</font>, str.length<font color="black">(</font><font color="black">)</font>, s<font color="black">)</font> ? <font color="blue">true</font> <font color="black">:</font> <font color="blue">false</font>;
+  <font color="black">}</font>
+  <font color="blue">static</font> <font color="blue">inline</font> std<font color="black">:</font><font color="black">:</font>wstring to_wstring<font color="black">(</font><font color="blue">const</font> struct_type <font color="black">*</font>s<font color="black">)</font> <font color="black">{</font>
+    <font color="blue">return</font> std<font color="black">:</font><font color="black">:</font>wstring<font color="black">(</font>s<font color="black">-</font><font color="black">&#62;</font>str, s<font color="black">-</font><font color="black">&#62;</font>length<font color="black">)</font>;
+  <font color="black">}</font>
+  <font color="blue">static</font> <font color="blue">inline</font> <font color="blue">bool</font> from_wstring<font color="black">(</font><font color="blue">const</font> std<font color="black">:</font><font color="black">:</font>wstring<font color="black">&</font> str, struct_type <font color="black">*</font>s<font color="black">)</font> <font color="black">{</font>
+    <font color="blue">return</font> cef_string_wide_set<font color="black">(</font>str.c_str<font color="black">(</font><font color="black">)</font>, str.length<font color="black">(</font><font color="black">)</font>, s, <font color="blue">true</font><font color="black">)</font> ?
+        <font color="blue">true</font> <font color="black">:</font> <font color="blue">false</font>;
+  <font color="black">}</font>
+<font color="blue">#if</font> defined<font color="black">(</font>BUILDING_CEF_SHARED<font color="black">)</font>
+<font color="blue">#if</font> defined<font color="black">(</font>WCHAR_T_IS_UTF32<font color="black">)</font>
+  <font color="blue">static</font> <font color="blue">inline</font> string16 to_string16<font color="black">(</font><font color="blue">const</font> struct_type <font color="black">*</font>s<font color="black">)</font> <font color="black">{</font>
+    cef_string_utf16_t cstr;
+    memset<font color="black">(</font><font color="black">&</font>cstr, <font color="maroon">0</font>, <font color="blue">sizeof</font><font color="black">(</font>cstr<font color="black">)</font><font color="black">)</font>;
+    cef_string_wide_to_utf16<font color="black">(</font>s<font color="black">-</font><font color="black">&#62;</font>str, s<font color="black">-</font><font color="black">&#62;</font>length, <font color="black">&</font>cstr<font color="black">)</font>;
+    string16 str;
+    <font color="blue">if</font> <font color="black">(</font>cstr.length <font color="black">&#62;</font> <font color="maroon">0</font><font color="black">)</font>
+      str <font color="black">=</font> string16<font color="black">(</font>cstr.str, cstr.length<font color="black">)</font>;
+    cef_string_utf16_clear<font color="black">(</font><font color="black">&</font>cstr<font color="black">)</font>;
+    <font color="blue">return</font> str;
+  <font color="black">}</font>
+  <font color="blue">static</font> <font color="blue">inline</font> <font color="blue">bool</font> from_string16<font color="black">(</font><font color="blue">const</font> string16<font color="black">&</font> str, struct_type <font color="black">*</font>s<font color="black">)</font> <font color="black">{</font>
+    <font color="blue">return</font> cef_string_utf16_to_wide<font color="black">(</font>str.c_str<font color="black">(</font><font color="black">)</font>, str.length<font color="black">(</font><font color="black">)</font>, s<font color="black">)</font> ?
+        <font color="blue">true</font> <font color="black">:</font> <font color="blue">false</font>;
+  <font color="black">}</font>
+<font color="blue">#else</font>  <font color="green">// WCHAR_T_IS_UTF32</font>
+  <font color="blue">static</font> <font color="blue">inline</font> string16 to_string16<font color="black">(</font><font color="blue">const</font> struct_type <font color="black">*</font>s<font color="black">)</font> <font color="black">{</font>
+    <font color="blue">return</font> string16<font color="black">(</font>s<font color="black">-</font><font color="black">&#62;</font>str, s<font color="black">-</font><font color="black">&#62;</font>length<font color="black">)</font>;
+  <font color="black">}</font>
+  <font color="blue">static</font> <font color="blue">inline</font> <font color="blue">bool</font> from_string16<font color="black">(</font><font color="blue">const</font> string16<font color="black">&</font> str, struct_type <font color="black">*</font>s<font color="black">)</font> <font color="black">{</font>
+    <font color="blue">return</font> cef_string_wide_set<font color="black">(</font>str.c_str<font color="black">(</font><font color="black">)</font>, str.length<font color="black">(</font><font color="black">)</font>, s, <font color="blue">true</font><font color="black">)</font> ?
+        <font color="blue">true</font> <font color="black">:</font> <font color="blue">false</font>;
+  <font color="black">}</font>
+<font color="blue">#endif</font>  <font color="green">// WCHAR_T_IS_UTF32</font>
+<font color="blue">#endif</font>  <font color="green">// BUILDING_CEF_SHARED</font>
+<font color="black">}</font>;
+
+<font color="green">///</font>
+<font color="green">// Traits implementation for utf8 character strings.</font>
+<font color="green">///</font>
+<font color="blue">struct</font> CefStringTraitsUTF8 <font color="black">{</font>
+  <font color="blue">typedef</font> <font color="blue">char</font> char_type;
+  <font color="blue">typedef</font> cef_string_utf8_t struct_type;
+  <font color="blue">typedef</font> cef_string_userfree_utf8_t userfree_struct_type;
+
+  <font color="blue">static</font> <font color="blue">inline</font> <font color="blue">void</font> clear<font color="black">(</font>struct_type <font color="black">*</font>s<font color="black">)</font> <font color="black">{</font> cef_string_utf8_clear<font color="black">(</font>s<font color="black">)</font>; <font color="black">}</font>
+  <font color="blue">static</font> <font color="blue">inline</font> <font color="blue">int</font> set<font color="black">(</font><font color="blue">const</font> char_type<font color="black">*</font> src, size_t src_size,
+                        struct_type<font color="black">*</font> output, <font color="blue">int</font> copy<font color="black">)</font> <font color="black">{</font>
+    <font color="blue">return</font> cef_string_utf8_set<font color="black">(</font>src, src_size, output, copy<font color="black">)</font>;
+  <font color="black">}</font>
+  <font color="blue">static</font> <font color="blue">inline</font> <font color="blue">int</font> compare<font color="black">(</font><font color="blue">const</font> struct_type<font color="black">*</font> s1, <font color="blue">const</font> struct_type<font color="black">*</font> s2<font color="black">)</font> <font color="black">{</font>
+    <font color="blue">return</font> cef_string_utf8_cmp<font color="black">(</font>s1, s2<font color="black">)</font>;
+  <font color="black">}</font>
+  <font color="blue">static</font> <font color="blue">inline</font> userfree_struct_type userfree_alloc<font color="black">(</font><font color="black">)</font> <font color="black">{</font>
+    <font color="blue">return</font> cef_string_userfree_utf8_alloc<font color="black">(</font><font color="black">)</font>;
+  <font color="black">}</font>
+  <font color="blue">static</font> <font color="blue">inline</font> <font color="blue">void</font> userfree_free<font color="black">(</font>userfree_struct_type ufs<font color="black">)</font> <font color="black">{</font>
+    <font color="blue">return</font> cef_string_userfree_utf8_free<font color="black">(</font>ufs<font color="black">)</font>;
+  <font color="black">}</font>
+
+  <font color="green">// Conversion methods.</font>
+  <font color="blue">static</font> <font color="blue">inline</font> <font color="blue">bool</font> from_ascii<font color="black">(</font><font color="blue">const</font> <font color="blue">char</font><font color="black">*</font> str, size_t len, struct_type<font color="black">*</font> s<font color="black">)</font> <font color="black">{</font>
+    <font color="blue">return</font> cef_string_utf8_copy<font color="black">(</font>str, len, s<font color="black">)</font> ? <font color="blue">true</font> <font color="black">:</font> <font color="blue">false</font>;
+  <font color="black">}</font>
+  <font color="blue">static</font> <font color="blue">inline</font> std<font color="black">:</font><font color="black">:</font>string to_string<font color="black">(</font><font color="blue">const</font> struct_type<font color="black">*</font> s<font color="black">)</font> <font color="black">{</font>
+    <font color="blue">return</font> std<font color="black">:</font><font color="black">:</font>string<font color="black">(</font>s<font color="black">-</font><font color="black">&#62;</font>str, s<font color="black">-</font><font color="black">&#62;</font>length<font color="black">)</font>;
+  <font color="black">}</font>
+  <font color="blue">static</font> <font color="blue">inline</font> <font color="blue">bool</font> from_string<font color="black">(</font><font color="blue">const</font> std<font color="black">:</font><font color="black">:</font>string<font color="black">&</font> str, struct_type<font color="black">*</font> s<font color="black">)</font> <font color="black">{</font>
+    <font color="blue">return</font> cef_string_utf8_copy<font color="black">(</font>str.c_str<font color="black">(</font><font color="black">)</font>, str.length<font color="black">(</font><font color="black">)</font>, s<font color="black">)</font> ? <font color="blue">true</font> <font color="black">:</font> <font color="blue">false</font>;
+  <font color="black">}</font>
+  <font color="blue">static</font> <font color="blue">inline</font> std<font color="black">:</font><font color="black">:</font>wstring to_wstring<font color="black">(</font><font color="blue">const</font> struct_type<font color="black">*</font> s<font color="black">)</font> <font color="black">{</font>
+    cef_string_wide_t cstr;
+    memset<font color="black">(</font><font color="black">&</font>cstr, <font color="maroon">0</font>, <font color="blue">sizeof</font><font color="black">(</font>cstr<font color="black">)</font><font color="black">)</font>;
+    cef_string_utf8_to_wide<font color="black">(</font>s<font color="black">-</font><font color="black">&#62;</font>str, s<font color="black">-</font><font color="black">&#62;</font>length, <font color="black">&</font>cstr<font color="black">)</font>;
+    std<font color="black">:</font><font color="black">:</font>wstring str;
+    <font color="blue">if</font> <font color="black">(</font>cstr.length <font color="black">&#62;</font> <font color="maroon">0</font><font color="black">)</font>
+      str <font color="black">=</font> std<font color="black">:</font><font color="black">:</font>wstring<font color="black">(</font>cstr.str, cstr.length<font color="black">)</font>;
+    cef_string_wide_clear<font color="black">(</font><font color="black">&</font>cstr<font color="black">)</font>;
+    <font color="blue">return</font> str;
+  <font color="black">}</font>
+  <font color="blue">static</font> <font color="blue">inline</font> <font color="blue">bool</font> from_wstring<font color="black">(</font><font color="blue">const</font> std<font color="black">:</font><font color="black">:</font>wstring<font color="black">&</font> str, struct_type<font color="black">*</font> s<font color="black">)</font> <font color="black">{</font>
+    <font color="blue">return</font> cef_string_wide_to_utf8<font color="black">(</font>str.c_str<font color="black">(</font><font color="black">)</font>, str.length<font color="black">(</font><font color="black">)</font>, s<font color="black">)</font> ? <font color="blue">true</font> <font color="black">:</font> <font color="blue">false</font>;
+  <font color="black">}</font>
+<font color="blue">#if</font> defined<font color="black">(</font>BUILDING_CEF_SHARED<font color="black">)</font>
+  <font color="blue">static</font> <font color="blue">inline</font> string16 to_string16<font color="black">(</font><font color="blue">const</font> struct_type<font color="black">*</font> s<font color="black">)</font> <font color="black">{</font>
+    cef_string_utf16_t cstr;
+    memset<font color="black">(</font><font color="black">&</font>cstr, <font color="maroon">0</font>, <font color="blue">sizeof</font><font color="black">(</font>cstr<font color="black">)</font><font color="black">)</font>;
+    cef_string_utf8_to_utf16<font color="black">(</font>s<font color="black">-</font><font color="black">&#62;</font>str, s<font color="black">-</font><font color="black">&#62;</font>length, <font color="black">&</font>cstr<font color="black">)</font>;
+    string16 str;
+    <font color="blue">if</font> <font color="black">(</font>cstr.length <font color="black">&#62;</font> <font color="maroon">0</font><font color="black">)</font>
+      str <font color="black">=</font> string16<font color="black">(</font>cstr.str, cstr.length<font color="black">)</font>;
+    cef_string_utf16_clear<font color="black">(</font><font color="black">&</font>cstr<font color="black">)</font>;
+    <font color="blue">return</font> str;
+  <font color="black">}</font>
+  <font color="blue">static</font> <font color="blue">inline</font> <font color="blue">bool</font> from_string16<font color="black">(</font><font color="blue">const</font> string16<font color="black">&</font> str, struct_type<font color="black">*</font> s<font color="black">)</font> <font color="black">{</font>
+    <font color="blue">return</font> cef_string_utf16_to_utf8<font color="black">(</font>str.c_str<font color="black">(</font><font color="black">)</font>, str.length<font color="black">(</font><font color="black">)</font>, s<font color="black">)</font> ?
+        <font color="blue">true</font> <font color="black">:</font> <font color="blue">false</font>;
+  <font color="black">}</font>
+<font color="blue">#endif</font>  <font color="green">// BUILDING_CEF_SHARED</font>
+<font color="black">}</font>;
+
+<font color="green">///</font>
+<font color="green">// Traits implementation for utf16 character strings.</font>
+<font color="green">///</font>
+<font color="blue">struct</font> CefStringTraitsUTF16 <font color="black">{</font>
+  <font color="blue">typedef</font> char16 char_type;
+  <font color="blue">typedef</font> cef_string_utf16_t struct_type;
+  <font color="blue">typedef</font> cef_string_userfree_utf16_t userfree_struct_type;
+
+  <font color="blue">static</font> <font color="blue">inline</font> <font color="blue">void</font> clear<font color="black">(</font>struct_type <font color="black">*</font>s<font color="black">)</font> <font color="black">{</font> cef_string_utf16_clear<font color="black">(</font>s<font color="black">)</font>; <font color="black">}</font>
+  <font color="blue">static</font> <font color="blue">inline</font> <font color="blue">int</font> set<font color="black">(</font><font color="blue">const</font> char_type<font color="black">*</font> src, size_t src_size,
+                        struct_type<font color="black">*</font> output, <font color="blue">int</font> copy<font color="black">)</font> <font color="black">{</font>
+    <font color="blue">return</font> cef_string_utf16_set<font color="black">(</font>src, src_size, output, copy<font color="black">)</font>;
+  <font color="black">}</font>
+  <font color="blue">static</font> <font color="blue">inline</font> <font color="blue">int</font> compare<font color="black">(</font><font color="blue">const</font> struct_type<font color="black">*</font> s1, <font color="blue">const</font> struct_type<font color="black">*</font> s2<font color="black">)</font> <font color="black">{</font>
+    <font color="blue">return</font> cef_string_utf16_cmp<font color="black">(</font>s1, s2<font color="black">)</font>;
+  <font color="black">}</font>
+  <font color="blue">static</font> <font color="blue">inline</font> userfree_struct_type userfree_alloc<font color="black">(</font><font color="black">)</font> <font color="black">{</font>
+    <font color="blue">return</font> cef_string_userfree_utf16_alloc<font color="black">(</font><font color="black">)</font>;
+  <font color="black">}</font>
+  <font color="blue">static</font> <font color="blue">inline</font> <font color="blue">void</font> userfree_free<font color="black">(</font>userfree_struct_type ufs<font color="black">)</font> <font color="black">{</font>
+    <font color="blue">return</font> cef_string_userfree_utf16_free<font color="black">(</font>ufs<font color="black">)</font>;
+  <font color="black">}</font>
+
+  <font color="green">// Conversion methods.</font>
+  <font color="blue">static</font> <font color="blue">inline</font> <font color="blue">bool</font> from_ascii<font color="black">(</font><font color="blue">const</font> <font color="blue">char</font><font color="black">*</font> str, size_t len, struct_type<font color="black">*</font> s<font color="black">)</font> <font color="black">{</font>
+    <font color="blue">return</font> cef_string_ascii_to_utf16<font color="black">(</font>str, len, s<font color="black">)</font> ? <font color="blue">true</font> <font color="black">:</font> <font color="blue">false</font>;
+  <font color="black">}</font>
+  <font color="blue">static</font> <font color="blue">inline</font> std<font color="black">:</font><font color="black">:</font>string to_string<font color="black">(</font><font color="blue">const</font> struct_type<font color="black">*</font> s<font color="black">)</font> <font color="black">{</font>
+    cef_string_utf8_t cstr;
+    memset<font color="black">(</font><font color="black">&</font>cstr, <font color="maroon">0</font>, <font color="blue">sizeof</font><font color="black">(</font>cstr<font color="black">)</font><font color="black">)</font>;
+    cef_string_utf16_to_utf8<font color="black">(</font>s<font color="black">-</font><font color="black">&#62;</font>str, s<font color="black">-</font><font color="black">&#62;</font>length, <font color="black">&</font>cstr<font color="black">)</font>;
+    std<font color="black">:</font><font color="black">:</font>string str;
+    <font color="blue">if</font> <font color="black">(</font>cstr.length <font color="black">&#62;</font> <font color="maroon">0</font><font color="black">)</font>
+      str <font color="black">=</font> std<font color="black">:</font><font color="black">:</font>string<font color="black">(</font>cstr.str, cstr.length<font color="black">)</font>;
+    cef_string_utf8_clear<font color="black">(</font><font color="black">&</font>cstr<font color="black">)</font>;
+    <font color="blue">return</font> str;
+  <font color="black">}</font>
+  <font color="blue">static</font> <font color="blue">inline</font> <font color="blue">bool</font> from_string<font color="black">(</font><font color="blue">const</font> std<font color="black">:</font><font color="black">:</font>string<font color="black">&</font> str, struct_type<font color="black">*</font> s<font color="black">)</font> <font color="black">{</font>
+    <font color="blue">return</font> cef_string_utf8_to_utf16<font color="black">(</font>str.c_str<font color="black">(</font><font color="black">)</font>, str.length<font color="black">(</font><font color="black">)</font>, s<font color="black">)</font> ?
+        <font color="blue">true</font> <font color="black">:</font> <font color="blue">false</font>;
+  <font color="black">}</font>
+<font color="blue">#if</font> defined<font color="black">(</font>WCHAR_T_IS_UTF32<font color="black">)</font>
+  <font color="blue">static</font> <font color="blue">inline</font> std<font color="black">:</font><font color="black">:</font>wstring to_wstring<font color="black">(</font><font color="blue">const</font> struct_type<font color="black">*</font> s<font color="black">)</font> <font color="black">{</font>
+    cef_string_wide_t cstr;
+    memset<font color="black">(</font><font color="black">&</font>cstr, <font color="maroon">0</font>, <font color="blue">sizeof</font><font color="black">(</font>cstr<font color="black">)</font><font color="black">)</font>;
+    cef_string_utf16_to_wide<font color="black">(</font>s<font color="black">-</font><font color="black">&#62;</font>str, s<font color="black">-</font><font color="black">&#62;</font>length, <font color="black">&</font>cstr<font color="black">)</font>;
+    std<font color="black">:</font><font color="black">:</font>wstring str;
+    <font color="blue">if</font> <font color="black">(</font>cstr.length <font color="black">&#62;</font> <font color="maroon">0</font><font color="black">)</font>
+      str <font color="black">=</font> std<font color="black">:</font><font color="black">:</font>wstring<font color="black">(</font>cstr.str, cstr.length<font color="black">)</font>;
+    cef_string_wide_clear<font color="black">(</font><font color="black">&</font>cstr<font color="black">)</font>;
+    <font color="blue">return</font> str;
+  <font color="black">}</font>
+  <font color="blue">static</font> <font color="blue">inline</font> <font color="blue">bool</font> from_wstring<font color="black">(</font><font color="blue">const</font> std<font color="black">:</font><font color="black">:</font>wstring<font color="black">&</font> str, struct_type<font color="black">*</font> s<font color="black">)</font> <font color="black">{</font>
+    <font color="blue">return</font> cef_string_wide_to_utf16<font color="black">(</font>str.c_str<font color="black">(</font><font color="black">)</font>, str.length<font color="black">(</font><font color="black">)</font>, s<font color="black">)</font> ?
+        <font color="blue">true</font> <font color="black">:</font> <font color="blue">false</font>;
+  <font color="black">}</font>
+<font color="blue">#else</font>  <font color="green">// WCHAR_T_IS_UTF32</font>
+  <font color="blue">static</font> <font color="blue">inline</font> std<font color="black">:</font><font color="black">:</font>wstring to_wstring<font color="black">(</font><font color="blue">const</font> struct_type<font color="black">*</font> s<font color="black">)</font> <font color="black">{</font>
+    <font color="blue">return</font> std<font color="black">:</font><font color="black">:</font>wstring<font color="black">(</font>s<font color="black">-</font><font color="black">&#62;</font>str, s<font color="black">-</font><font color="black">&#62;</font>length<font color="black">)</font>;
+  <font color="black">}</font>
+  <font color="blue">static</font> <font color="blue">inline</font> <font color="blue">bool</font> from_wstring<font color="black">(</font><font color="blue">const</font> std<font color="black">:</font><font color="black">:</font>wstring<font color="black">&</font> str, struct_type<font color="black">*</font> s<font color="black">)</font> <font color="black">{</font>
+    <font color="blue">return</font> cef_string_utf16_set<font color="black">(</font>str.c_str<font color="black">(</font><font color="black">)</font>, str.length<font color="black">(</font><font color="black">)</font>, s, <font color="blue">true</font><font color="black">)</font> ?
+        <font color="blue">true</font> <font color="black">:</font> <font color="blue">false</font>;
+  <font color="black">}</font>
+<font color="blue">#endif</font>  <font color="green">// WCHAR_T_IS_UTF32</font>
+<font color="blue">#if</font> defined<font color="black">(</font>BUILDING_CEF_SHARED<font color="black">)</font>
+  <font color="blue">static</font> <font color="blue">inline</font> string16 to_string16<font color="black">(</font><font color="blue">const</font> struct_type<font color="black">*</font> s<font color="black">)</font> <font color="black">{</font>
+    <font color="blue">return</font> string16<font color="black">(</font>s<font color="black">-</font><font color="black">&#62;</font>str, s<font color="black">-</font><font color="black">&#62;</font>length<font color="black">)</font>;
+  <font color="black">}</font>
+  <font color="blue">static</font> <font color="blue">inline</font> <font color="blue">bool</font> from_string16<font color="black">(</font><font color="blue">const</font> string16<font color="black">&</font> str, struct_type<font color="black">*</font> s<font color="black">)</font> <font color="black">{</font>
+    <font color="blue">return</font> cef_string_utf16_set<font color="black">(</font>str.c_str<font color="black">(</font><font color="black">)</font>, str.length<font color="black">(</font><font color="black">)</font>, s, <font color="blue">true</font><font color="black">)</font> ?
+        <font color="blue">true</font> <font color="black">:</font> <font color="blue">false</font>;
+  <font color="black">}</font>
+<font color="blue">#endif</font>  <font color="green">// BUILDING_CEF_SHARED</font>
+<font color="black">}</font>;
+
+<font color="green">///</font>
+<font color="green">// CEF string classes can convert between all supported string types. For</font>
+<font color="green">// example, the CefStringWide class uses wchar_t as the underlying character</font>
+<font color="green">// type and provides two approaches for converting data to/from a UTF8 string</font>
+<font color="green">// (std::string).</font>
+<font color="green">// &#60;p&#62;</font>
+<font color="green">// 1. Implicit conversion using the assignment operator overload.</font>
+<font color="green">// &#60;pre&#62;</font>
+<font color="green">//   CefStringWide aCefString;</font>
+<font color="green">//   std::string aUTF8String;</font>
+<font color="green">//   aCefString = aUTF8String; // Assign std::string to CefStringWide</font>
+<font color="green">//   aUTF8String = aCefString; // Assign CefStringWide to std::string</font>
+<font color="green">// &#60;/pre&#62;</font>
+<font color="green">// 2. Explicit conversion using the FromString/ToString methods.</font>
+<font color="green">// &#60;pre&#62;</font>
+<font color="green">//   CefStringWide aCefString;</font>
+<font color="green">//   std::string aUTF8String;</font>
+<font color="green">//   aCefString.FromString(aUTF8String); // Assign std::string to CefStringWide</font>
+<font color="green">//   aUTF8String = aCefString.ToString(); // Assign CefStringWide to std::string</font>
+<font color="green">// &#60;/pre&#62;</font>
+<font color="green">// Conversion will only occur if the assigned value is a different string type.</font>
+<font color="green">// Assigning a std::string to a CefStringUTF8, for example, will copy the data</font>
+<font color="green">// without performing a conversion.</font>
+<font color="green">// &#60;/p&#62;</font>
+<font color="green">// CEF string classes are safe for reading from multiple threads but not for</font>
+<font color="green">// modification. It is the user's responsibility to provide synchronization if</font>
+<font color="green">// modifying CEF strings from multiple threads.</font>
+<font color="green">///</font>
+<font color="blue">template</font> <font color="black">&#60;</font><font color="blue">class</font> traits<font color="black">&#62;</font>
+<font color="blue">class</font> CefStringBase <font color="black">{</font>
+ <font color="blue">public</font><font color="black">:</font>
+  <font color="blue">typedef</font> typename traits<font color="black">:</font><font color="black">:</font>char_type char_type;
+  <font color="blue">typedef</font> typename traits<font color="black">:</font><font color="black">:</font>struct_type struct_type;
+  <font color="blue">typedef</font> typename traits<font color="black">:</font><font color="black">:</font>userfree_struct_type userfree_struct_type;
+
+  <font color="green">///</font>
+  <font color="green">// Default constructor.</font>
+  <font color="green">///</font>
+  CefStringBase<font color="black">(</font><font color="black">)</font> <font color="black">:</font> string_<font color="black">(</font>NULL<font color="black">)</font>, owner_<font color="black">(</font><font color="blue">false</font><font color="black">)</font> <font color="black">{</font><font color="black">}</font>
+
+  <font color="green">///</font>
+  <font color="green">// Create a new string from an existing string. Data will always be copied.</font>
+  <font color="green">///</font>
+  CefStringBase<font color="black">(</font><font color="blue">const</font> CefStringBase<font color="black">&</font> str<font color="black">)</font>
+    <font color="black">:</font> string_<font color="black">(</font>NULL<font color="black">)</font>, owner_<font color="black">(</font><font color="blue">false</font><font color="black">)</font> <font color="black">{</font>
+    FromString<font color="black">(</font>str.c_str<font color="black">(</font><font color="black">)</font>, str.length<font color="black">(</font><font color="black">)</font>, <font color="blue">true</font><font color="black">)</font>;
+  <font color="black">}</font>
+
+  <font color="green">///</font>
+  <font color="green">// Create a new string from an existing std::string. Data will be always</font>
+  <font color="green">// copied. Translation will occur if necessary based on the underlying string</font>
+  <font color="green">// type.</font>
+  <font color="green">///</font>
+  CefStringBase<font color="black">(</font><font color="blue">const</font> std<font color="black">:</font><font color="black">:</font>string<font color="black">&</font> src<font color="black">)</font>  <font color="green">// NOLINT(runtime/explicit)</font>
+    <font color="black">:</font> string_<font color="black">(</font>NULL<font color="black">)</font>, owner_<font color="black">(</font><font color="blue">false</font><font color="black">)</font> <font color="black">{</font>
+    FromString<font color="black">(</font>src<font color="black">)</font>;
+  <font color="black">}</font>
+  CefStringBase<font color="black">(</font><font color="blue">const</font> <font color="blue">char</font><font color="black">*</font> src<font color="black">)</font>  <font color="green">// NOLINT(runtime/explicit)</font>
+    <font color="black">:</font> string_<font color="black">(</font>NULL<font color="black">)</font>, owner_<font color="black">(</font><font color="blue">false</font><font color="black">)</font> <font color="black">{</font>
+    <font color="blue">if</font> <font color="black">(</font>src<font color="black">)</font>
+      FromString<font color="black">(</font>std<font color="black">:</font><font color="black">:</font>string<font color="black">(</font>src<font color="black">)</font><font color="black">)</font>;
+  <font color="black">}</font>
+
+  <font color="green">///</font>
+  <font color="green">// Create a new string from an existing std::wstring. Data will be always</font>
+  <font color="green">// copied. Translation will occur if necessary based on the underlying string</font>
+  <font color="green">// type.</font>
+  <font color="green">///</font>
+  CefStringBase<font color="black">(</font><font color="blue">const</font> std<font color="black">:</font><font color="black">:</font>wstring<font color="black">&</font> src<font color="black">)</font>  <font color="green">// NOLINT(runtime/explicit)</font>
+    <font color="black">:</font> string_<font color="black">(</font>NULL<font color="black">)</font>, owner_<font color="black">(</font><font color="blue">false</font><font color="black">)</font> <font color="black">{</font>
+    FromWString<font color="black">(</font>src<font color="black">)</font>;
+  <font color="black">}</font>
+  CefStringBase<font color="black">(</font><font color="blue">const</font> wchar_t<font color="black">*</font> src<font color="black">)</font>  <font color="green">// NOLINT(runtime/explicit)</font>
+    <font color="black">:</font> string_<font color="black">(</font>NULL<font color="black">)</font>, owner_<font color="black">(</font><font color="blue">false</font><font color="black">)</font> <font color="black">{</font>
+    <font color="blue">if</font> <font color="black">(</font>src<font color="black">)</font>
+      FromWString<font color="black">(</font>std<font color="black">:</font><font color="black">:</font>wstring<font color="black">(</font>src<font color="black">)</font><font color="black">)</font>;
+  <font color="black">}</font>
+
+<font color="blue">#if</font> <font color="black">(</font>defined<font color="black">(</font>BUILDING_CEF_SHARED<font color="black">)</font> <font color="black">&</font><font color="black">&</font> defined<font color="black">(</font>WCHAR_T_IS_UTF32<font color="black">)</font><font color="black">)</font>
+  <font color="green">///</font>
+  <font color="green">// Create a new string from an existing string16. Data will be always</font>
+  <font color="green">// copied. Translation will occur if necessary based on the underlying string</font>
+  <font color="green">// type.</font>
+  <font color="green">///</font>
+  CefStringBase<font color="black">(</font><font color="blue">const</font> string16<font color="black">&</font> src<font color="black">)</font>  <font color="green">// NOLINT(runtime/explicit)</font>
+    <font color="black">:</font> string_<font color="black">(</font>NULL<font color="black">)</font>, owner_<font color="black">(</font><font color="blue">false</font><font color="black">)</font> <font color="black">{</font>
+    FromString16<font color="black">(</font>src<font color="black">)</font>;
+  <font color="black">}</font>
+  CefStringBase<font color="black">(</font><font color="blue">const</font> char16<font color="black">*</font> src<font color="black">)</font>  <font color="green">// NOLINT(runtime/explicit)</font>
+    <font color="black">:</font> string_<font color="black">(</font>NULL<font color="black">)</font>, owner_<font color="black">(</font><font color="blue">false</font><font color="black">)</font> <font color="black">{</font>
+    <font color="blue">if</font> <font color="black">(</font>src<font color="black">)</font>
+      FromString16<font color="black">(</font>string16<font color="black">(</font>src<font color="black">)</font><font color="black">)</font>;
+  <font color="black">}</font>
+<font color="blue">#endif</font>  <font color="green">// BUILDING_CEF_SHARED && WCHAR_T_IS_UTF32</font>
+
+  <font color="green">///</font>
+  <font color="green">// Create a new string from an existing character array. If |copy| is true</font>
+  <font color="green">// this class will copy the data. Otherwise, this class will reference the</font>
+  <font color="green">// existing data. Referenced data must exist for the lifetime of this class</font>
+  <font color="green">// and will not be freed by this class.</font>
+  <font color="green">///</font>
+  CefStringBase<font color="black">(</font><font color="blue">const</font> char_type<font color="black">*</font> src, size_t src_len, <font color="blue">bool</font> copy<font color="black">)</font>
+    <font color="black">:</font> string_<font color="black">(</font>NULL<font color="black">)</font>, owner_<font color="black">(</font><font color="blue">false</font><font color="black">)</font> <font color="black">{</font>
+    <font color="blue">if</font> <font color="black">(</font>src <font color="black">&</font><font color="black">&</font> src_len <font color="black">&#62;</font> <font color="maroon">0</font><font color="black">)</font>
+      FromString<font color="black">(</font>src, src_len, copy<font color="black">)</font>;
+  <font color="black">}</font>
+
+  <font color="green">///</font>
+  <font color="green">// Create a new string referencing an existing string structure without taking</font>
+  <font color="green">// ownership. Referenced structures must exist for the lifetime of this class</font>
+  <font color="green">// and will not be freed by this class.</font>
+  <font color="green">///</font>
+  CefStringBase<font color="black">(</font><font color="blue">const</font> struct_type<font color="black">*</font> src<font color="black">)</font>  <font color="green">// NOLINT(runtime/explicit)</font>
+    <font color="black">:</font> string_<font color="black">(</font>NULL<font color="black">)</font>, owner_<font color="black">(</font><font color="blue">false</font><font color="black">)</font> <font color="black">{</font>
+    <font color="blue">if</font> <font color="black">(</font><font color="black">!</font>src<font color="black">)</font>
+      <font color="blue">return</font>;
+    <font color="green">// Reference the existing structure without taking ownership.</font>
+    Attach<font color="black">(</font>const_cast<font color="black">&#60;</font>struct_type<font color="black">*</font><font color="black">&#62;</font><font color="black">(</font>src<font color="black">)</font>, <font color="blue">false</font><font color="black">)</font>;
+  <font color="black">}</font>
+
+  virtual ~CefStringBase<font color="black">(</font><font color="black">)</font> <font color="black">{</font> ClearAndFree<font color="black">(</font><font color="black">)</font>; <font color="black">}</font>
+
+
+  <font color="green">// The following methods are named for compatibility with the standard library</font>
+  <font color="green">// string template types.</font>
+
+  <font color="green">///</font>
+  <font color="green">// Return a read-only pointer to the string data.</font>
+  <font color="green">///</font>
+  <font color="blue">const</font> char_type<font color="black">*</font> c_str<font color="black">(</font><font color="black">)</font> <font color="blue">const</font> <font color="black">{</font> <font color="blue">return</font> <font color="black">(</font>string_ ? string_<font color="black">-</font><font color="black">&#62;</font>str <font color="black">:</font> NULL<font color="black">)</font>; <font color="black">}</font>
+
+  <font color="green">///</font>
+  <font color="green">// Return the length of the string data.</font>
+  <font color="green">///</font>
+  size_t length<font color="black">(</font><font color="black">)</font> <font color="blue">const</font> <font color="black">{</font> <font color="blue">return</font> <font color="black">(</font>string_ ? string_<font color="black">-</font><font color="black">&#62;</font>length <font color="black">:</font> <font color="maroon">0</font><font color="black">)</font>; <font color="black">}</font>
+
+  <font color="green">///</font>
+  <font color="green">// Return the length of the string data.</font>
+  <font color="green">///</font>
+  <font color="blue">inline</font> size_t size<font color="black">(</font><font color="black">)</font> <font color="blue">const</font> <font color="black">{</font> <font color="blue">return</font> length<font color="black">(</font><font color="black">)</font>; <font color="black">}</font>
+
+  <font color="green">///</font>
+  <font color="green">// Returns true if the string is empty.</font>
+  <font color="green">///</font>
+  <font color="blue">bool</font> empty<font color="black">(</font><font color="black">)</font> <font color="blue">const</font> <font color="black">{</font> <font color="blue">return</font> <font color="black">(</font>string_ <font color="black">=</font><font color="black">=</font> NULL <font color="black">|</font><font color="black">|</font> string_<font color="black">-</font><font color="black">&#62;</font>length <font color="black">=</font><font color="black">=</font> <font color="maroon">0</font><font color="black">)</font>; <font color="black">}</font>
+
+  <font color="green">///</font>
+  <font color="green">// Compare this string to the specified string.</font>
+  <font color="green">///</font>
+  <font color="blue">int</font> compare<font color="black">(</font><font color="blue">const</font> CefStringBase<font color="black">&</font> str<font color="black">)</font> <font color="blue">const</font> <font color="black">{</font>
+    <font color="blue">if</font> <font color="black">(</font>empty<font color="black">(</font><font color="black">)</font> <font color="black">&</font><font color="black">&</font> str.empty<font color="black">(</font><font color="black">)</font><font color="black">)</font>
+      <font color="blue">return</font> <font color="maroon">0</font>;
+    <font color="blue">if</font> <font color="black">(</font>empty<font color="black">(</font><font color="black">)</font><font color="black">)</font>
+      <font color="blue">return</font> <font color="maroon">-1</font>;
+    <font color="blue">if</font> <font color="black">(</font>str.empty<font color="black">(</font><font color="black">)</font><font color="black">)</font>
+      <font color="blue">return</font> <font color="maroon">1</font>;
+    <font color="blue">return</font> traits<font color="black">:</font><font color="black">:</font>compare<font color="black">(</font>string_, str.GetStruct<font color="black">(</font><font color="black">)</font><font color="black">)</font>;
+  <font color="black">}</font>
+
+  <font color="green">///</font>
+  <font color="green">// Clear the string data.</font>
+  <font color="green">///</font>
+  <font color="blue">void</font> clear<font color="black">(</font><font color="black">)</font> <font color="black">{</font>
+    <font color="blue">if</font> <font color="black">(</font>string_<font color="black">)</font>
+      traits<font color="black">:</font><font color="black">:</font>clear<font color="black">(</font>string_<font color="black">)</font>;
+  <font color="black">}</font>
+
+
+  <font color="green">// The following methods are unique to CEF string template types.</font>
+
+  <font color="green">///</font>
+  <font color="green">// Returns true if this class owns the underlying string structure.</font>
+  <font color="green">///</font>
+  <font color="blue">bool</font> IsOwner<font color="black">(</font><font color="black">)</font> <font color="blue">const</font> <font color="black">{</font> <font color="blue">return</font> owner_; <font color="black">}</font>
+
+  <font color="green">///</font>
+  <font color="green">// Returns a read-only pointer to the underlying string structure. May return</font>
+  <font color="green">// NULL if no structure is currently allocated.</font>
+  <font color="green">///</font>
+  <font color="blue">const</font> struct_type<font color="black">*</font> GetStruct<font color="black">(</font><font color="black">)</font> <font color="blue">const</font> <font color="black">{</font> <font color="blue">return</font> string_; <font color="black">}</font>
+
+  <font color="green">///</font>
+  <font color="green">// Returns a writable pointer to the underlying string structure. Will never</font>
+  <font color="green">// return NULL.</font>
+  <font color="green">///</font>
+  struct_type<font color="black">*</font> GetWritableStruct<font color="black">(</font><font color="black">)</font> <font color="black">{</font>
+    AllocIfNeeded<font color="black">(</font><font color="black">)</font>;
+    <font color="blue">return</font> string_;
+  <font color="black">}</font>
+
+  <font color="green">///</font>
+  <font color="green">// Clear the state of this class. The underlying string structure and data</font>
+  <font color="green">// will be freed if this class owns the structure.</font>
+  <font color="green">///</font>
+  <font color="blue">void</font> ClearAndFree<font color="black">(</font><font color="black">)</font> <font color="black">{</font>
+    <font color="blue">if</font> <font color="black">(</font><font color="black">!</font>string_<font color="black">)</font>
+      <font color="blue">return</font>;
+    <font color="blue">if</font> <font color="black">(</font>owner_<font color="black">)</font> <font color="black">{</font>
+      clear<font color="black">(</font><font color="black">)</font>;
+      <font color="blue">delete</font> string_;
+    <font color="black">}</font>
+    string_ <font color="black">=</font> NULL;
+    owner_ <font color="black">=</font> <font color="blue">false</font>;
+  <font color="black">}</font>
+
+  <font color="green">///</font>
+  <font color="green">// Attach to the specified string structure. If |owner| is true this class</font>
+  <font color="green">// will take ownership of the structure.</font>
+  <font color="green">///</font>
+  <font color="blue">void</font> Attach<font color="black">(</font>struct_type<font color="black">*</font> str, <font color="blue">bool</font> owner<font color="black">)</font> <font color="black">{</font>
+    <font color="green">// Free the previous structure and data, if any.</font>
+    ClearAndFree<font color="black">(</font><font color="black">)</font>;
+
+    string_ <font color="black">=</font> str;
+    owner_ <font color="black">=</font> owner;
+  <font color="black">}</font>
+
+  <font color="green">///</font>
+  <font color="green">// Take ownership of the specified userfree structure's string data. The</font>
+  <font color="green">// userfree structure itself will be freed. Only use this method with userfree</font>
+  <font color="green">// structures.</font>
+  <font color="green">///</font>
+  <font color="blue">void</font> AttachToUserFree<font color="black">(</font>userfree_struct_type str<font color="black">)</font> <font color="black">{</font>
+    <font color="green">// Free the previous structure and data, if any.</font>
+    ClearAndFree<font color="black">(</font><font color="black">)</font>;
+
+    <font color="blue">if</font> <font color="black">(</font><font color="black">!</font>str<font color="black">)</font>
+      <font color="blue">return</font>;
+
+    AllocIfNeeded<font color="black">(</font><font color="black">)</font>;
+    owner_ <font color="black">=</font> <font color="blue">true</font>;
+    memcpy<font color="black">(</font>string_, str, <font color="blue">sizeof</font><font color="black">(</font>struct_type<font color="black">)</font><font color="black">)</font>;
+
+    <font color="green">// Free the |str| structure but not the data.</font>
+    memset<font color="black">(</font>str, <font color="maroon">0</font>, <font color="blue">sizeof</font><font color="black">(</font>struct_type<font color="black">)</font><font color="black">)</font>;
+    traits<font color="black">:</font><font color="black">:</font>userfree_free<font color="black">(</font>str<font color="black">)</font>;
+  <font color="black">}</font>
+
+  <font color="green">///</font>
+  <font color="green">// Detach from the underlying string structure. To avoid memory leaks only use</font>
+  <font color="green">// this method if you already hold a pointer to the underlying string</font>
+  <font color="green">// structure.</font>
+  <font color="green">///</font>
+  <font color="blue">void</font> Detach<font color="black">(</font><font color="black">)</font> <font color="black">{</font>
+    string_ <font color="black">=</font> NULL;
+    owner_ <font color="black">=</font> <font color="blue">false</font>;
+  <font color="black">}</font>
+
+  <font color="green">///</font>
+  <font color="green">// Create a userfree structure and give it ownership of this class' string</font>
+  <font color="green">// data. This class will be disassociated from the data. May return NULL if</font>
+  <font color="green">// this string class currently contains no data.</font>
+  <font color="green">///</font>
+  userfree_struct_type DetachToUserFree<font color="black">(</font><font color="black">)</font> <font color="black">{</font>
+    <font color="blue">if</font> <font color="black">(</font>empty<font color="black">(</font><font color="black">)</font><font color="black">)</font>
+      <font color="blue">return</font> NULL;
+
+    userfree_struct_type str <font color="black">=</font> traits<font color="black">:</font><font color="black">:</font>userfree_alloc<font color="black">(</font><font color="black">)</font>;
+    memcpy<font color="black">(</font>str, string_, <font color="blue">sizeof</font><font color="black">(</font>struct_type<font color="black">)</font><font color="black">)</font>;
+
+    <font color="green">// Free this class' structure but not the data.</font>
+    memset<font color="black">(</font>string_, <font color="maroon">0</font>, <font color="blue">sizeof</font><font color="black">(</font>struct_type<font color="black">)</font><font color="black">)</font>;
+    ClearAndFree<font color="black">(</font><font color="black">)</font>;
+
+    <font color="blue">return</font> str;
+  <font color="black">}</font>
+
+  <font color="green">///</font>
+  <font color="green">// Set this string's data to the specified character array. If |copy| is true</font>
+  <font color="green">// this class will copy the data. Otherwise, this class will reference the</font>
+  <font color="green">// existing data. Referenced data must exist for the lifetime of this class</font>
+  <font color="green">// and will not be freed by this class.</font>
+  <font color="green">///</font>
+  <font color="blue">bool</font> FromString<font color="black">(</font><font color="blue">const</font> char_type<font color="black">*</font> src, size_t src_len, <font color="blue">bool</font> copy<font color="black">)</font> <font color="black">{</font>
+    <font color="blue">if</font> <font color="black">(</font>src <font color="black">=</font><font color="black">=</font> NULL <font color="black">|</font><font color="black">|</font> src_len <font color="black">=</font><font color="black">=</font> <font color="maroon">0</font><font color="black">)</font> <font color="black">{</font>
+      clear<font color="black">(</font><font color="black">)</font>;
+      <font color="blue">return</font> <font color="blue">true</font>;
+    <font color="black">}</font>
+    AllocIfNeeded<font color="black">(</font><font color="black">)</font>;
+    <font color="blue">return</font> traits<font color="black">:</font><font color="black">:</font>set<font color="black">(</font>src, src_len, string_, copy<font color="black">)</font> ? <font color="blue">true</font> <font color="black">:</font> <font color="blue">false</font>;
+  <font color="black">}</font>
+
+  <font color="green">///</font>
+  <font color="green">// Set this string's data from an existing ASCII string. Data will be always</font>
+  <font color="green">// copied. Translation will occur if necessary based on the underlying string</font>
+  <font color="green">// type.</font>
+  <font color="green">///</font>
+  <font color="blue">bool</font> FromASCII<font color="black">(</font><font color="blue">const</font> <font color="blue">char</font><font color="black">*</font> str<font color="black">)</font> <font color="black">{</font>
+    size_t len <font color="black">=</font> str ? strlen<font color="black">(</font>str<font color="black">)</font> <font color="black">:</font> <font color="maroon">0</font>;
+    <font color="blue">if</font> <font color="black">(</font>len <font color="black">=</font><font color="black">=</font> <font color="maroon">0</font><font color="black">)</font> <font color="black">{</font>
+      clear<font color="black">(</font><font color="black">)</font>;
+      <font color="blue">return</font> <font color="blue">true</font>;
+    <font color="black">}</font>
+    AllocIfNeeded<font color="black">(</font><font color="black">)</font>;
+    <font color="blue">return</font> traits<font color="black">:</font><font color="black">:</font>from_ascii<font color="black">(</font>str, len, string_<font color="black">)</font>;
+  <font color="black">}</font>
+
+  <font color="green">///</font>
+  <font color="green">// Return this string's data as a std::string. Translation will occur if</font>
+  <font color="green">// necessary based on the underlying string type.</font>
+  <font color="green">///</font>
+  std<font color="black">:</font><font color="black">:</font>string ToString<font color="black">(</font><font color="black">)</font> <font color="blue">const</font> <font color="black">{</font>
+    <font color="blue">if</font> <font color="black">(</font>empty<font color="black">(</font><font color="black">)</font><font color="black">)</font>
+      <font color="blue">return</font> std<font color="black">:</font><font color="black">:</font>string<font color="black">(</font><font color="black">)</font>;
+    <font color="blue">return</font> traits<font color="black">:</font><font color="black">:</font>to_string<font color="black">(</font>string_<font color="black">)</font>;
+  <font color="black">}</font>
+
+  <font color="green">///</font>
+  <font color="green">// Set this string's data from an existing std::string. Data will be always</font>
+  <font color="green">// copied. Translation will occur if necessary based on the underlying string</font>
+  <font color="green">// type.</font>
+  <font color="green">///</font>
+  <font color="blue">bool</font> FromString<font color="black">(</font><font color="blue">const</font> std<font color="black">:</font><font color="black">:</font>string<font color="black">&</font> str<font color="black">)</font> <font color="black">{</font>
+    <font color="blue">if</font> <font color="black">(</font>str.empty<font color="black">(</font><font color="black">)</font><font color="black">)</font> <font color="black">{</font>
+      clear<font color="black">(</font><font color="black">)</font>;
+      <font color="blue">return</font> <font color="blue">true</font>;
+    <font color="black">}</font>
+    AllocIfNeeded<font color="black">(</font><font color="black">)</font>;
+    <font color="blue">return</font> traits<font color="black">:</font><font color="black">:</font>from_string<font color="black">(</font>str, string_<font color="black">)</font>;
+  <font color="black">}</font>
+
+  <font color="green">///</font>
+  <font color="green">// Return this string's data as a std::wstring. Translation will occur if</font>
+  <font color="green">// necessary based on the underlying string type.</font>
+  <font color="green">///</font>
+  std<font color="black">:</font><font color="black">:</font>wstring ToWString<font color="black">(</font><font color="black">)</font> <font color="blue">const</font> <font color="black">{</font>
+    <font color="blue">if</font> <font color="black">(</font>empty<font color="black">(</font><font color="black">)</font><font color="black">)</font>
+      <font color="blue">return</font> std<font color="black">:</font><font color="black">:</font>wstring<font color="black">(</font><font color="black">)</font>;
+    <font color="blue">return</font> traits<font color="black">:</font><font color="black">:</font>to_wstring<font color="black">(</font>string_<font color="black">)</font>;
+  <font color="black">}</font>
+
+  <font color="green">///</font>
+  <font color="green">// Set this string's data from an existing std::wstring. Data will be always</font>
+  <font color="green">// copied. Translation will occur if necessary based on the underlying string</font>
+  <font color="green">// type.</font>
+  <font color="green">///</font>
+  <font color="blue">bool</font> FromWString<font color="black">(</font><font color="blue">const</font> std<font color="black">:</font><font color="black">:</font>wstring<font color="black">&</font> str<font color="black">)</font> <font color="black">{</font>
+    <font color="blue">if</font> <font color="black">(</font>str.empty<font color="black">(</font><font color="black">)</font><font color="black">)</font> <font color="black">{</font>
+      clear<font color="black">(</font><font color="black">)</font>;
+      <font color="blue">return</font> <font color="blue">true</font>;
+    <font color="black">}</font>
+    AllocIfNeeded<font color="black">(</font><font color="black">)</font>;
+    <font color="blue">return</font> traits<font color="black">:</font><font color="black">:</font>from_wstring<font color="black">(</font>str, string_<font color="black">)</font>;
+  <font color="black">}</font>
+<font color="blue">#if</font> defined<font color="black">(</font>BUILDING_CEF_SHARED<font color="black">)</font>
+  <font color="green">///</font>
+  <font color="green">// Return this string's data as a string16. Translation will occur if</font>
+  <font color="green">// necessary based on the underlying string type.</font>
+  <font color="green">///</font>
+  string16 ToString16<font color="black">(</font><font color="black">)</font> <font color="blue">const</font> <font color="black">{</font>
+    <font color="blue">if</font> <font color="black">(</font>empty<font color="black">(</font><font color="black">)</font><font color="black">)</font>
+      <font color="blue">return</font> string16<font color="black">(</font><font color="black">)</font>;
+    <font color="blue">return</font> traits<font color="black">:</font><font color="black">:</font>to_string16<font color="black">(</font>string_<font color="black">)</font>;
+  <font color="black">}</font>
+
+  <font color="green">///</font>
+  <font color="green">// Set this string's data from an existing string16. Data will be always</font>
+  <font color="green">// copied. Translation will occur if necessary based on the underlying string</font>
+  <font color="green">// type.</font>
+  <font color="green">///</font>
+  <font color="blue">bool</font> FromString16<font color="black">(</font><font color="blue">const</font> string16<font color="black">&</font> str<font color="black">)</font> <font color="black">{</font>
+    <font color="blue">if</font> <font color="black">(</font>str.empty<font color="black">(</font><font color="black">)</font><font color="black">)</font> <font color="black">{</font>
+      clear<font color="black">(</font><font color="black">)</font>;
+      <font color="blue">return</font> <font color="blue">true</font>;
+    <font color="black">}</font>
+    AllocIfNeeded<font color="black">(</font><font color="black">)</font>;
+    <font color="blue">return</font> traits<font color="black">:</font><font color="black">:</font>from_string16<font color="black">(</font>str, string_<font color="black">)</font>;
+  <font color="black">}</font>
+<font color="blue">#endif</font>  <font color="green">// BUILDING_CEF_SHARED</font>
+
+  <font color="green">///</font>
+  <font color="green">// Comparison operator overloads.</font>
+  <font color="green">///</font>
+  <font color="blue">bool</font> <font color="blue">operator</font><font color="black">&#60;</font><font color="black">(</font><font color="blue">const</font> CefStringBase<font color="black">&</font> str<font color="black">)</font> <font color="blue">const</font> <font color="black">{</font>
+    <font color="blue">return</font> <font color="black">(</font>compare<font color="black">(</font>str<font color="black">)</font> <font color="black">&#60;</font> <font color="maroon">0</font><font color="black">)</font>;
+  <font color="black">}</font>
+  <font color="blue">bool</font> <font color="blue">operator</font><font color="black">&#60;</font><font color="black">=</font><font color="black">(</font><font color="blue">const</font> CefStringBase<font color="black">&</font> str<font color="black">)</font> <font color="blue">const</font> <font color="black">{</font>
+    <font color="blue">return</font> <font color="black">(</font>compare<font color="black">(</font>str<font color="black">)</font> <font color="black">&#60;</font><font color="black">=</font> <font color="maroon">0</font><font color="black">)</font>;
+  <font color="black">}</font>
+  <font color="blue">bool</font> <font color="blue">operator</font><font color="black">&#62;</font><font color="black">(</font><font color="blue">const</font> CefStringBase<font color="black">&</font> str<font color="black">)</font> <font color="blue">const</font> <font color="black">{</font>
+    <font color="blue">return</font> <font color="black">(</font>compare<font color="black">(</font>str<font color="black">)</font> <font color="black">&#62;</font> <font color="maroon">0</font><font color="black">)</font>;
+  <font color="black">}</font>
+  <font color="blue">bool</font> <font color="blue">operator</font><font color="black">&#62;</font><font color="black">=</font><font color="black">(</font><font color="blue">const</font> CefStringBase<font color="black">&</font> str<font color="black">)</font> <font color="blue">const</font> <font color="black">{</font>
+    <font color="blue">return</font> <font color="black">(</font>compare<font color="black">(</font>str<font color="black">)</font> <font color="black">&#62;</font><font color="black">=</font> <font color="maroon">0</font><font color="black">)</font>;
+  <font color="black">}</font>
+  <font color="blue">bool</font> <font color="blue">operator</font><font color="black">=</font><font color="black">=</font><font color="black">(</font><font color="blue">const</font> CefStringBase<font color="black">&</font> str<font color="black">)</font> <font color="blue">const</font> <font color="black">{</font>
+    <font color="blue">return</font> <font color="black">(</font>compare<font color="black">(</font>str<font color="black">)</font> <font color="black">=</font><font color="black">=</font> <font color="maroon">0</font><font color="black">)</font>;
+  <font color="black">}</font>
+  <font color="blue">bool</font> <font color="blue">operator</font><font color="black">!</font><font color="black">=</font><font color="black">(</font><font color="blue">const</font> CefStringBase<font color="black">&</font> str<font color="black">)</font> <font color="blue">const</font> <font color="black">{</font>
+    <font color="blue">return</font> <font color="black">(</font>compare<font color="black">(</font>str<font color="black">)</font> <font color="black">!</font><font color="black">=</font> <font color="maroon">0</font><font color="black">)</font>;
+  <font color="black">}</font>
+
+  <font color="green">///</font>
+  <font color="green">// Assignment operator overloads.</font>
+  <font color="green">///</font>
+  CefStringBase<font color="black">&</font> <font color="blue">operator</font><font color="black">=</font><font color="black">(</font><font color="blue">const</font> CefStringBase<font color="black">&</font> str<font color="black">)</font> <font color="black">{</font>
+    FromString<font color="black">(</font>str.c_str<font color="black">(</font><font color="black">)</font>, str.length<font color="black">(</font><font color="black">)</font>, <font color="blue">true</font><font color="black">)</font>;
+    <font color="blue">return</font> <font color="black">*</font><font color="blue">this</font>;
+  <font color="black">}</font>
+  <font color="blue">operator</font> std<font color="black">:</font><font color="black">:</font>string<font color="black">(</font><font color="black">)</font> <font color="blue">const</font> <font color="black">{</font>
+    <font color="blue">return</font> ToString<font color="black">(</font><font color="black">)</font>;
+  <font color="black">}</font>
+  CefStringBase<font color="black">&</font> <font color="blue">operator</font><font color="black">=</font><font color="black">(</font><font color="blue">const</font> std<font color="black">:</font><font color="black">:</font>string<font color="black">&</font> str<font color="black">)</font> <font color="black">{</font>
+    FromString<font color="black">(</font>str<font color="black">)</font>;
+    <font color="blue">return</font> <font color="black">*</font><font color="blue">this</font>;
+  <font color="black">}</font>
+  CefStringBase<font color="black">&</font> <font color="blue">operator</font><font color="black">=</font><font color="black">(</font><font color="blue">const</font> <font color="blue">char</font><font color="black">*</font> str<font color="black">)</font> <font color="black">{</font>
+    FromString<font color="black">(</font>std<font color="black">:</font><font color="black">:</font>string<font color="black">(</font>str<font color="black">)</font><font color="black">)</font>;
+    <font color="blue">return</font> <font color="black">*</font><font color="blue">this</font>;
+  <font color="black">}</font>
+  <font color="blue">operator</font> std<font color="black">:</font><font color="black">:</font>wstring<font color="black">(</font><font color="black">)</font> <font color="blue">const</font> <font color="black">{</font>
+    <font color="blue">return</font> ToWString<font color="black">(</font><font color="black">)</font>;
+  <font color="black">}</font>
+  CefStringBase<font color="black">&</font> <font color="blue">operator</font><font color="black">=</font><font color="black">(</font><font color="blue">const</font> std<font color="black">:</font><font color="black">:</font>wstring<font color="black">&</font> str<font color="black">)</font> <font color="black">{</font>
+    FromWString<font color="black">(</font>str<font color="black">)</font>;
+    <font color="blue">return</font> <font color="black">*</font><font color="blue">this</font>;
+  <font color="black">}</font>
+  CefStringBase<font color="black">&</font> <font color="blue">operator</font><font color="black">=</font><font color="black">(</font><font color="blue">const</font> wchar_t<font color="black">*</font> str<font color="black">)</font> <font color="black">{</font>
+    FromWString<font color="black">(</font>std<font color="black">:</font><font color="black">:</font>wstring<font color="black">(</font>str<font color="black">)</font><font color="black">)</font>;
+    <font color="blue">return</font> <font color="black">*</font><font color="blue">this</font>;
+  <font color="black">}</font>
+<font color="blue">#if</font> <font color="black">(</font>defined<font color="black">(</font>BUILDING_CEF_SHARED<font color="black">)</font> <font color="black">&</font><font color="black">&</font> defined<font color="black">(</font>WCHAR_T_IS_UTF32<font color="black">)</font><font color="black">)</font>
+  <font color="blue">operator</font> string16<font color="black">(</font><font color="black">)</font> <font color="blue">const</font> <font color="black">{</font>
+    <font color="blue">return</font> ToString16<font color="black">(</font><font color="black">)</font>;
+  <font color="black">}</font>
+  CefStringBase<font color="black">&</font> <font color="blue">operator</font><font color="black">=</font><font color="black">(</font><font color="blue">const</font> string16<font color="black">&</font> str<font color="black">)</font> <font color="black">{</font>
+    FromString16<font color="black">(</font>str<font color="black">)</font>;
+    <font color="blue">return</font> <font color="black">*</font><font color="blue">this</font>;
+  <font color="black">}</font>
+  CefStringBase<font color="black">&</font> <font color="blue">operator</font><font color="black">=</font><font color="black">(</font><font color="blue">const</font> char16<font color="black">*</font> str<font color="black">)</font> <font color="black">{</font>
+    FromString16<font color="black">(</font>string16<font color="black">(</font>str<font color="black">)</font><font color="black">)</font>;
+    <font color="blue">return</font> <font color="black">*</font><font color="blue">this</font>;
+  <font color="black">}</font>
+<font color="blue">#endif</font>  <font color="green">// BUILDING_CEF_SHARED && WCHAR_T_IS_UTF32</font>
+
+ <font color="blue">private</font><font color="black">:</font>
+  <font color="green">// Allocate the string structure if it doesn't already exist.</font>
+  <font color="blue">void</font> AllocIfNeeded<font color="black">(</font><font color="black">)</font> <font color="black">{</font>
+    <font color="blue">if</font> <font color="black">(</font>string_ <font color="black">=</font><font color="black">=</font> NULL<font color="black">)</font> <font color="black">{</font>
+      string_ <font color="black">=</font> <font color="blue">new</font> struct_type;
+      memset<font color="black">(</font>string_, <font color="maroon">0</font>, <font color="blue">sizeof</font><font color="black">(</font>struct_type<font color="black">)</font><font color="black">)</font>;
+      owner_ <font color="black">=</font> <font color="blue">true</font>;
+    <font color="black">}</font>
+  <font color="black">}</font>
+
+  struct_type<font color="black">*</font> string_;
+  <font color="blue">bool</font> owner_;
+<font color="black">}</font>;
+
+
+<font color="blue">typedef</font> CefStringBase<font color="black">&#60;</font>CefStringTraitsWide<font color="black">&#62;</font> CefStringWide;
+<font color="blue">typedef</font> CefStringBase<font color="black">&#60;</font>CefStringTraitsUTF8<font color="black">&#62;</font> CefStringUTF8;
+<font color="blue">typedef</font> CefStringBase<font color="black">&#60;</font>CefStringTraitsUTF16<font color="black">&#62;</font> CefStringUTF16;
+
+<font color="blue">#endif</font>  <font color="green">// CEF_INCLUDE_INTERNAL_CEF_STRING_WRAPPERS_H_</font>
+
+</PRE>
+</BODY>
+</HTML>

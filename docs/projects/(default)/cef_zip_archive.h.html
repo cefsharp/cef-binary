@@ -1,0 +1,144 @@
+<HTML>
+<HEAD>
+<TITLE>
+cef_zip_archive.h
+</TITLE>
+</HEAD>
+<BODY>
+<PRE>
+<font color="green">// Copyright (c) 2011 Marshall A. Greenblatt. All rights reserved.</font>
+<font color="green">//</font>
+<font color="green">// Redistribution and use in source and binary forms, with or without</font>
+<font color="green">// modification, are permitted provided that the following conditions are</font>
+<font color="green">// met:</font>
+<font color="green">//</font>
+<font color="green">//    * Redistributions of source code must retain the above copyright</font>
+<font color="green">// notice, this list of conditions and the following disclaimer.</font>
+<font color="green">//    * Redistributions in binary form must reproduce the above</font>
+<font color="green">// copyright notice, this list of conditions and the following disclaimer</font>
+<font color="green">// in the documentation and/or other materials provided with the</font>
+<font color="green">// distribution.</font>
+<font color="green">//    * Neither the name of Google Inc. nor the name Chromium Embedded</font>
+<font color="green">// Framework nor the names of its contributors may be used to endorse</font>
+<font color="green">// or promote products derived from this software without specific prior</font>
+<font color="green">// written permission.</font>
+<font color="green">//</font>
+<font color="green">// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS</font>
+<font color="green">// "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT</font>
+<font color="green">// LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR</font>
+<font color="green">// A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT</font>
+<font color="green">// OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,</font>
+<font color="green">// SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT</font>
+<font color="green">// LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,</font>
+<font color="green">// DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY</font>
+<font color="green">// THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT</font>
+<font color="green">// (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE</font>
+<font color="green">// OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.</font>
+<font color="green">//</font>
+<font color="green">// ---------------------------------------------------------------------------</font>
+<font color="green">//</font>
+<font color="green">// The contents of this file are only available to applications that link</font>
+<font color="green">// against the libcef_dll_wrapper target.</font>
+<font color="green">//</font>
+
+<font color="blue">#ifndef</font> CEF_INCLUDE_WRAPPER_CEF_ZIP_ARCHIVE_H_
+<font color="blue">#define</font> CEF_INCLUDE_WRAPPER_CEF_ZIP_ARCHIVE_H_
+<font color="blue">#pragma</font> once
+
+<font color="blue">#include</font> <font color="maroon">"include/cef_base.h"</font>
+<font color="blue">#include</font> <font color="maroon">&#60;map&#62;</font>
+
+<font color="blue">class</font> CefStreamReader;
+
+<font color="green">///</font>
+<font color="green">// Thread-safe class for accessing zip archive file contents. This class should</font>
+<font color="green">// not be used with large archive files because all data will be resident in</font>
+<font color="green">// memory at the same time. This implementation supports a restricted set of zip</font>
+<font color="green">// archive features:</font>
+<font color="green">// (1) Password-protected files are not supported.</font>
+<font color="green">// (2) All file names are stored and compared in lower case.</font>
+<font color="green">// (3) File ordering from the original zip archive is not maintained. This</font>
+<font color="green">//     means that files from the same folder may not be located together in the</font>
+<font color="green">//     file content map.</font>
+<font color="green">///</font>
+<font color="blue">class</font> CefZipArchive <font color="black">:</font> <font color="blue">public</font> CefBase <font color="black">{</font>
+ <font color="blue">public</font><font color="black">:</font>
+  <font color="green">///</font>
+  <font color="green">// Class representing a file in the archive. Accessing the file data from</font>
+  <font color="green">// multiple threads is safe provided a reference to the File object is kept.</font>
+  <font color="green">///</font>
+  <font color="blue">class</font> File <font color="black">:</font> <font color="blue">public</font> CefBase <font color="black">{</font>
+   <font color="blue">public</font><font color="black">:</font>
+    <font color="green">///</font>
+    <font color="green">// Returns the read-only data contained in the file.</font>
+    <font color="green">///</font>
+    virtual <font color="blue">const</font> <font color="blue">unsigned</font> <font color="blue">char</font><font color="black">*</font> GetData<font color="black">(</font><font color="black">)</font> <font color="black">=</font><font color="maroon">0</font>;
+
+    <font color="green">///</font>
+    <font color="green">// Returns the size of the data in the file.</font>
+    <font color="green">///</font>
+    virtual size_t GetDataSize<font color="black">(</font><font color="black">)</font> <font color="black">=</font><font color="maroon">0</font>;
+
+    <font color="green">///</font>
+    <font color="green">// Returns a CefStreamReader object for streaming the contents of the file.</font>
+    <font color="green">///</font>
+    virtual CefRefPtr<font color="black">&#60;</font>CefStreamReader<font color="black">&#62;</font> GetStreamReader<font color="black">(</font><font color="black">)</font> <font color="black">=</font><font color="maroon">0</font>;
+  <font color="black">}</font>;
+  <font color="blue">typedef</font> std<font color="black">:</font><font color="black">:</font>map<font color="black">&#60;</font>CefString, CefRefPtr<font color="black">&#60;</font>File<font color="black">&#62;</font> <font color="black">&#62;</font> FileMap;
+
+  <font color="green">///</font>
+  <font color="green">// Create a new object.</font>
+  <font color="green">///</font>
+  CefZipArchive<font color="black">(</font><font color="black">)</font>;
+  virtual ~CefZipArchive<font color="black">(</font><font color="black">)</font>;
+
+  <font color="green">///</font>
+  <font color="green">// Load the contents of the specified zip archive stream into this object.</font>
+  <font color="green">// If |overwriteExisting| is true then any files in this object that also</font>
+  <font color="green">// exist in the specified archive will be replaced with the new files.</font>
+  <font color="green">// Returns the number of files successfully loaded.</font>
+  <font color="green">///</font>
+  size_t Load<font color="black">(</font>CefRefPtr<font color="black">&#60;</font>CefStreamReader<font color="black">&#62;</font> stream, <font color="blue">bool</font> overwriteExisting<font color="black">)</font>;
+
+  <font color="green">///</font>
+  <font color="green">// Clears the contents of this object.</font>
+  <font color="green">///</font>
+  <font color="blue">void</font> Clear<font color="black">(</font><font color="black">)</font>;
+
+  <font color="green">///</font>
+  <font color="green">// Returns the number of files in the archive.</font>
+  <font color="green">///</font>
+  size_t GetFileCount<font color="black">(</font><font color="black">)</font>;
+
+  <font color="green">///</font>
+  <font color="green">// Returns true if the specified file exists and has contents.</font>
+  <font color="green">///</font>
+  <font color="blue">bool</font> HasFile<font color="black">(</font><font color="blue">const</font> CefString<font color="black">&</font> fileName<font color="black">)</font>;
+
+  <font color="green">///</font>
+  <font color="green">// Returns the specified file.</font>
+  <font color="green">///</font>
+  CefRefPtr<font color="black">&#60;</font>File<font color="black">&#62;</font> GetFile<font color="black">(</font><font color="blue">const</font> CefString<font color="black">&</font> fileName<font color="black">)</font>;
+
+  <font color="green">///</font>
+  <font color="green">// Removes the specified file.</font>
+  <font color="green">///</font>
+  <font color="blue">bool</font> RemoveFile<font color="black">(</font><font color="blue">const</font> CefString<font color="black">&</font> fileName<font color="black">)</font>;
+
+  <font color="green">///</font>
+  <font color="green">// Returns the map of all files.</font>
+  <font color="green">///</font>
+  size_t GetFiles<font color="black">(</font>FileMap<font color="black">&</font> map<font color="black">)</font>;
+
+ <font color="blue">private</font><font color="black">:</font>
+  FileMap contents_;
+
+  IMPLEMENT_REFCOUNTING<font color="black">(</font>CefZipArchive<font color="black">)</font>;
+  IMPLEMENT_LOCKING<font color="black">(</font>CefZipArchive<font color="black">)</font>;
+<font color="black">}</font>;
+
+<font color="blue">#endif</font>  <font color="green">// CEF_INCLUDE_WRAPPER_CEF_ZIP_ARCHIVE_H_</font>
+
+</PRE>
+</BODY>
+</HTML>

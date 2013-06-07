@@ -1,0 +1,356 @@
+<HTML>
+<HEAD>
+<TITLE>
+cef_browser.h
+</TITLE>
+</HEAD>
+<BODY>
+<PRE>
+<font color="green">// Copyright (c) 2011 Marshall A. Greenblatt. All rights reserved.</font>
+<font color="green">//</font>
+<font color="green">// Redistribution and use in source and binary forms, with or without</font>
+<font color="green">// modification, are permitted provided that the following conditions are</font>
+<font color="green">// met:</font>
+<font color="green">//</font>
+<font color="green">//    * Redistributions of source code must retain the above copyright</font>
+<font color="green">// notice, this list of conditions and the following disclaimer.</font>
+<font color="green">//    * Redistributions in binary form must reproduce the above</font>
+<font color="green">// copyright notice, this list of conditions and the following disclaimer</font>
+<font color="green">// in the documentation and/or other materials provided with the</font>
+<font color="green">// distribution.</font>
+<font color="green">//    * Neither the name of Google Inc. nor the name Chromium Embedded</font>
+<font color="green">// Framework nor the names of its contributors may be used to endorse</font>
+<font color="green">// or promote products derived from this software without specific prior</font>
+<font color="green">// written permission.</font>
+<font color="green">//</font>
+<font color="green">// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS</font>
+<font color="green">// "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT</font>
+<font color="green">// LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR</font>
+<font color="green">// A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT</font>
+<font color="green">// OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,</font>
+<font color="green">// SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT</font>
+<font color="green">// LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,</font>
+<font color="green">// DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY</font>
+<font color="green">// THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT</font>
+<font color="green">// (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE</font>
+<font color="green">// OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.</font>
+<font color="green">//</font>
+<font color="green">// ---------------------------------------------------------------------------</font>
+<font color="green">//</font>
+<font color="green">// The contents of this file must follow a specific format in order to</font>
+<font color="green">// support the CEF translator tool. See the translator.README.txt file in the</font>
+<font color="green">// tools directory for more information.</font>
+<font color="green">//</font>
+
+<font color="blue">#ifndef</font> CEF_INCLUDE_CEF_BROWSER_H_
+<font color="blue">#define</font> CEF_INCLUDE_CEF_BROWSER_H_
+<font color="blue">#pragma</font> once
+
+<font color="blue">#include</font> <font color="maroon">"include/cef_base.h"</font>
+<font color="blue">#include</font> <font color="maroon">"include/cef_frame.h"</font>
+<font color="blue">#include</font> <font color="maroon">&#60;vector&#62;</font>
+
+<font color="blue">class</font> CefClient;
+
+<font color="green">///</font>
+<font color="green">// Class used to represent a browser window. The methods of this class may be</font>
+<font color="green">// called on any thread unless otherwise indicated in the comments.</font>
+<font color="green">///</font>
+<font color="green">/*--cef(source=library)--*/</font>
+<font color="blue">class</font> CefBrowser <font color="black">:</font> <font color="blue">public</font> virtual CefBase <font color="black">{</font>
+ <font color="blue">public</font><font color="black">:</font>
+  <font color="blue">typedef</font> cef_key_type_t KeyType;
+  <font color="blue">typedef</font> cef_mouse_button_type_t MouseButtonType;
+  <font color="blue">typedef</font> cef_paint_element_type_t PaintElementType;
+
+  <font color="green">///</font>
+  <font color="green">// Create a new browser window using the window parameters specified by</font>
+  <font color="green">// |windowInfo|. All values will be copied internally and the actual window</font>
+  <font color="green">// will be created on the UI thread. This method call will not block.</font>
+  <font color="green">///</font>
+  <font color="green">/*--cef(optional_param=url)--*/</font>
+  <font color="blue">static</font> <font color="blue">bool</font> CreateBrowser<font color="black">(</font>CefWindowInfo<font color="black">&</font> windowInfo,
+                            CefRefPtr<font color="black">&#60;</font>CefClient<font color="black">&#62;</font> client,
+                            <font color="blue">const</font> CefString<font color="black">&</font> url,
+                            <font color="blue">const</font> CefBrowserSettings<font color="black">&</font> settings<font color="black">)</font>;
+
+  <font color="green">///</font>
+  <font color="green">// Create a new browser window using the window parameters specified by</font>
+  <font color="green">// |windowInfo|. This method should only be called on the UI thread.</font>
+  <font color="green">///</font>
+  <font color="green">/*--cef(optional_param=url)--*/</font>
+  <font color="blue">static</font> CefRefPtr<font color="black">&#60;</font>CefBrowser<font color="black">&#62;</font> CreateBrowserSync<font color="black">(</font>CefWindowInfo<font color="black">&</font> windowInfo,
+                                            CefRefPtr<font color="black">&#60;</font>CefClient<font color="black">&#62;</font> client,
+                                            <font color="blue">const</font> CefString<font color="black">&</font> url,
+                                            <font color="blue">const</font> CefBrowserSettings<font color="black">&</font> settings<font color="black">)</font>;
+
+  <font color="green">///</font>
+  <font color="green">// Call this method before destroying a contained browser window. This method</font>
+  <font color="green">// performs any internal cleanup that may be needed before the browser window</font>
+  <font color="green">// is destroyed.</font>
+  <font color="green">///</font>
+  <font color="green">/*--cef()--*/</font>
+  virtual <font color="blue">void</font> ParentWindowWillClose<font color="black">(</font><font color="black">)</font> <font color="black">=</font><font color="maroon">0</font>;
+
+  <font color="green">///</font>
+  <font color="green">// Closes this browser window.</font>
+  <font color="green">///</font>
+  <font color="green">/*--cef()--*/</font>
+  virtual <font color="blue">void</font> CloseBrowser<font color="black">(</font><font color="black">)</font> <font color="black">=</font><font color="maroon">0</font>;
+
+  <font color="green">///</font>
+  <font color="green">// Returns true if the browser can navigate backwards.</font>
+  <font color="green">///</font>
+  <font color="green">/*--cef()--*/</font>
+  virtual <font color="blue">bool</font> CanGoBack<font color="black">(</font><font color="black">)</font> <font color="black">=</font><font color="maroon">0</font>;
+  <font color="green">///</font>
+  <font color="green">// Navigate backwards.</font>
+  <font color="green">///</font>
+  <font color="green">/*--cef()--*/</font>
+  virtual <font color="blue">void</font> GoBack<font color="black">(</font><font color="black">)</font> <font color="black">=</font><font color="maroon">0</font>;
+  <font color="green">///</font>
+  <font color="green">// Returns true if the browser can navigate forwards.</font>
+  <font color="green">///</font>
+  <font color="green">/*--cef()--*/</font>
+  virtual <font color="blue">bool</font> CanGoForward<font color="black">(</font><font color="black">)</font> <font color="black">=</font><font color="maroon">0</font>;
+  <font color="green">///</font>
+  <font color="green">// Navigate forwards.</font>
+  <font color="green">///</font>
+  <font color="green">/*--cef()--*/</font>
+  virtual <font color="blue">void</font> GoForward<font color="black">(</font><font color="black">)</font> <font color="black">=</font><font color="maroon">0</font>;
+  <font color="green">///</font>
+  <font color="green">// Reload the current page.</font>
+  <font color="green">///</font>
+  <font color="green">/*--cef()--*/</font>
+  virtual <font color="blue">void</font> Reload<font color="black">(</font><font color="black">)</font> <font color="black">=</font><font color="maroon">0</font>;
+  <font color="green">///</font>
+  <font color="green">// Reload the current page ignoring any cached data.</font>
+  <font color="green">///</font>
+  <font color="green">/*--cef()--*/</font>
+  virtual <font color="blue">void</font> ReloadIgnoreCache<font color="black">(</font><font color="black">)</font> <font color="black">=</font><font color="maroon">0</font>;
+  <font color="green">///</font>
+  <font color="green">// Stop loading the page.</font>
+  <font color="green">///</font>
+  <font color="green">/*--cef()--*/</font>
+  virtual <font color="blue">void</font> StopLoad<font color="black">(</font><font color="black">)</font> <font color="black">=</font><font color="maroon">0</font>;
+
+  <font color="green">///</font>
+  <font color="green">// Set focus for the browser window. If |enable| is true focus will be set to</font>
+  <font color="green">// the window. Otherwise, focus will be removed.</font>
+  <font color="green">///</font>
+  <font color="green">/*--cef()--*/</font>
+  virtual <font color="blue">void</font> SetFocus<font color="black">(</font><font color="blue">bool</font> enable<font color="black">)</font> <font color="black">=</font><font color="maroon">0</font>;
+
+  <font color="green">///</font>
+  <font color="green">// Retrieve the window handle for this browser.</font>
+  <font color="green">///</font>
+  <font color="green">/*--cef()--*/</font>
+  virtual CefWindowHandle GetWindowHandle<font color="black">(</font><font color="black">)</font> <font color="black">=</font><font color="maroon">0</font>;
+
+  <font color="green">///</font>
+  <font color="green">// Retrieve the window handle of the browser that opened this browser. Will</font>
+  <font color="green">// return NULL for non-popup windows. This method can be used in combination</font>
+  <font color="green">// with custom handling of modal windows.</font>
+  <font color="green">///</font>
+  <font color="green">/*--cef()--*/</font>
+  virtual CefWindowHandle GetOpenerWindowHandle<font color="black">(</font><font color="black">)</font> <font color="black">=</font><font color="maroon">0</font>;
+
+  <font color="green">///</font>
+  <font color="green">// Returns the globally unique identifier for this browser.</font>
+  <font color="green">///</font>
+  <font color="green">/*--cef()--*/</font>
+  virtual <font color="blue">int</font> GetIdentifier<font color="black">(</font><font color="black">)</font> <font color="black">=</font><font color="maroon">0</font>;
+
+  <font color="green">///</font>
+  <font color="green">// Returns true if the window is a popup window.</font>
+  <font color="green">///</font>
+  <font color="green">/*--cef()--*/</font>
+  virtual <font color="blue">bool</font> IsPopup<font color="black">(</font><font color="black">)</font> <font color="black">=</font><font color="maroon">0</font>;
+
+  <font color="green">// Returns true if a document has been loaded in the browser.</font>
+  <font color="green">/*--cef()--*/</font>
+  virtual <font color="blue">bool</font> HasDocument<font color="black">(</font><font color="black">)</font> <font color="black">=</font><font color="maroon">0</font>;
+
+  <font color="green">///</font>
+  <font color="green">// Returns the client for this browser.</font>
+  <font color="green">///</font>
+  <font color="green">/*--cef()--*/</font>
+  virtual CefRefPtr<font color="black">&#60;</font>CefClient<font color="black">&#62;</font> GetClient<font color="black">(</font><font color="black">)</font> <font color="black">=</font><font color="maroon">0</font>;
+
+  <font color="green">///</font>
+  <font color="green">// Returns the main (top-level) frame for the browser window.</font>
+  <font color="green">///</font>
+  <font color="green">/*--cef()--*/</font>
+  virtual CefRefPtr<font color="black">&#60;</font>CefFrame<font color="black">&#62;</font> GetMainFrame<font color="black">(</font><font color="black">)</font> <font color="black">=</font><font color="maroon">0</font>;
+
+  <font color="green">///</font>
+  <font color="green">// Returns the focused frame for the browser window. This method should only</font>
+  <font color="green">// be called on the UI thread.</font>
+  <font color="green">///</font>
+  <font color="green">/*--cef()--*/</font>
+  virtual CefRefPtr<font color="black">&#60;</font>CefFrame<font color="black">&#62;</font> GetFocusedFrame<font color="black">(</font><font color="black">)</font> <font color="black">=</font><font color="maroon">0</font>;
+
+  <font color="green">///</font>
+  <font color="green">// Returns the frame with the specified name, or NULL if not found. This</font>
+  <font color="green">// method should only be called on the UI thread.</font>
+  <font color="green">///</font>
+  <font color="green">/*--cef()--*/</font>
+  virtual CefRefPtr<font color="black">&#60;</font>CefFrame<font color="black">&#62;</font> GetFrame<font color="black">(</font><font color="blue">const</font> CefString<font color="black">&</font> <font color="blue">name</font><font color="black">)</font> <font color="black">=</font><font color="maroon">0</font>;
+
+  <font color="green">///</font>
+  <font color="green">// Returns the names of all existing frames. This method should only be called</font>
+  <font color="green">// on the UI thread.</font>
+  <font color="green">///</font>
+  <font color="green">/*--cef()--*/</font>
+  virtual <font color="blue">void</font> GetFrameNames<font color="black">(</font>std<font color="black">:</font><font color="black">:</font>vector<font color="black">&#60;</font>CefString<font color="black">&#62;</font><font color="black">&</font> names<font color="black">)</font> <font color="black">=</font><font color="maroon">0</font>;
+
+  <font color="green">///</font>
+  <font color="green">// Search for |searchText|. |identifier| can be used to have multiple searches</font>
+  <font color="green">// running simultaniously. |forward| indicates whether to search forward or</font>
+  <font color="green">// backward within the page. |matchCase| indicates whether the search should</font>
+  <font color="green">// be case-sensitive. |findNext| indicates whether this is the first request</font>
+  <font color="green">// or a follow-up.</font>
+  <font color="green">///</font>
+  <font color="green">/*--cef()--*/</font>
+  virtual <font color="blue">void</font> Find<font color="black">(</font><font color="blue">int</font> identifier, <font color="blue">const</font> CefString<font color="black">&</font> searchText,
+                    <font color="blue">bool</font> forward, <font color="blue">bool</font> matchCase, <font color="blue">bool</font> findNext<font color="black">)</font> <font color="black">=</font><font color="maroon">0</font>;
+
+  <font color="green">///</font>
+  <font color="green">// Cancel all searches that are currently going on.</font>
+  <font color="green">///</font>
+  <font color="green">/*--cef()--*/</font>
+  virtual <font color="blue">void</font> StopFinding<font color="black">(</font><font color="blue">bool</font> clearSelection<font color="black">)</font> <font color="black">=</font><font color="maroon">0</font>;
+
+  <font color="green">///</font>
+  <font color="green">// Get the current zoom level. The default zoom level is 0.0. This method can</font>
+  <font color="green">// only be called on the UI thread.</font>
+  <font color="green">///</font>
+  <font color="green">/*--cef()--*/</font>
+  virtual <font color="blue">double</font> GetZoomLevel<font color="black">(</font><font color="black">)</font> <font color="black">=</font><font color="maroon">0</font>;
+
+  <font color="green">///</font>
+  <font color="green">// Change the zoom level to the specified value. Specify 0.0 to reset the</font>
+  <font color="green">// zoom level. The change will be applied asynchronously on the UI thread.</font>
+  <font color="green">///</font>
+  <font color="green">/*--cef()--*/</font>
+  virtual <font color="blue">void</font> SetZoomLevel<font color="black">(</font><font color="blue">double</font> zoomLevel<font color="black">)</font> <font color="black">=</font><font color="maroon">0</font>;
+
+  <font color="green">///</font>
+  <font color="green">// Clear the back/forward browsing history.</font>
+  <font color="green">///</font>
+  <font color="green">/*--cef()--*/</font>
+  virtual <font color="blue">void</font> ClearHistory<font color="black">(</font><font color="black">)</font> <font color="black">=</font><font color="maroon">0</font>;
+
+  <font color="green">///</font>
+  <font color="green">// Open developer tools in its own window.</font>
+  <font color="green">///</font>
+  <font color="green">/*--cef()--*/</font>
+  virtual <font color="blue">void</font> ShowDevTools<font color="black">(</font><font color="black">)</font> <font color="black">=</font><font color="maroon">0</font>;
+
+  <font color="green">///</font>
+  <font color="green">// Explicitly close the developer tools window if one exists for this browser</font>
+  <font color="green">// instance.</font>
+  <font color="green">///</font>
+  <font color="green">/*--cef()--*/</font>
+  virtual <font color="blue">void</font> CloseDevTools<font color="black">(</font><font color="black">)</font> <font color="black">=</font><font color="maroon">0</font>;
+
+  <font color="green">///</font>
+  <font color="green">// Returns true if window rendering is disabled.</font>
+  <font color="green">///</font>
+  <font color="green">/*--cef()--*/</font>
+  virtual <font color="blue">bool</font> IsWindowRenderingDisabled<font color="black">(</font><font color="black">)</font> <font color="black">=</font><font color="maroon">0</font>;
+
+  <font color="green">///</font>
+  <font color="green">// Get the size of the specified element. This method should only be called on</font>
+  <font color="green">// the UI thread.</font>
+  <font color="green">///</font>
+  <font color="green">/*--cef()--*/</font>
+  virtual <font color="blue">bool</font> GetSize<font color="black">(</font>PaintElementType type, <font color="blue">int</font><font color="black">&</font> width, <font color="blue">int</font><font color="black">&</font> height<font color="black">)</font> <font color="black">=</font><font color="maroon">0</font>;
+
+  <font color="green">///</font>
+  <font color="green">// Set the size of the specified element. This method is only used when window</font>
+  <font color="green">// rendering is disabled.</font>
+  <font color="green">///</font>
+  <font color="green">/*--cef()--*/</font>
+  virtual <font color="blue">void</font> SetSize<font color="black">(</font>PaintElementType type, <font color="blue">int</font> width, <font color="blue">int</font> height<font color="black">)</font> <font color="black">=</font><font color="maroon">0</font>;
+
+  <font color="green">///</font>
+  <font color="green">// Returns true if a popup is currently visible. This method should only be</font>
+  <font color="green">// called on the UI thread.</font>
+  <font color="green">///</font>
+  <font color="green">/*--cef()--*/</font>
+  virtual <font color="blue">bool</font> IsPopupVisible<font color="black">(</font><font color="black">)</font> <font color="black">=</font><font color="maroon">0</font>;
+
+  <font color="green">///</font>
+  <font color="green">// Hide the currently visible popup, if any.</font>
+  <font color="green">///</font>
+  <font color="green">/*--cef()--*/</font>
+  virtual <font color="blue">void</font> HidePopup<font color="black">(</font><font color="black">)</font> <font color="black">=</font><font color="maroon">0</font>;
+
+  <font color="green">///</font>
+  <font color="green">// Invalidate the |dirtyRect| region of the view. This method is only used</font>
+  <font color="green">// when window rendering is disabled and will result in a call to</font>
+  <font color="green">// HandlePaint().</font>
+  <font color="green">///</font>
+  <font color="green">/*--cef()--*/</font>
+  virtual <font color="blue">void</font> Invalidate<font color="black">(</font><font color="blue">const</font> CefRect<font color="black">&</font> dirtyRect<font color="black">)</font> <font color="black">=</font><font color="maroon">0</font>;
+
+  <font color="green">///</font>
+  <font color="green">// Get the raw image data contained in the specified element without</font>
+  <font color="green">// performing validation. The specified |width| and |height| dimensions must</font>
+  <font color="green">// match the current element size. On Windows |buffer| must be width*height*4</font>
+  <font color="green">// bytes in size and represents a BGRA image with an upper-left origin. This</font>
+  <font color="green">// method should only be called on the UI thread.</font>
+  <font color="green">///</font>
+  <font color="green">/*--cef()--*/</font>
+  virtual <font color="blue">bool</font> GetImage<font color="black">(</font>PaintElementType type, <font color="blue">int</font> width, <font color="blue">int</font> height,
+                        <font color="blue">void</font><font color="black">*</font> buffer<font color="black">)</font> <font color="black">=</font><font color="maroon">0</font>;
+
+  <font color="green">///</font>
+  <font color="green">// Send a key event to the browser.</font>
+  <font color="green">///</font>
+  <font color="green">/*--cef()--*/</font>
+  virtual <font color="blue">void</font> SendKeyEvent<font color="black">(</font>KeyType type, <font color="blue">const</font> CefKeyInfo<font color="black">&</font> keyInfo,
+                            <font color="blue">int</font> modifiers<font color="black">)</font> <font color="black">=</font><font color="maroon">0</font>;
+
+  <font color="green">///</font>
+  <font color="green">// Send a mouse click event to the browser. The |x| and |y| coordinates are</font>
+  <font color="green">// relative to the upper-left corner of the view.</font>
+  <font color="green">///</font>
+  <font color="green">/*--cef()--*/</font>
+  virtual <font color="blue">void</font> SendMouseClickEvent<font color="black">(</font><font color="blue">int</font> x, <font color="blue">int</font> y, MouseButtonType type,
+                                   <font color="blue">bool</font> mouseUp, <font color="blue">int</font> clickCount<font color="black">)</font> <font color="black">=</font><font color="maroon">0</font>;
+
+  <font color="green">///</font>
+  <font color="green">// Send a mouse move event to the browser. The |x| and |y| coordinates are</font>
+  <font color="green">// relative to the upper-left corner of the view.</font>
+  <font color="green">///</font>
+  <font color="green">/*--cef()--*/</font>
+  virtual <font color="blue">void</font> SendMouseMoveEvent<font color="black">(</font><font color="blue">int</font> x, <font color="blue">int</font> y, <font color="blue">bool</font> mouseLeave<font color="black">)</font> <font color="black">=</font><font color="maroon">0</font>;
+
+  <font color="green">///</font>
+  <font color="green">// Send a mouse wheel event to the browser. The |x| and |y| coordinates are</font>
+  <font color="green">// relative to the upper-left corner of the view. The |deltaX| and |deltaY|</font>
+  <font color="green">// values represent the movement delta in the X and Y directions respectively.</font>
+  <font color="green">///</font>
+  <font color="green">/*--cef()--*/</font>
+  virtual <font color="blue">void</font> SendMouseWheelEvent<font color="black">(</font><font color="blue">int</font> x, <font color="blue">int</font> y, <font color="blue">int</font> deltaX, <font color="blue">int</font> deltaY<font color="black">)</font> <font color="black">=</font><font color="maroon">0</font>;
+
+  <font color="green">///</font>
+  <font color="green">// Send a focus event to the browser.</font>
+  <font color="green">///</font>
+  <font color="green">/*--cef()--*/</font>
+  virtual <font color="blue">void</font> SendFocusEvent<font color="black">(</font><font color="blue">bool</font> setFocus<font color="black">)</font> <font color="black">=</font><font color="maroon">0</font>;
+
+  <font color="green">///</font>
+  <font color="green">// Send a capture lost event to the browser.</font>
+  <font color="green">///</font>
+  <font color="green">/*--cef()--*/</font>
+  virtual <font color="blue">void</font> SendCaptureLostEvent<font color="black">(</font><font color="black">)</font> <font color="black">=</font><font color="maroon">0</font>;
+<font color="black">}</font>;
+
+<font color="blue">#endif</font>  <font color="green">// CEF_INCLUDE_CEF_BROWSER_H_</font>
+
+</PRE>
+</BODY>
+</HTML>

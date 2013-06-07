@@ -1,0 +1,161 @@
+<HTML>
+<HEAD>
+<TITLE>
+cef_linux.h
+</TITLE>
+</HEAD>
+<BODY>
+<PRE>
+<font color="green">// Copyright (c) 2010 Marshall A. Greenblatt. All rights reserved.</font>
+<font color="green">//</font>
+<font color="green">// Redistribution and use in source and binary forms, with or without</font>
+<font color="green">// modification, are permitted provided that the following conditions are</font>
+<font color="green">// met:</font>
+<font color="green">//</font>
+<font color="green">//    * Redistributions of source code must retain the above copyright</font>
+<font color="green">// notice, this list of conditions and the following disclaimer.</font>
+<font color="green">//    * Redistributions in binary form must reproduce the above</font>
+<font color="green">// copyright notice, this list of conditions and the following disclaimer</font>
+<font color="green">// in the documentation and/or other materials provided with the</font>
+<font color="green">// distribution.</font>
+<font color="green">//    * Neither the name of Google Inc. nor the name Chromium Embedded</font>
+<font color="green">// Framework nor the names of its contributors may be used to endorse</font>
+<font color="green">// or promote products derived from this software without specific prior</font>
+<font color="green">// written permission.</font>
+<font color="green">//</font>
+<font color="green">// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS</font>
+<font color="green">// "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT</font>
+<font color="green">// LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR</font>
+<font color="green">// A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT</font>
+<font color="green">// OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,</font>
+<font color="green">// SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT</font>
+<font color="green">// LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,</font>
+<font color="green">// DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY</font>
+<font color="green">// THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT</font>
+<font color="green">// (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE</font>
+<font color="green">// OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.</font>
+
+
+<font color="blue">#ifndef</font> CEF_INCLUDE_INTERNAL_CEF_LINUX_H_
+<font color="blue">#define</font> CEF_INCLUDE_INTERNAL_CEF_LINUX_H_
+<font color="blue">#pragma</font> once
+
+<font color="blue">#if</font> defined<font color="black">(</font>OS_LINUX<font color="black">)</font>
+<font color="blue">#include</font> <font color="maroon">&#60;pthread.h&#62;</font>
+<font color="blue">#include</font> <font color="maroon">"include/internal/cef_types_linux.h"</font>
+<font color="blue">#include</font> <font color="maroon">"include/internal/cef_types_wrappers.h"</font>
+
+<font color="green">///</font>
+<font color="green">// Atomic increment and decrement.</font>
+<font color="green">///</font>
+<font color="blue">inline</font> <font color="blue">long</font> CefAtomicIncrement<font color="black">(</font><font color="blue">long</font> <font color="blue">volatile</font> <font color="black">*</font>pDest<font color="black">)</font> <font color="black">{</font>  <font color="green">// NOLINT(runtime/int)</font>
+  <font color="blue">return</font> __sync_add_and_fetch<font color="black">(</font>pDest, <font color="maroon">1</font><font color="black">)</font>;
+<font color="black">}</font>
+<font color="blue">inline</font> <font color="blue">long</font> CefAtomicDecrement<font color="black">(</font><font color="blue">long</font> <font color="blue">volatile</font> <font color="black">*</font>pDest<font color="black">)</font> <font color="black">{</font>  <font color="green">// NOLINT(runtime/int)</font>
+  <font color="blue">return</font> __sync_sub_and_fetch<font color="black">(</font>pDest, <font color="maroon">1</font><font color="black">)</font>;
+<font color="black">}</font>
+
+<font color="green">///</font>
+<font color="green">// Critical section wrapper.</font>
+<font color="green">///</font>
+<font color="blue">class</font> CefCriticalSection <font color="black">{</font>
+ <font color="blue">public</font><font color="black">:</font>
+  CefCriticalSection<font color="black">(</font><font color="black">)</font> <font color="black">{</font>
+    pthread_mutexattr_init<font color="black">(</font><font color="black">&</font>attr_<font color="black">)</font>;
+    pthread_mutexattr_settype<font color="black">(</font><font color="black">&</font>attr_, PTHREAD_MUTEX_RECURSIVE<font color="black">)</font>;
+    pthread_mutex_init<font color="black">(</font><font color="black">&</font>lock_, <font color="black">&</font>attr_<font color="black">)</font>;
+  <font color="black">}</font>
+  virtual ~CefCriticalSection<font color="black">(</font><font color="black">)</font> <font color="black">{</font>
+    pthread_mutex_destroy<font color="black">(</font><font color="black">&</font>lock_<font color="black">)</font>;
+    pthread_mutexattr_destroy<font color="black">(</font><font color="black">&</font>attr_<font color="black">)</font>;
+  <font color="black">}</font>
+  <font color="blue">void</font> Lock<font color="black">(</font><font color="black">)</font> <font color="black">{</font>
+    pthread_mutex_lock<font color="black">(</font><font color="black">&</font>lock_<font color="black">)</font>;
+  <font color="black">}</font>
+  <font color="blue">void</font> Unlock<font color="black">(</font><font color="black">)</font> <font color="black">{</font>
+    pthread_mutex_unlock<font color="black">(</font><font color="black">&</font>lock_<font color="black">)</font>;
+  <font color="black">}</font>
+
+  pthread_mutex_t lock_;
+  pthread_mutexattr_t attr_;
+<font color="black">}</font>;
+
+<font color="green">///</font>
+<font color="green">// Handle types.</font>
+<font color="green">///</font>
+<font color="blue">#define</font> CefWindowHandle cef_window_handle_t
+<font color="blue">#define</font> CefCursorHandle cef_cursor_handle_t
+
+
+<font color="blue">struct</font> CefWindowInfoTraits <font color="black">{</font>
+  <font color="blue">typedef</font> cef_window_info_t struct_type;
+
+  <font color="blue">static</font> <font color="blue">inline</font> <font color="blue">void</font> init<font color="black">(</font>struct_type<font color="black">*</font> s<font color="black">)</font> <font color="black">{</font><font color="black">}</font>
+  <font color="blue">static</font> <font color="blue">inline</font> <font color="blue">void</font> clear<font color="black">(</font>struct_type<font color="black">*</font> s<font color="black">)</font> <font color="black">{</font><font color="black">}</font>
+
+  <font color="blue">static</font> <font color="blue">inline</font> <font color="blue">void</font> set<font color="black">(</font><font color="blue">const</font> struct_type<font color="black">*</font> src, struct_type<font color="black">*</font> target,
+      <font color="blue">bool</font> copy<font color="black">)</font> <font color="black">{</font>
+    target<font color="black">-</font><font color="black">&#62;</font>m_Widget <font color="black">=</font> src<font color="black">-</font><font color="black">&#62;</font>m_Widget;
+    target<font color="black">-</font><font color="black">&#62;</font>m_ParentWidget <font color="black">=</font> src<font color="black">-</font><font color="black">&#62;</font>m_ParentWidget;
+  <font color="black">}</font>
+<font color="black">}</font>;
+
+<font color="green">///</font>
+<font color="green">// Class representing window information.</font>
+<font color="green">///</font>
+<font color="blue">class</font> CefWindowInfo <font color="black">:</font> <font color="blue">public</font> CefStructBase<font color="black">&#60;</font>CefWindowInfoTraits<font color="black">&#62;</font> <font color="black">{</font>
+ <font color="blue">public</font><font color="black">:</font>
+  <font color="blue">typedef</font> CefStructBase<font color="black">&#60;</font>CefWindowInfoTraits<font color="black">&#62;</font> parent;
+
+  CefWindowInfo<font color="black">(</font><font color="black">)</font> <font color="black">:</font> parent<font color="black">(</font><font color="black">)</font> <font color="black">{</font><font color="black">}</font>
+  explicit CefWindowInfo<font color="black">(</font><font color="blue">const</font> cef_window_info_t<font color="black">&</font> r<font color="black">)</font> <font color="black">:</font> parent<font color="black">(</font>r<font color="black">)</font> <font color="black">{</font><font color="black">}</font>
+  explicit CefWindowInfo<font color="black">(</font><font color="blue">const</font> CefWindowInfo<font color="black">&</font> r<font color="black">)</font> <font color="black">:</font> parent<font color="black">(</font>r<font color="black">)</font> <font color="black">{</font><font color="black">}</font>
+
+  <font color="blue">void</font> SetAsChild<font color="black">(</font>CefWindowHandle ParentWidget<font color="black">)</font> <font color="black">{</font>
+    m_ParentWidget <font color="black">=</font> ParentWidget;
+  <font color="black">}</font>
+<font color="black">}</font>;
+
+
+<font color="blue">struct</font> CefPrintInfoTraits <font color="black">{</font>
+  <font color="blue">typedef</font> cef_print_info_t struct_type;
+
+  <font color="blue">static</font> <font color="blue">inline</font> <font color="blue">void</font> init<font color="black">(</font>struct_type<font color="black">*</font> s<font color="black">)</font> <font color="black">{</font><font color="black">}</font>
+  <font color="blue">static</font> <font color="blue">inline</font> <font color="blue">void</font> clear<font color="black">(</font>struct_type<font color="black">*</font> s<font color="black">)</font> <font color="black">{</font><font color="black">}</font>
+
+  <font color="blue">static</font> <font color="blue">inline</font> <font color="blue">void</font> set<font color="black">(</font><font color="blue">const</font> struct_type<font color="black">*</font> src, struct_type<font color="black">*</font> target,
+      <font color="blue">bool</font> copy<font color="black">)</font> <font color="black">{</font>
+    target<font color="black">-</font><font color="black">&#62;</font>m_Scale <font color="black">=</font> src<font color="black">-</font><font color="black">&#62;</font>m_Scale;
+  <font color="black">}</font>
+<font color="black">}</font>;
+
+<font color="green">///</font>
+<font color="green">// Class representing print context information.</font>
+<font color="green">///</font>
+<font color="blue">typedef</font> CefStructBase<font color="black">&#60;</font>CefPrintInfoTraits<font color="black">&#62;</font> CefPrintInfo;
+
+
+<font color="blue">struct</font> CefKeyInfoTraits <font color="black">{</font>
+  <font color="blue">typedef</font> cef_key_info_t struct_type;
+
+  <font color="blue">static</font> <font color="blue">inline</font> <font color="blue">void</font> init<font color="black">(</font>struct_type<font color="black">*</font> s<font color="black">)</font> <font color="black">{</font><font color="black">}</font>
+  <font color="blue">static</font> <font color="blue">inline</font> <font color="blue">void</font> clear<font color="black">(</font>struct_type<font color="black">*</font> s<font color="black">)</font> <font color="black">{</font><font color="black">}</font>
+
+  <font color="blue">static</font> <font color="blue">inline</font> <font color="blue">void</font> set<font color="black">(</font><font color="blue">const</font> struct_type<font color="black">*</font> src, struct_type<font color="black">*</font> target,
+      <font color="blue">bool</font> copy<font color="black">)</font> <font color="black">{</font>
+    target<font color="black">-</font><font color="black">&#62;</font>key <font color="black">=</font> src<font color="black">-</font><font color="black">&#62;</font>key;
+  <font color="black">}</font>
+<font color="black">}</font>;
+
+<font color="green">///</font>
+<font color="green">// Class representing key information.</font>
+<font color="green">///</font>
+<font color="blue">typedef</font> CefStructBase<font color="black">&#60;</font>CefKeyInfoTraits<font color="black">&#62;</font> CefKeyInfo;
+
+<font color="blue">#endif</font>  <font color="green">// OS_LINUX</font>
+
+<font color="blue">#endif</font>  <font color="green">// CEF_INCLUDE_INTERNAL_CEF_LINUX_H_</font>
+
+</PRE>
+</BODY>
+</HTML>

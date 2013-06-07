@@ -1,0 +1,232 @@
+<HTML>
+<HEAD>
+<TITLE>
+cef_frame.h
+</TITLE>
+</HEAD>
+<BODY>
+<PRE>
+<font color="green">// Copyright (c) 2011 Marshall A. Greenblatt. All rights reserved.</font>
+<font color="green">//</font>
+<font color="green">// Redistribution and use in source and binary forms, with or without</font>
+<font color="green">// modification, are permitted provided that the following conditions are</font>
+<font color="green">// met:</font>
+<font color="green">//</font>
+<font color="green">//    * Redistributions of source code must retain the above copyright</font>
+<font color="green">// notice, this list of conditions and the following disclaimer.</font>
+<font color="green">//    * Redistributions in binary form must reproduce the above</font>
+<font color="green">// copyright notice, this list of conditions and the following disclaimer</font>
+<font color="green">// in the documentation and/or other materials provided with the</font>
+<font color="green">// distribution.</font>
+<font color="green">//    * Neither the name of Google Inc. nor the name Chromium Embedded</font>
+<font color="green">// Framework nor the names of its contributors may be used to endorse</font>
+<font color="green">// or promote products derived from this software without specific prior</font>
+<font color="green">// written permission.</font>
+<font color="green">//</font>
+<font color="green">// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS</font>
+<font color="green">// "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT</font>
+<font color="green">// LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR</font>
+<font color="green">// A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT</font>
+<font color="green">// OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,</font>
+<font color="green">// SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT</font>
+<font color="green">// LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,</font>
+<font color="green">// DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY</font>
+<font color="green">// THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT</font>
+<font color="green">// (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE</font>
+<font color="green">// OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.</font>
+<font color="green">//</font>
+<font color="green">// ---------------------------------------------------------------------------</font>
+<font color="green">//</font>
+<font color="green">// The contents of this file must follow a specific format in order to</font>
+<font color="green">// support the CEF translator tool. See the translator.README.txt file in the</font>
+<font color="green">// tools directory for more information.</font>
+<font color="green">//</font>
+
+<font color="blue">#ifndef</font> CEF_INCLUDE_CEF_FRAME_H_
+<font color="blue">#define</font> CEF_INCLUDE_CEF_FRAME_H_
+<font color="blue">#pragma</font> once
+
+<font color="blue">#include</font> <font color="maroon">"include/cef_base.h"</font>
+<font color="blue">#include</font> <font color="maroon">"include/cef_dom.h"</font>
+<font color="blue">#include</font> <font color="maroon">"include/cef_request.h"</font>
+<font color="blue">#include</font> <font color="maroon">"include/cef_stream.h"</font>
+
+<font color="blue">class</font> CefBrowser;
+<font color="blue">class</font> CefV8Context;
+
+<font color="green">///</font>
+<font color="green">// Class used to represent a frame in the browser window. The methods of this</font>
+<font color="green">// class may be called on any thread unless otherwise indicated in the comments.</font>
+<font color="green">///</font>
+<font color="green">/*--cef(source=library)--*/</font>
+<font color="blue">class</font> CefFrame <font color="black">:</font> <font color="blue">public</font> virtual CefBase <font color="black">{</font>
+ <font color="blue">public</font><font color="black">:</font>
+  <font color="green">///</font>
+  <font color="green">// Execute undo in this frame.</font>
+  <font color="green">///</font>
+  <font color="green">/*--cef()--*/</font>
+  virtual <font color="blue">void</font> Undo<font color="black">(</font><font color="black">)</font> <font color="black">=</font><font color="maroon">0</font>;
+  <font color="green">///</font>
+  <font color="green">// Execute redo in this frame.</font>
+  <font color="green">///</font>
+  <font color="green">/*--cef()--*/</font>
+  virtual <font color="blue">void</font> Redo<font color="black">(</font><font color="black">)</font> <font color="black">=</font><font color="maroon">0</font>;
+  <font color="green">///</font>
+  <font color="green">// Execute cut in this frame.</font>
+  <font color="green">///</font>
+  <font color="green">/*--cef()--*/</font>
+  virtual <font color="blue">void</font> Cut<font color="black">(</font><font color="black">)</font> <font color="black">=</font><font color="maroon">0</font>;
+  <font color="green">///</font>
+  <font color="green">// Execute copy in this frame.</font>
+  <font color="green">///</font>
+  <font color="green">/*--cef()--*/</font>
+  virtual <font color="blue">void</font> Copy<font color="black">(</font><font color="black">)</font> <font color="black">=</font><font color="maroon">0</font>;
+  <font color="green">///</font>
+  <font color="green">// Execute paste in this frame.</font>
+  <font color="green">///</font>
+  <font color="green">/*--cef()--*/</font>
+  virtual <font color="blue">void</font> Paste<font color="black">(</font><font color="black">)</font> <font color="black">=</font><font color="maroon">0</font>;
+  <font color="green">///</font>
+  <font color="green">// Execute delete in this frame.</font>
+  <font color="green">///</font>
+  <font color="green">/*--cef(capi_name=del)--*/</font>
+  virtual <font color="blue">void</font> Delete<font color="black">(</font><font color="black">)</font> <font color="black">=</font><font color="maroon">0</font>;
+  <font color="green">///</font>
+  <font color="green">// Execute select all in this frame.</font>
+  <font color="green">///</font>
+  <font color="green">/*--cef()--*/</font>
+  virtual <font color="blue">void</font> SelectAll<font color="black">(</font><font color="black">)</font> <font color="black">=</font><font color="maroon">0</font>;
+
+  <font color="green">///</font>
+  <font color="green">// Execute printing in the this frame.  The user will be prompted with the</font>
+  <font color="green">// print dialog appropriate to the operating system.</font>
+  <font color="green">///</font>
+  <font color="green">/*--cef()--*/</font>
+  virtual <font color="blue">void</font> Print<font color="black">(</font><font color="black">)</font> <font color="black">=</font><font color="maroon">0</font>;
+
+  <font color="green">///</font>
+  <font color="green">// Save this frame's HTML source to a temporary file and open it in the</font>
+  <font color="green">// default text viewing application.</font>
+  <font color="green">///</font>
+  <font color="green">/*--cef()--*/</font>
+  virtual <font color="blue">void</font> ViewSource<font color="black">(</font><font color="black">)</font> <font color="black">=</font><font color="maroon">0</font>;
+
+  <font color="green">///</font>
+  <font color="green">// Returns this frame's HTML source as a string. This method should only be</font>
+  <font color="green">// called on the UI thread.</font>
+  <font color="green">///</font>
+  <font color="green">/*--cef()--*/</font>
+  virtual CefString GetSource<font color="black">(</font><font color="black">)</font> <font color="black">=</font><font color="maroon">0</font>;
+
+  <font color="green">///</font>
+  <font color="green">// Returns this frame's display text as a string. This method should only be</font>
+  <font color="green">// called on the UI thread.</font>
+  <font color="green">///</font>
+  <font color="green">/*--cef()--*/</font>
+  virtual CefString GetText<font color="black">(</font><font color="black">)</font> <font color="black">=</font><font color="maroon">0</font>;
+
+  <font color="green">///</font>
+  <font color="green">// Load the request represented by the |request| object.</font>
+  <font color="green">///</font>
+  <font color="green">/*--cef()--*/</font>
+  virtual <font color="blue">void</font> LoadRequest<font color="black">(</font>CefRefPtr<font color="black">&#60;</font>CefRequest<font color="black">&#62;</font> request<font color="black">)</font> <font color="black">=</font><font color="maroon">0</font>;
+
+  <font color="green">///</font>
+  <font color="green">// Load the specified |url|.</font>
+  <font color="green">///</font>
+  <font color="green">/*--cef()--*/</font>
+  virtual <font color="blue">void</font> LoadURL<font color="black">(</font><font color="blue">const</font> CefString<font color="black">&</font> url<font color="black">)</font> <font color="black">=</font><font color="maroon">0</font>;
+
+  <font color="green">///</font>
+  <font color="green">// Load the contents of |string_val| with the optional dummy target |url|.</font>
+  <font color="green">///</font>
+  <font color="green">/*--cef()--*/</font>
+  virtual <font color="blue">void</font> LoadString<font color="black">(</font><font color="blue">const</font> CefString<font color="black">&</font> string_val,
+                          <font color="blue">const</font> CefString<font color="black">&</font> url<font color="black">)</font> <font color="black">=</font><font color="maroon">0</font>;
+
+  <font color="green">///</font>
+  <font color="green">// Load the contents of |stream| with the optional dummy target |url|.</font>
+  <font color="green">///</font>
+  <font color="green">/*--cef()--*/</font>
+  virtual <font color="blue">void</font> LoadStream<font color="black">(</font>CefRefPtr<font color="black">&#60;</font>CefStreamReader<font color="black">&#62;</font> stream,
+                          <font color="blue">const</font> CefString<font color="black">&</font> url<font color="black">)</font> <font color="black">=</font><font color="maroon">0</font>;
+
+  <font color="green">///</font>
+  <font color="green">// Execute a string of JavaScript code in this frame. The |script_url|</font>
+  <font color="green">// parameter is the URL where the script in question can be found, if any.</font>
+  <font color="green">// The renderer may request this URL to show the developer the source of the</font>
+  <font color="green">// error.  The |start_line| parameter is the base line number to use for error</font>
+  <font color="green">// reporting.</font>
+  <font color="green">///</font>
+  <font color="green">/*--cef(optional_param=scriptUrl)--*/</font>
+  virtual <font color="blue">void</font> ExecuteJavaScript<font color="black">(</font><font color="blue">const</font> CefString<font color="black">&</font> jsCode,
+                                 <font color="blue">const</font> CefString<font color="black">&</font> scriptUrl,
+                                 <font color="blue">int</font> startLine<font color="black">)</font> <font color="black">=</font><font color="maroon">0</font>;
+
+  <font color="green">///</font>
+  <font color="green">// Returns true if this is the main (top-level) frame.</font>
+  <font color="green">///</font>
+  <font color="green">/*--cef()--*/</font>
+  virtual <font color="blue">bool</font> IsMain<font color="black">(</font><font color="black">)</font> <font color="black">=</font><font color="maroon">0</font>;
+
+  <font color="green">///</font>
+  <font color="green">// Returns true if this is the focused frame. This method should only be</font>
+  <font color="green">// called on the UI thread.</font>
+  <font color="green">///</font>
+  <font color="green">/*--cef()--*/</font>
+  virtual <font color="blue">bool</font> IsFocused<font color="black">(</font><font color="black">)</font> <font color="black">=</font><font color="maroon">0</font>;
+
+  <font color="green">///</font>
+  <font color="green">// Returns the name for this frame. If the frame has an assigned name (for</font>
+  <font color="green">// example, set via the iframe "name" attribute) then that value will be</font>
+  <font color="green">// returned. Otherwise a unique name will be constructed based on the frame</font>
+  <font color="green">// parent hierarchy. The main (top-level) frame will always have an empty name</font>
+  <font color="green">// value.</font>
+  <font color="green">///</font>
+  <font color="green">/*--cef()--*/</font>
+  virtual CefString GetName<font color="black">(</font><font color="black">)</font> <font color="black">=</font><font color="maroon">0</font>;
+
+  <font color="green">///</font>
+  <font color="green">// Returns the globally unique identifier for this frame.</font>
+  <font color="green">///</font>
+  <font color="green">/*--cef()--*/</font>
+  virtual int64 GetIdentifier<font color="black">(</font><font color="black">)</font> <font color="black">=</font><font color="maroon">0</font>;
+
+  <font color="green">///</font>
+  <font color="green">// Returns the parent of this frame or NULL if this is the main (top-level)</font>
+  <font color="green">// frame. This method should only be called on the UI thread.</font>
+  <font color="green">///</font>
+  <font color="green">/*--cef()--*/</font>
+  virtual CefRefPtr<font color="black">&#60;</font>CefFrame<font color="black">&#62;</font> GetParent<font color="black">(</font><font color="black">)</font> <font color="black">=</font><font color="maroon">0</font>;
+
+  <font color="green">///</font>
+  <font color="green">// Returns the URL currently loaded in this frame.</font>
+  <font color="green">///</font>
+  <font color="green">/*--cef()--*/</font>
+  virtual CefString GetURL<font color="black">(</font><font color="black">)</font> <font color="black">=</font><font color="maroon">0</font>;
+
+  <font color="green">///</font>
+  <font color="green">// Returns the browser that this frame belongs to.</font>
+  <font color="green">///</font>
+  <font color="green">/*--cef()--*/</font>
+  virtual CefRefPtr<font color="black">&#60;</font>CefBrowser<font color="black">&#62;</font> GetBrowser<font color="black">(</font><font color="black">)</font> <font color="black">=</font><font color="maroon">0</font>;
+
+  <font color="green">///</font>
+  <font color="green">// Visit the DOM document.</font>
+  <font color="green">///</font>
+  <font color="green">/*--cef()--*/</font>
+  virtual <font color="blue">void</font> VisitDOM<font color="black">(</font>CefRefPtr<font color="black">&#60;</font>CefDOMVisitor<font color="black">&#62;</font> visitor<font color="black">)</font> <font color="black">=</font><font color="maroon">0</font>;
+
+  <font color="green">///</font>
+  <font color="green">// Get the V8 context associated with the frame. This method should only be</font>
+  <font color="green">// called on the UI thread.</font>
+  <font color="green">///</font>
+  <font color="green">/*--cef()--*/</font>
+  virtual CefRefPtr<font color="black">&#60;</font>CefV8Context<font color="black">&#62;</font> GetV8Context<font color="black">(</font><font color="black">)</font> <font color="black">=</font><font color="maroon">0</font>;
+<font color="black">}</font>;
+
+<font color="blue">#endif</font>  <font color="green">// CEF_INCLUDE_CEF_FRAME_H_</font>
+
+</PRE>
+</BODY>
+</HTML>

@@ -1,0 +1,131 @@
+<HTML>
+<HEAD>
+<TITLE>
+cef_nplugin.h
+</TITLE>
+</HEAD>
+<BODY>
+<PRE>
+<font color="green">// Copyright (c) 2011 Marshall A. Greenblatt. All rights reserved.</font>
+<font color="green">//</font>
+<font color="green">// Redistribution and use in source and binary forms, with or without</font>
+<font color="green">// modification, are permitted provided that the following conditions are</font>
+<font color="green">// met:</font>
+<font color="green">//</font>
+<font color="green">//    * Redistributions of source code must retain the above copyright</font>
+<font color="green">// notice, this list of conditions and the following disclaimer.</font>
+<font color="green">//    * Redistributions in binary form must reproduce the above</font>
+<font color="green">// copyright notice, this list of conditions and the following disclaimer</font>
+<font color="green">// in the documentation and/or other materials provided with the</font>
+<font color="green">// distribution.</font>
+<font color="green">//    * Neither the name of Google Inc. nor the name Chromium Embedded</font>
+<font color="green">// Framework nor the names of its contributors may be used to endorse</font>
+<font color="green">// or promote products derived from this software without specific prior</font>
+<font color="green">// written permission.</font>
+<font color="green">//</font>
+<font color="green">// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS</font>
+<font color="green">// "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT</font>
+<font color="green">// LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR</font>
+<font color="green">// A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT</font>
+<font color="green">// OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,</font>
+<font color="green">// SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT</font>
+<font color="green">// LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,</font>
+<font color="green">// DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY</font>
+<font color="green">// THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT</font>
+<font color="green">// (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE</font>
+<font color="green">// OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.</font>
+
+
+<font color="blue">#ifndef</font> CEF_INCLUDE_CEF_NPLUGIN_H_
+<font color="blue">#define</font> CEF_INCLUDE_CEF_NPLUGIN_H_
+<font color="blue">#pragma</font> once
+
+<font color="blue">#include</font> <font color="maroon">"internal/cef_nplugin_types.h"</font>
+
+<font color="green">///</font>
+<font color="green">// Netscape plugins are normally built at separate DLLs that are loaded by the</font>
+<font color="green">// browser when needed.  This interface supports the creation of plugins that</font>
+<font color="green">// are an embedded component of the application.  Embedded plugins built using</font>
+<font color="green">// this interface use the same Netscape Plugin API as DLL-based plugins.</font>
+<font color="green">// See https://developer.mozilla.org/En/Gecko_Plugin_API_Reference for complete</font>
+<font color="green">// documentation on how to use the Netscape Plugin API.</font>
+<font color="green">//</font>
+<font color="green">// This class provides attribute information and entry point functions for a</font>
+<font color="green">// plugin.</font>
+<font color="green">///</font>
+<font color="blue">class</font> CefPluginInfo <font color="black">:</font> <font color="blue">public</font> cef_plugin_info_t <font color="black">{</font>
+ <font color="blue">public</font><font color="black">:</font>
+  CefPluginInfo<font color="black">(</font><font color="black">)</font> <font color="black">{</font>
+    Init<font color="black">(</font><font color="black">)</font>;
+  <font color="black">}</font>
+  virtual ~CefPluginInfo<font color="black">(</font><font color="black">)</font> <font color="black">{</font>
+    Reset<font color="black">(</font><font color="black">)</font>;
+  <font color="black">}</font>
+
+  CefPluginInfo<font color="black">(</font><font color="blue">const</font> CefPluginInfo<font color="black">&</font> r<font color="black">)</font> <font color="black">{</font>  <font color="green">// NOLINT(runtime/explicit)</font>
+    Init<font color="black">(</font><font color="black">)</font>;
+    <font color="black">*</font><font color="blue">this</font> <font color="black">=</font> r;
+  <font color="black">}</font>
+  CefPluginInfo<font color="black">(</font><font color="blue">const</font> cef_plugin_info_t<font color="black">&</font> r<font color="black">)</font> <font color="black">{</font>  <font color="green">// NOLINT(runtime/explicit)</font>
+    Init<font color="black">(</font><font color="black">)</font>;
+    <font color="black">*</font><font color="blue">this</font> <font color="black">=</font> r;
+  <font color="black">}</font>
+
+  <font color="blue">void</font> Reset<font color="black">(</font><font color="black">)</font> <font color="black">{</font>
+    cef_string_clear<font color="black">(</font><font color="black">&</font>unique_name<font color="black">)</font>;
+    cef_string_clear<font color="black">(</font><font color="black">&</font>display_name<font color="black">)</font>;
+    cef_string_clear<font color="black">(</font><font color="black">&</font>version<font color="black">)</font>;
+    cef_string_clear<font color="black">(</font><font color="black">&</font>description<font color="black">)</font>;
+    cef_string_clear<font color="black">(</font><font color="black">&</font>mime_types<font color="black">)</font>;
+    cef_string_clear<font color="black">(</font><font color="black">&</font>file_extensions<font color="black">)</font>;
+    cef_string_clear<font color="black">(</font><font color="black">&</font>type_descriptions<font color="black">)</font>;
+    Init<font color="black">(</font><font color="black">)</font>;
+  <font color="black">}</font>
+
+  <font color="blue">void</font> Attach<font color="black">(</font><font color="blue">const</font> cef_plugin_info_t<font color="black">&</font> r<font color="black">)</font> <font color="black">{</font>
+    Reset<font color="black">(</font><font color="black">)</font>;
+    <font color="black">*</font>static_cast<font color="black">&#60;</font>cef_plugin_info_t<font color="black">*</font><font color="black">&#62;</font><font color="black">(</font><font color="blue">this</font><font color="black">)</font> <font color="black">=</font> r;
+  <font color="black">}</font>
+
+  <font color="blue">void</font> Detach<font color="black">(</font><font color="black">)</font> <font color="black">{</font>
+    Init<font color="black">(</font><font color="black">)</font>;
+  <font color="black">}</font>
+
+  CefPluginInfo<font color="black">&</font> <font color="blue">operator</font><font color="black">=</font><font color="black">(</font><font color="blue">const</font> CefPluginInfo<font color="black">&</font> r<font color="black">)</font> <font color="black">{</font>
+    <font color="blue">return</font> <font color="blue">operator</font><font color="black">=</font><font color="black">(</font>static_cast<font color="black">&#60;</font><font color="blue">const</font> cef_plugin_info_t<font color="black">&</font><font color="black">&#62;</font><font color="black">(</font>r<font color="black">)</font><font color="black">)</font>;
+  <font color="black">}</font>
+
+  CefPluginInfo<font color="black">&</font> <font color="blue">operator</font><font color="black">=</font><font color="black">(</font><font color="blue">const</font> cef_plugin_info_t<font color="black">&</font> r<font color="black">)</font> <font color="black">{</font>
+    cef_string_copy<font color="black">(</font>r.unique_name.str, r.unique_name.length, <font color="black">&</font>unique_name<font color="black">)</font>;
+    cef_string_copy<font color="black">(</font>r.display_name.str, r.display_name.length, <font color="black">&</font>display_name<font color="black">)</font>;
+    cef_string_copy<font color="black">(</font>r.version.str, r.version.length, <font color="black">&</font>version<font color="black">)</font>;
+    cef_string_copy<font color="black">(</font>r.description.str, r.description.length, <font color="black">&</font>description<font color="black">)</font>;
+    cef_string_copy<font color="black">(</font>r.mime_types.str, r.mime_types.length, <font color="black">&</font>mime_types<font color="black">)</font>;
+    cef_string_copy<font color="black">(</font>r.file_extensions.str, r.file_extensions.length,
+        <font color="black">&</font>file_extensions<font color="black">)</font>;
+    cef_string_copy<font color="black">(</font>r.type_descriptions.str, r.type_descriptions.length,
+        <font color="black">&</font>type_descriptions<font color="black">)</font>;
+<font color="blue">#if</font> <font color="black">!</font>defined<font color="black">(</font>OS_POSIX<font color="black">)</font> <font color="black">|</font><font color="black">|</font> defined<font color="black">(</font>OS_MACOSX<font color="black">)</font>
+    np_getentrypoints <font color="black">=</font> r.np_getentrypoints;
+<font color="blue">#endif</font>
+    np_initialize <font color="black">=</font> r.np_initialize;
+    np_shutdown <font color="black">=</font> r.np_shutdown;
+    <font color="blue">return</font> <font color="black">*</font><font color="blue">this</font>;
+  <font color="black">}</font>
+
+ <font color="blue">protected</font><font color="black">:</font>
+  <font color="blue">void</font> Init<font color="black">(</font><font color="black">)</font> <font color="black">{</font>
+    memset<font color="black">(</font>static_cast<font color="black">&#60;</font>cef_plugin_info_t<font color="black">*</font><font color="black">&#62;</font><font color="black">(</font><font color="blue">this</font><font color="black">)</font>, <font color="maroon">0</font>, <font color="blue">sizeof</font><font color="black">(</font>cef_plugin_info_t<font color="black">)</font><font color="black">)</font>;
+  <font color="black">}</font>
+<font color="black">}</font>;
+
+<font color="green">///</font>
+<font color="green">// Register a plugin with the system.</font>
+<font color="green">///</font>
+<font color="blue">bool</font> CefRegisterPlugin<font color="black">(</font><font color="blue">const</font> CefPluginInfo<font color="black">&</font> plugin_info<font color="black">)</font>;
+
+<font color="blue">#endif</font>  <font color="green">// CEF_INCLUDE_CEF_NPLUGIN_H_</font>
+
+</PRE>
+</BODY>
+</HTML>

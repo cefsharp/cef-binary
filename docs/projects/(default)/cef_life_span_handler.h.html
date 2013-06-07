@@ -1,0 +1,117 @@
+<HTML>
+<HEAD>
+<TITLE>
+cef_life_span_handler.h
+</TITLE>
+</HEAD>
+<BODY>
+<PRE>
+<font color="green">// Copyright (c) 2011 Marshall A. Greenblatt. All rights reserved.</font>
+<font color="green">//</font>
+<font color="green">// Redistribution and use in source and binary forms, with or without</font>
+<font color="green">// modification, are permitted provided that the following conditions are</font>
+<font color="green">// met:</font>
+<font color="green">//</font>
+<font color="green">//    * Redistributions of source code must retain the above copyright</font>
+<font color="green">// notice, this list of conditions and the following disclaimer.</font>
+<font color="green">//    * Redistributions in binary form must reproduce the above</font>
+<font color="green">// copyright notice, this list of conditions and the following disclaimer</font>
+<font color="green">// in the documentation and/or other materials provided with the</font>
+<font color="green">// distribution.</font>
+<font color="green">//    * Neither the name of Google Inc. nor the name Chromium Embedded</font>
+<font color="green">// Framework nor the names of its contributors may be used to endorse</font>
+<font color="green">// or promote products derived from this software without specific prior</font>
+<font color="green">// written permission.</font>
+<font color="green">//</font>
+<font color="green">// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS</font>
+<font color="green">// "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT</font>
+<font color="green">// LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR</font>
+<font color="green">// A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT</font>
+<font color="green">// OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,</font>
+<font color="green">// SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT</font>
+<font color="green">// LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,</font>
+<font color="green">// DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY</font>
+<font color="green">// THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT</font>
+<font color="green">// (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE</font>
+<font color="green">// OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.</font>
+<font color="green">//</font>
+<font color="green">// ---------------------------------------------------------------------------</font>
+<font color="green">//</font>
+<font color="green">// The contents of this file must follow a specific format in order to</font>
+<font color="green">// support the CEF translator tool. See the translator.README.txt file in the</font>
+<font color="green">// tools directory for more information.</font>
+<font color="green">//</font>
+
+<font color="blue">#ifndef</font> CEF_INCLUDE_CEF_LIFE_SPAN_HANDLER_H_
+<font color="blue">#define</font> CEF_INCLUDE_CEF_LIFE_SPAN_HANDLER_H_
+<font color="blue">#pragma</font> once
+
+<font color="blue">#include</font> <font color="maroon">"include/cef_base.h"</font>
+<font color="blue">#include</font> <font color="maroon">"include/cef_browser.h"</font>
+
+<font color="blue">class</font> CefClient;
+
+<font color="green">///</font>
+<font color="green">// Implement this interface to handle events related to browser life span. The</font>
+<font color="green">// methods of this class will be called on the UI thread.</font>
+<font color="green">///</font>
+<font color="green">/*--cef(source=client)--*/</font>
+<font color="blue">class</font> CefLifeSpanHandler <font color="black">:</font> <font color="blue">public</font> virtual CefBase <font color="black">{</font>
+ <font color="blue">public</font><font color="black">:</font>
+  <font color="green">///</font>
+  <font color="green">// Called before a new popup window is created. The |parentBrowser| parameter</font>
+  <font color="green">// will point to the parent browser window. The |popupFeatures| parameter will</font>
+  <font color="green">// contain information about the style of popup window requested. Return false</font>
+  <font color="green">// to have the framework create the new popup window based on the parameters</font>
+  <font color="green">// in |windowInfo|. Return true to cancel creation of the popup window. By</font>
+  <font color="green">// default, a newly created popup window will have the same client and</font>
+  <font color="green">// settings as the parent window. To change the client for the new window</font>
+  <font color="green">// modify the object that |client| points to. To change the settings for the</font>
+  <font color="green">// new window modify the |settings| structure.</font>
+  <font color="green">///</font>
+  <font color="green">/*--cef(optional_param=url)--*/</font>
+  virtual <font color="blue">bool</font> OnBeforePopup<font color="black">(</font>CefRefPtr<font color="black">&#60;</font>CefBrowser<font color="black">&#62;</font> parentBrowser,
+                             <font color="blue">const</font> CefPopupFeatures<font color="black">&</font> popupFeatures,
+                             CefWindowInfo<font color="black">&</font> windowInfo,
+                             <font color="blue">const</font> CefString<font color="black">&</font> url,
+                             CefRefPtr<font color="black">&#60;</font>CefClient<font color="black">&#62;</font><font color="black">&</font> client,
+                             CefBrowserSettings<font color="black">&</font> settings<font color="black">)</font> <font color="black">{</font> <font color="blue">return</font> <font color="blue">false</font>; <font color="black">}</font>
+
+  <font color="green">///</font>
+  <font color="green">// Called after a new window is created.</font>
+  <font color="green">///</font>
+  <font color="green">/*--cef()--*/</font>
+  virtual <font color="blue">void</font> OnAfterCreated<font color="black">(</font>CefRefPtr<font color="black">&#60;</font>CefBrowser<font color="black">&#62;</font> browser<font color="black">)</font> <font color="black">{</font><font color="black">}</font>
+
+  <font color="green">///</font>
+  <font color="green">// Called when a modal window is about to display and the modal loop should</font>
+  <font color="green">// begin running. Return false to use the default modal loop implementation or</font>
+  <font color="green">// true to use a custom implementation.</font>
+  <font color="green">///</font>
+  <font color="green">/*--cef()--*/</font>
+  virtual <font color="blue">bool</font> RunModal<font color="black">(</font>CefRefPtr<font color="black">&#60;</font>CefBrowser<font color="black">&#62;</font> browser<font color="black">)</font> <font color="black">{</font> <font color="blue">return</font> <font color="blue">false</font>; <font color="black">}</font>
+
+  <font color="green">///</font>
+  <font color="green">// Called when a window has recieved a request to close. Return false to</font>
+  <font color="green">// proceed with the window close or true to cancel the window close. If this</font>
+  <font color="green">// is a modal window and a custom modal loop implementation was provided in</font>
+  <font color="green">// RunModal() this callback should be used to restore the opener window to a</font>
+  <font color="green">// usable state.</font>
+  <font color="green">///</font>
+  <font color="green">/*--cef()--*/</font>
+  virtual <font color="blue">bool</font> DoClose<font color="black">(</font>CefRefPtr<font color="black">&#60;</font>CefBrowser<font color="black">&#62;</font> browser<font color="black">)</font> <font color="black">{</font> <font color="blue">return</font> <font color="blue">false</font>; <font color="black">}</font>
+
+  <font color="green">///</font>
+  <font color="green">// Called just before a window is closed. If this is a modal window and a</font>
+  <font color="green">// custom modal loop implementation was provided in RunModal() this callback</font>
+  <font color="green">// should be used to exit the custom modal loop.</font>
+  <font color="green">///</font>
+  <font color="green">/*--cef()--*/</font>
+  virtual <font color="blue">void</font> OnBeforeClose<font color="black">(</font>CefRefPtr<font color="black">&#60;</font>CefBrowser<font color="black">&#62;</font> browser<font color="black">)</font> <font color="black">{</font><font color="black">}</font>
+<font color="black">}</font>;
+
+<font color="blue">#endif</font>  <font color="green">// CEF_INCLUDE_CEF_LIFE_SPAN_HANDLER_H_</font>
+
+</PRE>
+</BODY>
+</HTML>

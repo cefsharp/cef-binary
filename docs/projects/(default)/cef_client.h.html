@@ -1,0 +1,208 @@
+<HTML>
+<HEAD>
+<TITLE>
+cef_client.h
+</TITLE>
+</HEAD>
+<BODY>
+<PRE>
+<font color="green">// Copyright (c) 2011 Marshall A. Greenblatt. All rights reserved.</font>
+<font color="green">//</font>
+<font color="green">// Redistribution and use in source and binary forms, with or without</font>
+<font color="green">// modification, are permitted provided that the following conditions are</font>
+<font color="green">// met:</font>
+<font color="green">//</font>
+<font color="green">//    * Redistributions of source code must retain the above copyright</font>
+<font color="green">// notice, this list of conditions and the following disclaimer.</font>
+<font color="green">//    * Redistributions in binary form must reproduce the above</font>
+<font color="green">// copyright notice, this list of conditions and the following disclaimer</font>
+<font color="green">// in the documentation and/or other materials provided with the</font>
+<font color="green">// distribution.</font>
+<font color="green">//    * Neither the name of Google Inc. nor the name Chromium Embedded</font>
+<font color="green">// Framework nor the names of its contributors may be used to endorse</font>
+<font color="green">// or promote products derived from this software without specific prior</font>
+<font color="green">// written permission.</font>
+<font color="green">//</font>
+<font color="green">// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS</font>
+<font color="green">// "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT</font>
+<font color="green">// LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR</font>
+<font color="green">// A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT</font>
+<font color="green">// OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,</font>
+<font color="green">// SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT</font>
+<font color="green">// LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,</font>
+<font color="green">// DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY</font>
+<font color="green">// THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT</font>
+<font color="green">// (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE</font>
+<font color="green">// OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.</font>
+<font color="green">//</font>
+<font color="green">// ---------------------------------------------------------------------------</font>
+<font color="green">//</font>
+<font color="green">// The contents of this file must follow a specific format in order to</font>
+<font color="green">// support the CEF translator tool. See the translator.README.txt file in the</font>
+<font color="green">// tools directory for more information.</font>
+<font color="green">//</font>
+
+<font color="blue">#ifndef</font> CEF_INCLUDE_CEF_CLIENT_H_
+<font color="blue">#define</font> CEF_INCLUDE_CEF_CLIENT_H_
+<font color="blue">#pragma</font> once
+
+<font color="blue">#include</font> <font color="maroon">"include/cef_base.h"</font>
+<font color="blue">#include</font> <font color="maroon">"include/cef_display_handler.h"</font>
+<font color="blue">#include</font> <font color="maroon">"include/cef_drag_handler.h"</font>
+<font color="blue">#include</font> <font color="maroon">"include/cef_find_handler.h"</font>
+<font color="blue">#include</font> <font color="maroon">"include/cef_focus_handler.h"</font>
+<font color="blue">#include</font> <font color="maroon">"include/cef_geolocation_handler.h"</font>
+<font color="blue">#include</font> <font color="maroon">"include/cef_jsdialog_handler.h"</font>
+<font color="blue">#include</font> <font color="maroon">"include/cef_keyboard_handler.h"</font>
+<font color="blue">#include</font> <font color="maroon">"include/cef_life_span_handler.h"</font>
+<font color="blue">#include</font> <font color="maroon">"include/cef_load_handler.h"</font>
+<font color="blue">#include</font> <font color="maroon">"include/cef_menu_handler.h"</font>
+<font color="blue">#include</font> <font color="maroon">"include/cef_permission_handler.h"</font>
+<font color="blue">#include</font> <font color="maroon">"include/cef_print_handler.h"</font>
+<font color="blue">#include</font> <font color="maroon">"include/cef_render_handler.h"</font>
+<font color="blue">#include</font> <font color="maroon">"include/cef_request_handler.h"</font>
+<font color="blue">#include</font> <font color="maroon">"include/cef_v8context_handler.h"</font>
+<font color="blue">#include</font> <font color="maroon">"include/cef_zoom_handler.h"</font>
+
+<font color="green">///</font>
+<font color="green">// Implement this interface to provide handler implementations.</font>
+<font color="green">///</font>
+<font color="green">/*--cef(source=client,no_debugct_check)--*/</font>
+<font color="blue">class</font> CefClient <font color="black">:</font> <font color="blue">public</font> virtual CefBase <font color="black">{</font>
+ <font color="blue">public</font><font color="black">:</font>
+  <font color="green">///</font>
+  <font color="green">// Return the handler for browser life span events.</font>
+  <font color="green">///</font>
+  <font color="green">/*--cef()--*/</font>
+  virtual CefRefPtr<font color="black">&#60;</font>CefLifeSpanHandler<font color="black">&#62;</font> GetLifeSpanHandler<font color="black">(</font><font color="black">)</font> <font color="black">{</font>
+    <font color="blue">return</font> NULL;
+  <font color="black">}</font>
+
+  <font color="green">///</font>
+  <font color="green">// Return the handler for browser load status events.</font>
+  <font color="green">///</font>
+  <font color="green">/*--cef()--*/</font>
+  virtual CefRefPtr<font color="black">&#60;</font>CefLoadHandler<font color="black">&#62;</font> GetLoadHandler<font color="black">(</font><font color="black">)</font> <font color="black">{</font>
+    <font color="blue">return</font> NULL;
+  <font color="black">}</font>
+
+  <font color="green">///</font>
+  <font color="green">// Return the handler for browser request events.</font>
+  <font color="green">///</font>
+  <font color="green">/*--cef()--*/</font>
+  virtual CefRefPtr<font color="black">&#60;</font>CefRequestHandler<font color="black">&#62;</font> GetRequestHandler<font color="black">(</font><font color="black">)</font> <font color="black">{</font>
+    <font color="blue">return</font> NULL;
+  <font color="black">}</font>
+
+  <font color="green">///</font>
+  <font color="green">// Return the handler for browser display state events.</font>
+  <font color="green">///</font>
+  <font color="green">/*--cef()--*/</font>
+  virtual CefRefPtr<font color="black">&#60;</font>CefDisplayHandler<font color="black">&#62;</font> GetDisplayHandler<font color="black">(</font><font color="black">)</font> <font color="black">{</font>
+    <font color="blue">return</font> NULL;
+  <font color="black">}</font>
+
+  <font color="green">///</font>
+  <font color="green">// Return the handler for focus events.</font>
+  <font color="green">///</font>
+  <font color="green">/*--cef()--*/</font>
+  virtual CefRefPtr<font color="black">&#60;</font>CefFocusHandler<font color="black">&#62;</font> GetFocusHandler<font color="black">(</font><font color="black">)</font> <font color="black">{</font>
+    <font color="blue">return</font> NULL;
+  <font color="black">}</font>
+
+  <font color="green">///</font>
+  <font color="green">// Return the handler for keyboard events.</font>
+  <font color="green">///</font>
+  <font color="green">/*--cef()--*/</font>
+  virtual CefRefPtr<font color="black">&#60;</font>CefKeyboardHandler<font color="black">&#62;</font> GetKeyboardHandler<font color="black">(</font><font color="black">)</font> <font color="black">{</font>
+    <font color="blue">return</font> NULL;
+  <font color="black">}</font>
+
+  <font color="green">///</font>
+  <font color="green">// Return the handler for context menu events.</font>
+  <font color="green">///</font>
+  <font color="green">/*--cef()--*/</font>
+  virtual CefRefPtr<font color="black">&#60;</font>CefMenuHandler<font color="black">&#62;</font> GetMenuHandler<font color="black">(</font><font color="black">)</font> <font color="black">{</font>
+    <font color="blue">return</font> NULL;
+  <font color="black">}</font>
+
+  <font color="green">///</font>
+  <font color="green">// Return the handler for browser permission events.</font>
+  <font color="green">///</font>
+  <font color="green">/*--cef()--*/</font>
+  virtual CefRefPtr<font color="black">&#60;</font>CefPermissionHandler<font color="black">&#62;</font> GetPermissionHandler<font color="black">(</font><font color="black">)</font> <font color="black">{</font>
+    <font color="blue">return</font> NULL;
+  <font color="black">}</font>
+
+  <font color="green">///</font>
+  <font color="green">// Return the handler for printing events.</font>
+  <font color="green">///</font>
+  <font color="green">/*--cef()--*/</font>
+  virtual CefRefPtr<font color="black">&#60;</font>CefPrintHandler<font color="black">&#62;</font> GetPrintHandler<font color="black">(</font><font color="black">)</font> <font color="black">{</font>
+    <font color="blue">return</font> NULL;
+  <font color="black">}</font>
+
+  <font color="green">///</font>
+  <font color="green">// Return the handler for find result events.</font>
+  <font color="green">///</font>
+  <font color="green">/*--cef()--*/</font>
+  virtual CefRefPtr<font color="black">&#60;</font>CefFindHandler<font color="black">&#62;</font> GetFindHandler<font color="black">(</font><font color="black">)</font> <font color="black">{</font>
+    <font color="blue">return</font> NULL;
+  <font color="black">}</font>
+
+  <font color="green">///</font>
+  <font color="green">// Return the handler for JavaScript dialog events.</font>
+  <font color="green">///</font>
+  <font color="green">/*--cef()--*/</font>
+  virtual CefRefPtr<font color="black">&#60;</font>CefJSDialogHandler<font color="black">&#62;</font> GetJSDialogHandler<font color="black">(</font><font color="black">)</font> <font color="black">{</font>
+    <font color="blue">return</font> NULL;
+  <font color="black">}</font>
+
+  <font color="green">///</font>
+  <font color="green">// Return the handler for V8 context events.</font>
+  <font color="green">///</font>
+  <font color="green">/*--cef()--*/</font>
+  virtual CefRefPtr<font color="black">&#60;</font>CefV8ContextHandler<font color="black">&#62;</font> GetV8ContextHandler<font color="black">(</font><font color="black">)</font> <font color="black">{</font>
+    <font color="blue">return</font> NULL;
+  <font color="black">}</font>
+
+  <font color="green">///</font>
+  <font color="green">// Return the handler for off-screen rendering events.</font>
+  <font color="green">///</font>
+  <font color="green">/*--cef()--*/</font>
+  virtual CefRefPtr<font color="black">&#60;</font>CefRenderHandler<font color="black">&#62;</font> GetRenderHandler<font color="black">(</font><font color="black">)</font> <font color="black">{</font>
+    <font color="blue">return</font> NULL;
+  <font color="black">}</font>
+
+  <font color="green">///</font>
+  <font color="green">// Return the handler for drag events.</font>
+  <font color="green">///</font>
+  <font color="green">/*--cef()--*/</font>
+  virtual CefRefPtr<font color="black">&#60;</font>CefDragHandler<font color="black">&#62;</font> GetDragHandler<font color="black">(</font><font color="black">)</font> <font color="black">{</font>
+    <font color="blue">return</font> NULL;
+  <font color="black">}</font>
+
+  <font color="green">///</font>
+  <font color="green">// Return the handler for geolocation permissions requests. If no handler is</font>
+  <font color="green">// provided geolocation access will be denied by default.</font>
+  <font color="green">///</font>
+  <font color="green">/*--cef()--*/</font>
+  virtual CefRefPtr<font color="black">&#60;</font>CefGeolocationHandler<font color="black">&#62;</font> GetGeolocationHandler<font color="black">(</font><font color="black">)</font> <font color="black">{</font>
+    <font color="blue">return</font> NULL;
+  <font color="black">}</font>
+
+  <font color="green">///</font>
+  <font color="green">// Return the handler for zoom events. If no handler is provided the default</font>
+  <font color="green">// zoom behavior will be used.</font>
+  <font color="green">///</font>
+  <font color="green">/*--cef()--*/</font>
+  virtual CefRefPtr<font color="black">&#60;</font>CefZoomHandler<font color="black">&#62;</font> GetZoomHandler<font color="black">(</font><font color="black">)</font> <font color="black">{</font>
+    <font color="blue">return</font> NULL;
+  <font color="black">}</font>
+<font color="black">}</font>;
+
+<font color="blue">#endif</font>  <font color="green">// CEF_INCLUDE_CEF_CLIENT_H_</font>
+
+</PRE>
+</BODY>
+</HTML>

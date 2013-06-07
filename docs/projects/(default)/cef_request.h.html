@@ -1,0 +1,267 @@
+<HTML>
+<HEAD>
+<TITLE>
+cef_request.h
+</TITLE>
+</HEAD>
+<BODY>
+<PRE>
+<font color="green">// Copyright (c) 2011 Marshall A. Greenblatt. All rights reserved.</font>
+<font color="green">//</font>
+<font color="green">// Redistribution and use in source and binary forms, with or without</font>
+<font color="green">// modification, are permitted provided that the following conditions are</font>
+<font color="green">// met:</font>
+<font color="green">//</font>
+<font color="green">//    * Redistributions of source code must retain the above copyright</font>
+<font color="green">// notice, this list of conditions and the following disclaimer.</font>
+<font color="green">//    * Redistributions in binary form must reproduce the above</font>
+<font color="green">// copyright notice, this list of conditions and the following disclaimer</font>
+<font color="green">// in the documentation and/or other materials provided with the</font>
+<font color="green">// distribution.</font>
+<font color="green">//    * Neither the name of Google Inc. nor the name Chromium Embedded</font>
+<font color="green">// Framework nor the names of its contributors may be used to endorse</font>
+<font color="green">// or promote products derived from this software without specific prior</font>
+<font color="green">// written permission.</font>
+<font color="green">//</font>
+<font color="green">// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS</font>
+<font color="green">// "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT</font>
+<font color="green">// LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR</font>
+<font color="green">// A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT</font>
+<font color="green">// OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,</font>
+<font color="green">// SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT</font>
+<font color="green">// LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,</font>
+<font color="green">// DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY</font>
+<font color="green">// THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT</font>
+<font color="green">// (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE</font>
+<font color="green">// OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.</font>
+<font color="green">//</font>
+<font color="green">// ---------------------------------------------------------------------------</font>
+<font color="green">//</font>
+<font color="green">// The contents of this file must follow a specific format in order to</font>
+<font color="green">// support the CEF translator tool. See the translator.README.txt file in the</font>
+<font color="green">// tools directory for more information.</font>
+<font color="green">//</font>
+
+<font color="blue">#ifndef</font> CEF_INCLUDE_CEF_REQUEST_H_
+<font color="blue">#define</font> CEF_INCLUDE_CEF_REQUEST_H_
+<font color="blue">#pragma</font> once
+
+<font color="blue">#include</font> <font color="maroon">"include/cef_base.h"</font>
+<font color="blue">#include</font> <font color="maroon">&#60;map&#62;</font>
+<font color="blue">#include</font> <font color="maroon">&#60;vector&#62;</font>
+
+<font color="blue">class</font> CefPostData;
+<font color="blue">class</font> CefPostDataElement;
+
+<font color="green">///</font>
+<font color="green">// Class used to represent a web request. The methods of this class may be</font>
+<font color="green">// called on any thread.</font>
+<font color="green">///</font>
+<font color="green">/*--cef(source=library)--*/</font>
+<font color="blue">class</font> CefRequest <font color="black">:</font> <font color="blue">public</font> virtual CefBase <font color="black">{</font>
+ <font color="blue">public</font><font color="black">:</font>
+  <font color="blue">typedef</font> std<font color="black">:</font><font color="black">:</font>multimap<font color="black">&#60;</font>CefString, CefString<font color="black">&#62;</font> HeaderMap;
+  <font color="blue">typedef</font> cef_weburlrequest_flags_t RequestFlags;
+
+  <font color="green">///</font>
+  <font color="green">// Create a new CefRequest object.</font>
+  <font color="green">///</font>
+  <font color="green">/*--cef()--*/</font>
+  <font color="blue">static</font> CefRefPtr<font color="black">&#60;</font>CefRequest<font color="black">&#62;</font> CreateRequest<font color="black">(</font><font color="black">)</font>;
+
+  <font color="green">///</font>
+  <font color="green">// Get the fully qualified URL.</font>
+  <font color="green">///</font>
+  <font color="green">/*--cef()--*/</font>
+  virtual CefString GetURL<font color="black">(</font><font color="black">)</font> <font color="black">=</font><font color="maroon">0</font>;
+  <font color="green">///</font>
+  <font color="green">// Set the fully qualified URL.</font>
+  <font color="green">///</font>
+  <font color="green">/*--cef()--*/</font>
+  virtual <font color="blue">void</font> SetURL<font color="black">(</font><font color="blue">const</font> CefString<font color="black">&</font> url<font color="black">)</font> <font color="black">=</font><font color="maroon">0</font>;
+
+  <font color="green">///</font>
+  <font color="green">// Get the request method type. The value will default to POST if post data</font>
+  <font color="green">// is provided and GET otherwise.</font>
+  <font color="green">///</font>
+  <font color="green">/*--cef()--*/</font>
+  virtual CefString GetMethod<font color="black">(</font><font color="black">)</font> <font color="black">=</font><font color="maroon">0</font>;
+  <font color="green">///</font>
+  <font color="green">// Set the request method type.</font>
+  <font color="green">///</font>
+  <font color="green">/*--cef()--*/</font>
+  virtual <font color="blue">void</font> SetMethod<font color="black">(</font><font color="blue">const</font> CefString<font color="black">&</font> method<font color="black">)</font> <font color="black">=</font><font color="maroon">0</font>;
+
+  <font color="green">///</font>
+  <font color="green">// Get the post data.</font>
+  <font color="green">///</font>
+  <font color="green">/*--cef()--*/</font>
+  virtual CefRefPtr<font color="black">&#60;</font>CefPostData<font color="black">&#62;</font> GetPostData<font color="black">(</font><font color="black">)</font> <font color="black">=</font><font color="maroon">0</font>;
+  <font color="green">///</font>
+  <font color="green">// Set the post data.</font>
+  <font color="green">///</font>
+  <font color="green">/*--cef()--*/</font>
+  virtual <font color="blue">void</font> SetPostData<font color="black">(</font>CefRefPtr<font color="black">&#60;</font>CefPostData<font color="black">&#62;</font> postData<font color="black">)</font> <font color="black">=</font><font color="maroon">0</font>;
+
+  <font color="green">///</font>
+  <font color="green">// Get the header values.</font>
+  <font color="green">///</font>
+  <font color="green">/*--cef()--*/</font>
+  virtual <font color="blue">void</font> GetHeaderMap<font color="black">(</font>HeaderMap<font color="black">&</font> headerMap<font color="black">)</font> <font color="black">=</font><font color="maroon">0</font>;
+  <font color="green">///</font>
+  <font color="green">// Set the header values.</font>
+  <font color="green">///</font>
+  <font color="green">/*--cef()--*/</font>
+  virtual <font color="blue">void</font> SetHeaderMap<font color="black">(</font><font color="blue">const</font> HeaderMap<font color="black">&</font> headerMap<font color="black">)</font> <font color="black">=</font><font color="maroon">0</font>;
+
+  <font color="green">///</font>
+  <font color="green">// Set all values at one time.</font>
+  <font color="green">///</font>
+  <font color="green">/*--cef(optional_param=postData)--*/</font>
+  virtual <font color="blue">void</font> Set<font color="black">(</font><font color="blue">const</font> CefString<font color="black">&</font> url,
+                   <font color="blue">const</font> CefString<font color="black">&</font> method,
+                   CefRefPtr<font color="black">&#60;</font>CefPostData<font color="black">&#62;</font> postData,
+                   <font color="blue">const</font> HeaderMap<font color="black">&</font> headerMap<font color="black">)</font> <font color="black">=</font><font color="maroon">0</font>;
+
+  <font color="green">///</font>
+  <font color="green">// Get the flags used in combination with CefWebURLRequest.</font>
+  <font color="green">///</font>
+  <font color="green">/*--cef(default_retval=WUR_FLAG_NONE)--*/</font>
+  virtual RequestFlags GetFlags<font color="black">(</font><font color="black">)</font> <font color="black">=</font><font color="maroon">0</font>;
+  <font color="green">///</font>
+  <font color="green">// Set the flags used in combination with CefWebURLRequest.</font>
+  <font color="green">///</font>
+  <font color="green">/*--cef()--*/</font>
+  virtual <font color="blue">void</font> SetFlags<font color="black">(</font>RequestFlags flags<font color="black">)</font> <font color="black">=</font><font color="maroon">0</font>;
+
+  <font color="green">///</font>
+  <font color="green">// Set the URL to the first party for cookies used in combination with</font>
+  <font color="green">// CefWebURLRequest.</font>
+  <font color="green">///</font>
+  <font color="green">/*--cef()--*/</font>
+  virtual CefString GetFirstPartyForCookies<font color="black">(</font><font color="black">)</font> <font color="black">=</font><font color="maroon">0</font>;
+  <font color="green">///</font>
+  <font color="green">// Get the URL to the first party for cookies used in combination with</font>
+  <font color="green">// CefWebURLRequest.</font>
+  <font color="green">///</font>
+  <font color="green">/*--cef()--*/</font>
+  virtual <font color="blue">void</font> SetFirstPartyForCookies<font color="black">(</font><font color="blue">const</font> CefString<font color="black">&</font> url<font color="black">)</font> <font color="black">=</font><font color="maroon">0</font>;
+<font color="black">}</font>;
+
+
+<font color="green">///</font>
+<font color="green">// Class used to represent post data for a web request. The methods of this</font>
+<font color="green">// class may be called on any thread.</font>
+<font color="green">///</font>
+<font color="green">/*--cef(source=library)--*/</font>
+<font color="blue">class</font> CefPostData <font color="black">:</font> <font color="blue">public</font> virtual CefBase <font color="black">{</font>
+ <font color="blue">public</font><font color="black">:</font>
+  <font color="blue">typedef</font> std<font color="black">:</font><font color="black">:</font>vector<font color="black">&#60;</font>CefRefPtr<font color="black">&#60;</font>CefPostDataElement<font color="black">&#62;</font> <font color="black">&#62;</font> ElementVector;
+
+  <font color="green">///</font>
+  <font color="green">// Create a new CefPostData object.</font>
+  <font color="green">///</font>
+  <font color="green">/*--cef()--*/</font>
+  <font color="blue">static</font> CefRefPtr<font color="black">&#60;</font>CefPostData<font color="black">&#62;</font> CreatePostData<font color="black">(</font><font color="black">)</font>;
+
+  <font color="green">///</font>
+  <font color="green">// Returns the number of existing post data elements.</font>
+  <font color="green">///</font>
+  <font color="green">/*--cef()--*/</font>
+  virtual size_t GetElementCount<font color="black">(</font><font color="black">)</font> <font color="black">=</font><font color="maroon">0</font>;
+
+  <font color="green">///</font>
+  <font color="green">// Retrieve the post data elements.</font>
+  <font color="green">///</font>
+  <font color="green">/*--cef(count_func=elements:GetElementCount)--*/</font>
+  virtual <font color="blue">void</font> GetElements<font color="black">(</font>ElementVector<font color="black">&</font> elements<font color="black">)</font> <font color="black">=</font><font color="maroon">0</font>;
+
+  <font color="green">///</font>
+  <font color="green">// Remove the specified post data element.  Returns true if the removal</font>
+  <font color="green">// succeeds.</font>
+  <font color="green">///</font>
+  <font color="green">/*--cef()--*/</font>
+  virtual <font color="blue">bool</font> RemoveElement<font color="black">(</font>CefRefPtr<font color="black">&#60;</font>CefPostDataElement<font color="black">&#62;</font> element<font color="black">)</font> <font color="black">=</font><font color="maroon">0</font>;
+
+  <font color="green">///</font>
+  <font color="green">// Add the specified post data element.  Returns true if the add succeeds.</font>
+  <font color="green">///</font>
+  <font color="green">/*--cef()--*/</font>
+  virtual <font color="blue">bool</font> AddElement<font color="black">(</font>CefRefPtr<font color="black">&#60;</font>CefPostDataElement<font color="black">&#62;</font> element<font color="black">)</font> <font color="black">=</font><font color="maroon">0</font>;
+
+  <font color="green">///</font>
+  <font color="green">// Remove all existing post data elements.</font>
+  <font color="green">///</font>
+  <font color="green">/*--cef()--*/</font>
+  virtual <font color="blue">void</font> RemoveElements<font color="black">(</font><font color="black">)</font> <font color="black">=</font><font color="maroon">0</font>;
+<font color="black">}</font>;
+
+
+<font color="green">///</font>
+<font color="green">// Class used to represent a single element in the request post data. The</font>
+<font color="green">// methods of this class may be called on any thread.</font>
+<font color="green">///</font>
+<font color="green">/*--cef(source=library)--*/</font>
+<font color="blue">class</font> CefPostDataElement <font color="black">:</font> <font color="blue">public</font> virtual CefBase <font color="black">{</font>
+ <font color="blue">public</font><font color="black">:</font>
+  <font color="green">///</font>
+  <font color="green">// Post data elements may represent either bytes or files.</font>
+  <font color="green">///</font>
+  <font color="blue">typedef</font> cef_postdataelement_type_t Type;
+
+  <font color="green">///</font>
+  <font color="green">// Create a new CefPostDataElement object.</font>
+  <font color="green">///</font>
+  <font color="green">/*--cef()--*/</font>
+  <font color="blue">static</font> CefRefPtr<font color="black">&#60;</font>CefPostDataElement<font color="black">&#62;</font> CreatePostDataElement<font color="black">(</font><font color="black">)</font>;
+
+  <font color="green">///</font>
+  <font color="green">// Remove all contents from the post data element.</font>
+  <font color="green">///</font>
+  <font color="green">/*--cef()--*/</font>
+  virtual <font color="blue">void</font> SetToEmpty<font color="black">(</font><font color="black">)</font> <font color="black">=</font><font color="maroon">0</font>;
+
+  <font color="green">///</font>
+  <font color="green">// The post data element will represent a file.</font>
+  <font color="green">///</font>
+  <font color="green">/*--cef()--*/</font>
+  virtual <font color="blue">void</font> SetToFile<font color="black">(</font><font color="blue">const</font> CefString<font color="black">&</font> fileName<font color="black">)</font> <font color="black">=</font><font color="maroon">0</font>;
+
+  <font color="green">///</font>
+  <font color="green">// The post data element will represent bytes.  The bytes passed</font>
+  <font color="green">// in will be copied.</font>
+  <font color="green">///</font>
+  <font color="green">/*--cef()--*/</font>
+  virtual <font color="blue">void</font> SetToBytes<font color="black">(</font>size_t size, <font color="blue">const</font> <font color="blue">void</font><font color="black">*</font> bytes<font color="black">)</font> <font color="black">=</font><font color="maroon">0</font>;
+
+  <font color="green">///</font>
+  <font color="green">// Return the type of this post data element.</font>
+  <font color="green">///</font>
+  <font color="green">/*--cef(default_retval=PDE_TYPE_EMPTY)--*/</font>
+  virtual Type GetType<font color="black">(</font><font color="black">)</font> <font color="black">=</font><font color="maroon">0</font>;
+
+  <font color="green">///</font>
+  <font color="green">// Return the file name.</font>
+  <font color="green">///</font>
+  <font color="green">/*--cef()--*/</font>
+  virtual CefString GetFile<font color="black">(</font><font color="black">)</font> <font color="black">=</font><font color="maroon">0</font>;
+
+  <font color="green">///</font>
+  <font color="green">// Return the number of bytes.</font>
+  <font color="green">///</font>
+  <font color="green">/*--cef()--*/</font>
+  virtual size_t GetBytesCount<font color="black">(</font><font color="black">)</font> <font color="black">=</font><font color="maroon">0</font>;
+
+  <font color="green">///</font>
+  <font color="green">// Read up to |size| bytes into |bytes| and return the number of bytes</font>
+  <font color="green">// actually read.</font>
+  <font color="green">///</font>
+  <font color="green">/*--cef()--*/</font>
+  virtual size_t GetBytes<font color="black">(</font>size_t size, <font color="blue">void</font><font color="black">*</font> bytes<font color="black">)</font> <font color="black">=</font><font color="maroon">0</font>;
+<font color="black">}</font>;
+
+<font color="blue">#endif</font>  <font color="green">// CEF_INCLUDE_CEF_REQUEST_H_</font>
+
+</PRE>
+</BODY>
+</HTML>

@@ -1,0 +1,147 @@
+<HTML>
+<HEAD>
+<TITLE>
+cef_web_urlrequest.h
+</TITLE>
+</HEAD>
+<BODY>
+<PRE>
+<font color="green">// Copyright (c) 2011 Marshall A. Greenblatt. All rights reserved.</font>
+<font color="green">//</font>
+<font color="green">// Redistribution and use in source and binary forms, with or without</font>
+<font color="green">// modification, are permitted provided that the following conditions are</font>
+<font color="green">// met:</font>
+<font color="green">//</font>
+<font color="green">//    * Redistributions of source code must retain the above copyright</font>
+<font color="green">// notice, this list of conditions and the following disclaimer.</font>
+<font color="green">//    * Redistributions in binary form must reproduce the above</font>
+<font color="green">// copyright notice, this list of conditions and the following disclaimer</font>
+<font color="green">// in the documentation and/or other materials provided with the</font>
+<font color="green">// distribution.</font>
+<font color="green">//    * Neither the name of Google Inc. nor the name Chromium Embedded</font>
+<font color="green">// Framework nor the names of its contributors may be used to endorse</font>
+<font color="green">// or promote products derived from this software without specific prior</font>
+<font color="green">// written permission.</font>
+<font color="green">//</font>
+<font color="green">// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS</font>
+<font color="green">// "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT</font>
+<font color="green">// LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR</font>
+<font color="green">// A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT</font>
+<font color="green">// OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,</font>
+<font color="green">// SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT</font>
+<font color="green">// LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,</font>
+<font color="green">// DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY</font>
+<font color="green">// THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT</font>
+<font color="green">// (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE</font>
+<font color="green">// OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.</font>
+<font color="green">//</font>
+<font color="green">// ---------------------------------------------------------------------------</font>
+<font color="green">//</font>
+<font color="green">// The contents of this file must follow a specific format in order to</font>
+<font color="green">// support the CEF translator tool. See the translator.README.txt file in the</font>
+<font color="green">// tools directory for more information.</font>
+<font color="green">//</font>
+
+<font color="blue">#ifndef</font> CEF_INCLUDE_CEF_WEB_URLREQUEST_H_
+<font color="blue">#define</font> CEF_INCLUDE_CEF_WEB_URLREQUEST_H_
+<font color="blue">#pragma</font> once
+
+<font color="blue">#include</font> <font color="maroon">"include/cef_base.h"</font>
+<font color="blue">#include</font> <font color="maroon">"include/cef_request.h"</font>
+<font color="blue">#include</font> <font color="maroon">"include/cef_response.h"</font>
+
+<font color="blue">class</font> CefWebURLRequestClient;
+
+<font color="green">///</font>
+<font color="green">// Class used to make a Web URL request. Web URL requests are not associated</font>
+<font color="green">// with a browser instance so no CefClient callbacks will be executed. The</font>
+<font color="green">// methods of this class may be called on any thread.</font>
+<font color="green">///</font>
+<font color="green">/*--cef(source=library)--*/</font>
+<font color="blue">class</font> CefWebURLRequest <font color="black">:</font> <font color="blue">public</font> virtual CefBase <font color="black">{</font>
+ <font color="blue">public</font><font color="black">:</font>
+  <font color="blue">typedef</font> cef_weburlrequest_state_t RequestState;
+
+  <font color="green">///</font>
+  <font color="green">// Create a new CefWebUrlRequest object.</font>
+  <font color="green">///</font>
+  <font color="green">/*--cef()--*/</font>
+  <font color="blue">static</font> CefRefPtr<font color="black">&#60;</font>CefWebURLRequest<font color="black">&#62;</font> CreateWebURLRequest<font color="black">(</font>
+      CefRefPtr<font color="black">&#60;</font>CefRequest<font color="black">&#62;</font> request,
+      CefRefPtr<font color="black">&#60;</font>CefWebURLRequestClient<font color="black">&#62;</font> client<font color="black">)</font>;
+
+  <font color="green">///</font>
+  <font color="green">// Cancels the request.</font>
+  <font color="green">///</font>
+  <font color="green">/*--cef()--*/</font>
+  virtual <font color="blue">void</font> Cancel<font color="black">(</font><font color="black">)</font> <font color="black">=</font><font color="maroon">0</font>;
+
+  <font color="green">///</font>
+  <font color="green">// Returns the current ready state of the request.</font>
+  <font color="green">///</font>
+  <font color="green">/*--cef(default_retval=WUR_STATE_UNSENT)--*/</font>
+  virtual RequestState GetState<font color="black">(</font><font color="black">)</font> <font color="black">=</font><font color="maroon">0</font>;
+<font color="black">}</font>;
+
+<font color="green">///</font>
+<font color="green">// Interface that should be implemented by the CefWebURLRequest client. The</font>
+<font color="green">// methods of this class will always be called on the UI thread.</font>
+<font color="green">///</font>
+<font color="green">/*--cef(source=client)--*/</font>
+<font color="blue">class</font> CefWebURLRequestClient <font color="black">:</font> <font color="blue">public</font> virtual CefBase <font color="black">{</font>
+ <font color="blue">public</font><font color="black">:</font>
+  <font color="blue">typedef</font> cef_weburlrequest_state_t RequestState;
+  <font color="blue">typedef</font> cef_handler_errorcode_t ErrorCode;
+
+  <font color="green">///</font>
+  <font color="green">// Notifies the client that the request state has changed. State change</font>
+  <font color="green">// notifications will always be sent before the below notification methods</font>
+  <font color="green">// are called.</font>
+  <font color="green">///</font>
+  <font color="green">/*--cef()--*/</font>
+  virtual <font color="blue">void</font> OnStateChange<font color="black">(</font>CefRefPtr<font color="black">&#60;</font>CefWebURLRequest<font color="black">&#62;</font> requester,
+                             RequestState state<font color="black">)</font> <font color="black">=</font><font color="maroon">0</font>;
+
+  <font color="green">///</font>
+  <font color="green">// Notifies the client that the request has been redirected and  provides a</font>
+  <font color="green">// chance to change the request parameters.</font>
+  <font color="green">///</font>
+  <font color="green">/*--cef()--*/</font>
+  virtual <font color="blue">void</font> OnRedirect<font color="black">(</font>CefRefPtr<font color="black">&#60;</font>CefWebURLRequest<font color="black">&#62;</font> requester,
+                          CefRefPtr<font color="black">&#60;</font>CefRequest<font color="black">&#62;</font> request,
+                          CefRefPtr<font color="black">&#60;</font>CefResponse<font color="black">&#62;</font> response<font color="black">)</font> <font color="black">=</font><font color="maroon">0</font>;
+
+  <font color="green">///</font>
+  <font color="green">// Notifies the client of the response data.</font>
+  <font color="green">///</font>
+  <font color="green">/*--cef()--*/</font>
+  virtual <font color="blue">void</font> OnHeadersReceived<font color="black">(</font>CefRefPtr<font color="black">&#60;</font>CefWebURLRequest<font color="black">&#62;</font> requester,
+                                 CefRefPtr<font color="black">&#60;</font>CefResponse<font color="black">&#62;</font> response<font color="black">)</font> <font color="black">=</font><font color="maroon">0</font>;
+
+  <font color="green">///</font>
+  <font color="green">// Notifies the client of the upload progress.</font>
+  <font color="green">///</font>
+  <font color="green">/*--cef()--*/</font>
+  virtual <font color="blue">void</font> OnProgress<font color="black">(</font>CefRefPtr<font color="black">&#60;</font>CefWebURLRequest<font color="black">&#62;</font> requester,
+                          uint64 bytesSent, uint64 totalBytesToBeSent<font color="black">)</font> <font color="black">=</font><font color="maroon">0</font>;
+
+  <font color="green">///</font>
+  <font color="green">// Notifies the client that content has been received.</font>
+  <font color="green">///</font>
+  <font color="green">/*--cef()--*/</font>
+  virtual <font color="blue">void</font> OnData<font color="black">(</font>CefRefPtr<font color="black">&#60;</font>CefWebURLRequest<font color="black">&#62;</font> requester,
+                      <font color="blue">const</font> <font color="blue">void</font><font color="black">*</font> data, <font color="blue">int</font> dataLength<font color="black">)</font> <font color="black">=</font><font color="maroon">0</font>;
+
+  <font color="green">///</font>
+  <font color="green">// Notifies the client that the request ended with an error.</font>
+  <font color="green">///</font>
+  <font color="green">/*--cef()--*/</font>
+  virtual <font color="blue">void</font> OnError<font color="black">(</font>CefRefPtr<font color="black">&#60;</font>CefWebURLRequest<font color="black">&#62;</font> requester,
+                       ErrorCode errorCode<font color="black">)</font> <font color="black">=</font><font color="maroon">0</font>;
+<font color="black">}</font>;
+
+<font color="blue">#endif</font>  <font color="green">// CEF_INCLUDE_CEF_WEB_URLREQUEST_H_</font>
+
+</PRE>
+</BODY>
+</HTML>

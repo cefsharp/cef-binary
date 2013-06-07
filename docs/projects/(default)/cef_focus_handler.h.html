@@ -1,0 +1,100 @@
+<HTML>
+<HEAD>
+<TITLE>
+cef_focus_handler.h
+</TITLE>
+</HEAD>
+<BODY>
+<PRE>
+<font color="green">// Copyright (c) 2011 Marshall A. Greenblatt. All rights reserved.</font>
+<font color="green">//</font>
+<font color="green">// Redistribution and use in source and binary forms, with or without</font>
+<font color="green">// modification, are permitted provided that the following conditions are</font>
+<font color="green">// met:</font>
+<font color="green">//</font>
+<font color="green">//    * Redistributions of source code must retain the above copyright</font>
+<font color="green">// notice, this list of conditions and the following disclaimer.</font>
+<font color="green">//    * Redistributions in binary form must reproduce the above</font>
+<font color="green">// copyright notice, this list of conditions and the following disclaimer</font>
+<font color="green">// in the documentation and/or other materials provided with the</font>
+<font color="green">// distribution.</font>
+<font color="green">//    * Neither the name of Google Inc. nor the name Chromium Embedded</font>
+<font color="green">// Framework nor the names of its contributors may be used to endorse</font>
+<font color="green">// or promote products derived from this software without specific prior</font>
+<font color="green">// written permission.</font>
+<font color="green">//</font>
+<font color="green">// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS</font>
+<font color="green">// "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT</font>
+<font color="green">// LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR</font>
+<font color="green">// A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT</font>
+<font color="green">// OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,</font>
+<font color="green">// SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT</font>
+<font color="green">// LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,</font>
+<font color="green">// DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY</font>
+<font color="green">// THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT</font>
+<font color="green">// (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE</font>
+<font color="green">// OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.</font>
+<font color="green">//</font>
+<font color="green">// ---------------------------------------------------------------------------</font>
+<font color="green">//</font>
+<font color="green">// The contents of this file must follow a specific format in order to</font>
+<font color="green">// support the CEF translator tool. See the translator.README.txt file in the</font>
+<font color="green">// tools directory for more information.</font>
+<font color="green">//</font>
+
+<font color="blue">#ifndef</font> CEF_INCLUDE_CEF_FOCUS_HANDLER_H_
+<font color="blue">#define</font> CEF_INCLUDE_CEF_FOCUS_HANDLER_H_
+<font color="blue">#pragma</font> once
+
+<font color="blue">#include</font> <font color="maroon">"include/cef_base.h"</font>
+<font color="blue">#include</font> <font color="maroon">"include/cef_browser.h"</font>
+<font color="blue">#include</font> <font color="maroon">"include/cef_dom.h"</font>
+<font color="blue">#include</font> <font color="maroon">"include/cef_frame.h"</font>
+
+<font color="green">///</font>
+<font color="green">// Implement this interface to handle events related to focus. The methods of</font>
+<font color="green">// this class will be called on the UI thread.</font>
+<font color="green">///</font>
+<font color="green">/*--cef(source=client)--*/</font>
+<font color="blue">class</font> CefFocusHandler <font color="black">:</font> <font color="blue">public</font> virtual CefBase <font color="black">{</font>
+ <font color="blue">public</font><font color="black">:</font>
+  <font color="blue">typedef</font> cef_handler_focus_source_t FocusSource;
+
+  <font color="green">///</font>
+  <font color="green">// Called when the browser component is about to loose focus. For instance, if</font>
+  <font color="green">// focus was on the last HTML element and the user pressed the TAB key. |next|</font>
+  <font color="green">// will be true if the browser is giving focus to the next component and false</font>
+  <font color="green">// if the browser is giving focus to the previous component.</font>
+  <font color="green">///</font>
+  <font color="green">/*--cef()--*/</font>
+  virtual <font color="blue">void</font> OnTakeFocus<font color="black">(</font>CefRefPtr<font color="black">&#60;</font>CefBrowser<font color="black">&#62;</font> browser,
+                           <font color="blue">bool</font> next<font color="black">)</font> <font color="black">{</font><font color="black">}</font>
+
+  <font color="green">///</font>
+  <font color="green">// Called when the browser component is requesting focus. |source| indicates</font>
+  <font color="green">// where the focus request is originating from. Return false to allow the</font>
+  <font color="green">// focus to be set or true to cancel setting the focus.</font>
+  <font color="green">///</font>
+  <font color="green">/*--cef()--*/</font>
+  virtual <font color="blue">bool</font> OnSetFocus<font color="black">(</font>CefRefPtr<font color="black">&#60;</font>CefBrowser<font color="black">&#62;</font> browser,
+                          FocusSource source<font color="black">)</font> <font color="black">{</font> <font color="blue">return</font> <font color="blue">false</font>; <font color="black">}</font>
+
+  <font color="green">///</font>
+  <font color="green">// Called when a new node in the the browser gets focus. The |node| value may</font>
+  <font color="green">// be empty if no specific node has gained focus. The node object passed to</font>
+  <font color="green">// this method represents a snapshot of the DOM at the time this method is</font>
+  <font color="green">// executed. DOM objects are only valid for the scope of this method. Do not</font>
+  <font color="green">// keep references to or attempt to access any DOM objects outside the scope</font>
+  <font color="green">// of this method.</font>
+  <font color="green">///</font>
+  <font color="green">/*--cef(optional_param=frame,optional_param=node)--*/</font>
+  virtual <font color="blue">void</font> OnFocusedNodeChanged<font color="black">(</font>CefRefPtr<font color="black">&#60;</font>CefBrowser<font color="black">&#62;</font> browser,
+                                    CefRefPtr<font color="black">&#60;</font>CefFrame<font color="black">&#62;</font> frame,
+                                    CefRefPtr<font color="black">&#60;</font>CefDOMNode<font color="black">&#62;</font> node<font color="black">)</font> <font color="black">{</font><font color="black">}</font>
+<font color="black">}</font>;
+
+<font color="blue">#endif</font>  <font color="green">// CEF_INCLUDE_CEF_FOCUS_HANDLER_H_</font>
+
+</PRE>
+</BODY>
+</HTML>

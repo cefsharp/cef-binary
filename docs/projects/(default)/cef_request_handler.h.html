@@ -1,0 +1,183 @@
+<HTML>
+<HEAD>
+<TITLE>
+cef_request_handler.h
+</TITLE>
+</HEAD>
+<BODY>
+<PRE>
+<font color="green">// Copyright (c) 2011 Marshall A. Greenblatt. All rights reserved.</font>
+<font color="green">//</font>
+<font color="green">// Redistribution and use in source and binary forms, with or without</font>
+<font color="green">// modification, are permitted provided that the following conditions are</font>
+<font color="green">// met:</font>
+<font color="green">//</font>
+<font color="green">//    * Redistributions of source code must retain the above copyright</font>
+<font color="green">// notice, this list of conditions and the following disclaimer.</font>
+<font color="green">//    * Redistributions in binary form must reproduce the above</font>
+<font color="green">// copyright notice, this list of conditions and the following disclaimer</font>
+<font color="green">// in the documentation and/or other materials provided with the</font>
+<font color="green">// distribution.</font>
+<font color="green">//    * Neither the name of Google Inc. nor the name Chromium Embedded</font>
+<font color="green">// Framework nor the names of its contributors may be used to endorse</font>
+<font color="green">// or promote products derived from this software without specific prior</font>
+<font color="green">// written permission.</font>
+<font color="green">//</font>
+<font color="green">// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS</font>
+<font color="green">// "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT</font>
+<font color="green">// LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR</font>
+<font color="green">// A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT</font>
+<font color="green">// OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,</font>
+<font color="green">// SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT</font>
+<font color="green">// LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,</font>
+<font color="green">// DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY</font>
+<font color="green">// THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT</font>
+<font color="green">// (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE</font>
+<font color="green">// OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.</font>
+<font color="green">//</font>
+<font color="green">// ---------------------------------------------------------------------------</font>
+<font color="green">//</font>
+<font color="green">// The contents of this file must follow a specific format in order to</font>
+<font color="green">// support the CEF translator tool. See the translator.README.txt file in the</font>
+<font color="green">// tools directory for more information.</font>
+<font color="green">//</font>
+
+<font color="blue">#ifndef</font> CEF_INCLUDE_CEF_REQUEST_HANDLER_H_
+<font color="blue">#define</font> CEF_INCLUDE_CEF_REQUEST_HANDLER_H_
+<font color="blue">#pragma</font> once
+
+<font color="blue">#include</font> <font color="maroon">"include/cef_base.h"</font>
+<font color="blue">#include</font> <font color="maroon">"include/cef_browser.h"</font>
+<font color="blue">#include</font> <font color="maroon">"include/cef_cookie.h"</font>
+<font color="blue">#include</font> <font color="maroon">"include/cef_download_handler.h"</font>
+<font color="blue">#include</font> <font color="maroon">"include/cef_frame.h"</font>
+<font color="blue">#include</font> <font color="maroon">"include/cef_content_filter.h"</font>
+<font color="blue">#include</font> <font color="maroon">"include/cef_response.h"</font>
+<font color="blue">#include</font> <font color="maroon">"include/cef_request.h"</font>
+<font color="blue">#include</font> <font color="maroon">"include/cef_stream.h"</font>
+
+<font color="green">///</font>
+<font color="green">// Implement this interface to handle events related to browser requests. The</font>
+<font color="green">// methods of this class will be called on the thread indicated.</font>
+<font color="green">///</font>
+<font color="green">/*--cef(source=client)--*/</font>
+<font color="blue">class</font> CefRequestHandler <font color="black">:</font> <font color="blue">public</font> virtual CefBase <font color="black">{</font>
+ <font color="blue">public</font><font color="black">:</font>
+  <font color="blue">typedef</font> cef_handler_navtype_t NavType;
+
+  <font color="green">///</font>
+  <font color="green">// Called on the UI thread before browser navigation. Return true to cancel</font>
+  <font color="green">// the navigation or false to allow the navigation to proceed.</font>
+  <font color="green">///</font>
+  <font color="green">/*--cef()--*/</font>
+  virtual <font color="blue">bool</font> OnBeforeBrowse<font color="black">(</font>CefRefPtr<font color="black">&#60;</font>CefBrowser<font color="black">&#62;</font> browser,
+                              CefRefPtr<font color="black">&#60;</font>CefFrame<font color="black">&#62;</font> frame,
+                              CefRefPtr<font color="black">&#60;</font>CefRequest<font color="black">&#62;</font> request,
+                              NavType navType,
+                              <font color="blue">bool</font> isRedirect<font color="black">)</font> <font color="black">{</font> <font color="blue">return</font> <font color="blue">false</font>; <font color="black">}</font>
+
+  <font color="green">///</font>
+  <font color="green">// Called on the IO thread before a resource is loaded.  To allow the resource</font>
+  <font color="green">// to load normally return false. To redirect the resource to a new url</font>
+  <font color="green">// populate the |redirectUrl| value and return false.  To specify data for the</font>
+  <font color="green">// resource return a CefStream object in |resourceStream|, use the |response|</font>
+  <font color="green">// object to set mime type, HTTP status code and optional header values, and</font>
+  <font color="green">// return false. To cancel loading of the resource return true. Any</font>
+  <font color="green">// modifications to |request| will be observed.  If the URL in |request| is</font>
+  <font color="green">// changed and |redirectUrl| is also set, the URL in |request| will be used.</font>
+  <font color="green">///</font>
+  <font color="green">/*--cef()--*/</font>
+  virtual <font color="blue">bool</font> OnBeforeResourceLoad<font color="black">(</font>CefRefPtr<font color="black">&#60;</font>CefBrowser<font color="black">&#62;</font> browser,
+                                    CefRefPtr<font color="black">&#60;</font>CefRequest<font color="black">&#62;</font> request,
+                                    CefString<font color="black">&</font> redirectUrl,
+                                    CefRefPtr<font color="black">&#60;</font>CefStreamReader<font color="black">&#62;</font><font color="black">&</font> resourceStream,
+                                    CefRefPtr<font color="black">&#60;</font>CefResponse<font color="black">&#62;</font> response,
+                                    <font color="blue">int</font> loadFlags<font color="black">)</font> <font color="black">{</font> <font color="blue">return</font> <font color="blue">false</font>; <font color="black">}</font>
+
+  <font color="green">///</font>
+  <font color="green">// Called on the IO thread when a resource load is redirected. The |old_url|</font>
+  <font color="green">// parameter will contain the old URL. The |new_url| parameter will contain</font>
+  <font color="green">// the new URL and can be changed if desired.</font>
+  <font color="green">///</font>
+  <font color="green">/*--cef()--*/</font>
+  virtual <font color="blue">void</font> OnResourceRedirect<font color="black">(</font>CefRefPtr<font color="black">&#60;</font>CefBrowser<font color="black">&#62;</font> browser,
+                                  <font color="blue">const</font> CefString<font color="black">&</font> old_url,
+                                  CefString<font color="black">&</font> new_url<font color="black">)</font> <font color="black">{</font><font color="black">}</font>
+
+  <font color="green">///</font>
+  <font color="green">// Called on the UI thread after a response to the resource request is</font>
+  <font color="green">// received. Set |filter| if response content needs to be monitored and/or</font>
+  <font color="green">// modified as it arrives.</font>
+  <font color="green">///</font>
+  <font color="green">/*--cef()--*/</font>
+  virtual <font color="blue">void</font> OnResourceResponse<font color="black">(</font>CefRefPtr<font color="black">&#60;</font>CefBrowser<font color="black">&#62;</font> browser,
+                                  <font color="blue">const</font> CefString<font color="black">&</font> url,
+                                  CefRefPtr<font color="black">&#60;</font>CefResponse<font color="black">&#62;</font> response,
+                                  CefRefPtr<font color="black">&#60;</font>CefContentFilter<font color="black">&#62;</font><font color="black">&</font> filter<font color="black">)</font> <font color="black">{</font><font color="black">}</font>
+
+  <font color="green">///</font>
+  <font color="green">// Called on the IO thread to handle requests for URLs with an unknown</font>
+  <font color="green">// protocol component. Return true to indicate that the request should</font>
+  <font color="green">// succeed because it was handled externally. Set |allowOSExecution| to true</font>
+  <font color="green">// and return false to attempt execution via the registered OS protocol</font>
+  <font color="green">// handler, if any. If false is returned and either |allow_os_execution|</font>
+  <font color="green">// is false or OS protocol handler execution fails then the request will fail</font>
+  <font color="green">// with an error condition.</font>
+  <font color="green">// SECURITY WARNING: YOU SHOULD USE THIS METHOD TO ENFORCE RESTRICTIONS BASED</font>
+  <font color="green">// ON SCHEME, HOST OR OTHER URL ANALYSIS BEFORE ALLOWING OS EXECUTION.</font>
+  <font color="green">///</font>
+  <font color="green">/*--cef()--*/</font>
+  virtual <font color="blue">bool</font> OnProtocolExecution<font color="black">(</font>CefRefPtr<font color="black">&#60;</font>CefBrowser<font color="black">&#62;</font> browser,
+                                   <font color="blue">const</font> CefString<font color="black">&</font> url,
+                                   <font color="blue">bool</font><font color="black">&</font> allowOSExecution<font color="black">)</font> <font color="black">{</font> <font color="blue">return</font> <font color="blue">false</font>; <font color="black">}</font>
+
+  <font color="green">///</font>
+  <font color="green">// Called on the UI thread when a server indicates via the</font>
+  <font color="green">// 'Content-Disposition' header that a response represents a file to download.</font>
+  <font color="green">// |mimeType| is the mime type for the download, |fileName| is the suggested</font>
+  <font color="green">// target file name and |contentLength| is either the value of the</font>
+  <font color="green">// 'Content-Size' header or -1 if no size was provided. Set |handler| to the</font>
+  <font color="green">// CefDownloadHandler instance that will recieve the file contents. Return</font>
+  <font color="green">// true to download the file or false to cancel the file download.</font>
+  <font color="green">///</font>
+  <font color="green">/*--cef(optional_param=mimeType)--*/</font>
+  virtual <font color="blue">bool</font> GetDownloadHandler<font color="black">(</font>CefRefPtr<font color="black">&#60;</font>CefBrowser<font color="black">&#62;</font> browser,
+                                  <font color="blue">const</font> CefString<font color="black">&</font> mimeType,
+                                  <font color="blue">const</font> CefString<font color="black">&</font> fileName,
+                                  int64 contentLength,
+                                  CefRefPtr<font color="black">&#60;</font>CefDownloadHandler<font color="black">&#62;</font><font color="black">&</font> handler<font color="black">)</font>
+                                  <font color="black">{</font> <font color="blue">return</font> <font color="blue">false</font>; <font color="black">}</font>
+
+  <font color="green">///</font>
+  <font color="green">// Called on the IO thread when the browser needs credentials from the user.</font>
+  <font color="green">// |isProxy| indicates whether the host is a proxy server. |host| contains the</font>
+  <font color="green">// hostname and port number. Set |username| and |password| and return</font>
+  <font color="green">// true to handle the request. Return false to cancel the request.</font>
+  <font color="green">///</font>
+  <font color="green">/*--cef(optional_param=realm)--*/</font>
+  virtual <font color="blue">bool</font> GetAuthCredentials<font color="black">(</font>CefRefPtr<font color="black">&#60;</font>CefBrowser<font color="black">&#62;</font> browser,
+                                  <font color="blue">bool</font> isProxy,
+                                  <font color="blue">const</font> CefString<font color="black">&</font> host,
+                                  <font color="blue">int</font> port,
+                                  <font color="blue">const</font> CefString<font color="black">&</font> realm,
+                                  <font color="blue">const</font> CefString<font color="black">&</font> scheme,
+                                  CefString<font color="black">&</font> username,
+                                  CefString<font color="black">&</font> password<font color="black">)</font> <font color="black">{</font> <font color="blue">return</font> <font color="blue">false</font>; <font color="black">}</font>
+
+  <font color="green">///</font>
+  <font color="green">// Called on the IO thread to retrieve the cookie manager. |main_url| is the</font>
+  <font color="green">// URL of the top-level frame. Cookies managers can be unique per browser or</font>
+  <font color="green">// shared across multiple browsers. The global cookie manager will be used if</font>
+  <font color="green">// this method returns NULL.</font>
+  <font color="green">///</font>
+  <font color="green">/*--cef()--*/</font>
+  virtual CefRefPtr<font color="black">&#60;</font>CefCookieManager<font color="black">&#62;</font> GetCookieManager<font color="black">(</font>
+      CefRefPtr<font color="black">&#60;</font>CefBrowser<font color="black">&#62;</font> browser,
+      <font color="blue">const</font> CefString<font color="black">&</font> main_url<font color="black">)</font> <font color="black">{</font> <font color="blue">return</font> NULL; <font color="black">}</font>
+<font color="black">}</font>;
+
+<font color="blue">#endif</font>  <font color="green">// CEF_INCLUDE_CEF_REQUEST_HANDLER_H_</font>
+
+</PRE>
+</BODY>
+</HTML>
