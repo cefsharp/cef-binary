@@ -6,15 +6,21 @@
 #define CEF_TESTS_CEFCLIENT_SCHEME_TEST_H_
 #pragma once
 
-#include "include/cef_browser.h"
-#include "include/cef_scheme.h"
+#include <vector>
+#include "include/cef_base.h"
 
-void AddSchemeTestSchemes(CefRefPtr<CefSchemeRegistrar> registrar);
+class CefBrowser;
+class CefSchemeRegistrar;
 
-// Register the scheme handler.
-void InitSchemeTest();
+namespace scheme_test {
 
-// Run the test.
-void RunSchemeTest(CefRefPtr<CefBrowser> browser);
+// Register the scheme.
+void RegisterCustomSchemes(CefRefPtr<CefSchemeRegistrar> registrar,
+                           std::vector<CefString>& cookiable_schemes);
+
+// Create the scheme handler.
+void InitTest();
+
+}  // namespace scheme_test
 
 #endif  // CEF_TESTS_CEFCLIENT_SCHEME_TEST_H_

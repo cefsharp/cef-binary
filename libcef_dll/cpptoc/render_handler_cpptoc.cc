@@ -16,6 +16,39 @@
 
 // MEMBER FUNCTIONS - Body may be edited by hand.
 
+int CEF_CALLBACK render_handler_get_root_screen_rect(
+    struct _cef_render_handler_t* self, cef_browser_t* browser,
+    cef_rect_t* rect) {
+  // AUTO-GENERATED CONTENT - DELETE THIS COMMENT BEFORE MODIFYING
+
+  DCHECK(self);
+  if (!self)
+    return 0;
+  // Verify param: browser; type: refptr_diff
+  DCHECK(browser);
+  if (!browser)
+    return 0;
+  // Verify param: rect; type: simple_byref
+  DCHECK(rect);
+  if (!rect)
+    return 0;
+
+  // Translate param: rect; type: simple_byref
+  CefRect rectVal = rect?*rect:CefRect();
+
+  // Execute
+  bool _retval = CefRenderHandlerCppToC::Get(self)->GetRootScreenRect(
+      CefBrowserCToCpp::Wrap(browser),
+      rectVal);
+
+  // Restore param: rect; type: simple_byref
+  if (rect)
+    *rect = rectVal;
+
+  // Return type: bool
+  return _retval;
+}
+
 int CEF_CALLBACK render_handler_get_view_rect(
     struct _cef_render_handler_t* self, cef_browser_t* browser,
     cef_rect_t* rect) {
@@ -38,39 +71,6 @@ int CEF_CALLBACK render_handler_get_view_rect(
 
   // Execute
   bool _retval = CefRenderHandlerCppToC::Get(self)->GetViewRect(
-      CefBrowserCToCpp::Wrap(browser),
-      rectVal);
-
-  // Restore param: rect; type: simple_byref
-  if (rect)
-    *rect = rectVal;
-
-  // Return type: bool
-  return _retval;
-}
-
-int CEF_CALLBACK render_handler_get_screen_rect(
-    struct _cef_render_handler_t* self, cef_browser_t* browser,
-    cef_rect_t* rect) {
-  // AUTO-GENERATED CONTENT - DELETE THIS COMMENT BEFORE MODIFYING
-
-  DCHECK(self);
-  if (!self)
-    return 0;
-  // Verify param: browser; type: refptr_diff
-  DCHECK(browser);
-  if (!browser)
-    return 0;
-  // Verify param: rect; type: simple_byref
-  DCHECK(rect);
-  if (!rect)
-    return 0;
-
-  // Translate param: rect; type: simple_byref
-  CefRect rectVal = rect?*rect:CefRect();
-
-  // Execute
-  bool _retval = CefRenderHandlerCppToC::Get(self)->GetScreenRect(
       CefBrowserCToCpp::Wrap(browser),
       rectVal);
 
@@ -127,6 +127,41 @@ int CEF_CALLBACK render_handler_get_screen_point(
   return _retval;
 }
 
+int CEF_CALLBACK render_handler_get_screen_info(
+    struct _cef_render_handler_t* self, cef_browser_t* browser,
+    struct _cef_screen_info_t* screen_info) {
+  // AUTO-GENERATED CONTENT - DELETE THIS COMMENT BEFORE MODIFYING
+
+  DCHECK(self);
+  if (!self)
+    return 0;
+  // Verify param: browser; type: refptr_diff
+  DCHECK(browser);
+  if (!browser)
+    return 0;
+  // Verify param: screen_info; type: struct_byref
+  DCHECK(screen_info);
+  if (!screen_info)
+    return 0;
+
+  // Translate param: screen_info; type: struct_byref
+  CefScreenInfo screen_infoObj;
+  if (screen_info)
+    screen_infoObj.AttachTo(*screen_info);
+
+  // Execute
+  bool _retval = CefRenderHandlerCppToC::Get(self)->GetScreenInfo(
+      CefBrowserCToCpp::Wrap(browser),
+      screen_infoObj);
+
+  // Restore param: screen_info; type: struct_byref
+  if (screen_info)
+    screen_infoObj.DetachTo(*screen_info);
+
+  // Return type: bool
+  return _retval;
+}
+
 void CEF_CALLBACK render_handler_on_popup_show(
     struct _cef_render_handler_t* self, cef_browser_t* browser, int show) {
   // AUTO-GENERATED CONTENT - DELETE THIS COMMENT BEFORE MODIFYING
@@ -173,8 +208,8 @@ void CEF_CALLBACK render_handler_on_popup_size(
 
 void CEF_CALLBACK render_handler_on_paint(struct _cef_render_handler_t* self,
     cef_browser_t* browser, enum cef_paint_element_type_t type,
-    size_t dirtyRectsCount, cef_rect_t const* dirtyRects,
-    const void* buffer) {
+    size_t dirtyRectsCount, cef_rect_t const* dirtyRects, const void* buffer,
+    int width, int height) {
   // AUTO-GENERATED CONTENT - DELETE THIS COMMENT BEFORE MODIFYING
 
   DCHECK(self);
@@ -206,7 +241,9 @@ void CEF_CALLBACK render_handler_on_paint(struct _cef_render_handler_t* self,
       CefBrowserCToCpp::Wrap(browser),
       type,
       dirtyRectsList,
-      buffer);
+      buffer,
+      width,
+      height);
 }
 
 void CEF_CALLBACK render_handler_on_cursor_change(
@@ -234,9 +271,10 @@ void CEF_CALLBACK render_handler_on_cursor_change(
 CefRenderHandlerCppToC::CefRenderHandlerCppToC(CefRenderHandler* cls)
     : CefCppToC<CefRenderHandlerCppToC, CefRenderHandler, cef_render_handler_t>(
         cls) {
+  struct_.struct_.get_root_screen_rect = render_handler_get_root_screen_rect;
   struct_.struct_.get_view_rect = render_handler_get_view_rect;
-  struct_.struct_.get_screen_rect = render_handler_get_screen_rect;
   struct_.struct_.get_screen_point = render_handler_get_screen_point;
+  struct_.struct_.get_screen_info = render_handler_get_screen_info;
   struct_.struct_.on_popup_show = render_handler_on_popup_show;
   struct_.struct_.on_popup_size = render_handler_on_popup_size;
   struct_.struct_.on_paint = render_handler_on_paint;

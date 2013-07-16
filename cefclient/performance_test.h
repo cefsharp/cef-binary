@@ -6,22 +6,12 @@
 #define CEF_TESTS_CEFCLIENT_PERFORMANCE_TEST_H_
 #pragma once
 
-#include "include/cef_base.h"
-
-class CefBrowser;
-class CefFrame;
-class CefV8Value;
+#include "cefclient/client_app.h"
 
 namespace performance_test {
 
-extern const char kTestUrl[];
-
-void InitTest(CefRefPtr<CefBrowser> browser,
-              CefRefPtr<CefFrame> frame,
-              CefRefPtr<CefV8Value> object);
-
-// Run the test.
-void RunTest(CefRefPtr<CefBrowser> browser);
+// Render delegate creation. Called from client_app_delegates.cpp.
+void CreateRenderDelegates(ClientApp::RenderDelegateSet& delegates);
 
 }  // namespace performance_test
 

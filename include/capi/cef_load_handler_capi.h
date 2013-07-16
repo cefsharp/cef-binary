@@ -80,15 +80,29 @@ typedef struct _cef_load_handler_t {
 
   ///
   // Called when the browser fails to load a resource. |errorCode| is the error
-  // code number and |failedUrl| is the URL that failed to load. To provide
-  // custom error text assign the text to |errorText| and return true (1).
-  // Otherwise, return false (0) for the default error text. See
-  // net\base\net_error_list.h for complete descriptions of the error codes.
+  // code number, |errorText| is the error text and and |failedUrl| is the URL
+  // that failed to load. See net\base\net_error_list.h for complete
+  // descriptions of the error codes.
   ///
-  int (CEF_CALLBACK *on_load_error)(struct _cef_load_handler_t* self,
+  void (CEF_CALLBACK *on_load_error)(struct _cef_load_handler_t* self,
       struct _cef_browser_t* browser, struct _cef_frame_t* frame,
-      enum cef_handler_errorcode_t errorCode, const cef_string_t* failedUrl,
-      cef_string_t* errorText);
+      enum cef_errorcode_t errorCode, const cef_string_t* errorText,
+      const cef_string_t* failedUrl);
+
+  ///
+  // Called when the render process terminates unexpectedly. |status| indicates
+  // how the process terminated.
+  ///
+  void (CEF_CALLBACK *on_render_process_terminated)(
+      struct _cef_load_handler_t* self, struct _cef_browser_t* browser,
+      enum cef_termination_status_t status);
+
+  ///
+  // Called when a plugin has crashed. |plugin_path| is the path of the plugin
+  // that crashed.
+  ///
+  void (CEF_CALLBACK *on_plugin_crashed)(struct _cef_load_handler_t* self,
+      struct _cef_browser_t* browser, const cef_string_t* plugin_path);
 } cef_load_handler_t;
 
 

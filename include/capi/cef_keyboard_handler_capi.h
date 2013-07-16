@@ -55,23 +55,24 @@ typedef struct _cef_keyboard_handler_t {
   ///
   cef_base_t base;
 
+  // Called before a keyboard event is sent to the renderer. |event| contains
+  // information about the keyboard event. |os_event| is the operating system
+  // event message, if any. Return true (1) if the event was handled or false
+  // (0) otherwise. If the event will be handled in on_key_event() as a keyboard
+  // shortcut set |is_keyboard_shortcut| to true (1) and return false (0).
+  int (CEF_CALLBACK *on_pre_key_event)(struct _cef_keyboard_handler_t* self,
+      struct _cef_browser_t* browser, const struct _cef_key_event_t* event,
+      cef_event_handle_t os_event, int* is_keyboard_shortcut);
+
   ///
-  // Called when the browser component receives a keyboard event. This function
-  // is called both before the event is passed to the renderer and after
-  // JavaScript in the page has had a chance to handle the event. |type| is the
-  // type of keyboard event, |code| is the windows scan-code for the event,
-  // |modifiers| is a set of bit- flags describing any pressed modifier keys and
-  // |isSystemKey| is true (1) if Windows considers this a 'system key' message
-  // (see http://msdn.microsoft.com/en-us/library/ms646286(VS.85).aspx). If
-  // |isAfterJavaScript| is true (1) then JavaScript in the page has had a
-  // chance to handle the event and has chosen not to. Only RAWKEYDOWN, KEYDOWN
-  // and CHAR events will be sent with |isAfterJavaScript| set to true (1).
-  // Return true (1) if the keyboard event was handled or false (0) to allow
-  // continued handling of the event by the renderer.
+  // Called after the renderer and JavaScript in the page has had a chance to
+  // handle the event. |event| contains information about the keyboard event.
+  // |os_event| is the operating system event message, if any. Return true (1)
+  // if the keyboard event was handled or false (0) otherwise.
   ///
   int (CEF_CALLBACK *on_key_event)(struct _cef_keyboard_handler_t* self,
-      struct _cef_browser_t* browser, enum cef_handler_keyevent_type_t type,
-      int code, int modifiers, int isSystemKey, int isAfterJavaScript);
+      struct _cef_browser_t* browser, const struct _cef_key_event_t* event,
+      cef_event_handle_t os_event);
 } cef_keyboard_handler_t;
 
 

@@ -66,7 +66,7 @@ typedef struct _cef_geolocation_callback_t {
 ///
 // Implement this structure to handle events related to geolocation permission
 // requests. The functions of this structure will be called on the browser
-// process UI thread.
+// process IO thread.
 ///
 typedef struct _cef_geolocation_handler_t {
   ///

@@ -19,7 +19,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="cefclient.gyp"/>
-    <ClInclude Include="include\cef_geolocation_handler.h">
+    <ClInclude Include="include\cef_trace.h">
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="include\cef_download_handler.h">
@@ -28,13 +28,7 @@
     <ClInclude Include="include\cef_request.h">
       <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="include\cef_load_handler.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="include\cef_drag_data.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="include\cef_response.h">
+    <ClInclude Include="include\cef_resource_handler.h">
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="include\cef_dom.h">
@@ -49,19 +43,19 @@
     <ClInclude Include="include\cef_frame.h">
       <Filter>include</Filter>
     </ClInclude>
+    <ClInclude Include="include\cef_command_line.h">
+      <Filter>include</Filter>
+    </ClInclude>
     <ClInclude Include="include\cef_app.h">
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="include\cef_life_span_handler.h">
       <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="include\cef_permission_handler.h">
-      <Filter>include</Filter>
-    </ClInclude>
     <ClInclude Include="include\cef_v8.h">
       <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="include\cef_task.h">
+    <ClInclude Include="include\cef_download_item.h">
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="include\cef_render_handler.h">
@@ -70,58 +64,79 @@
     <ClInclude Include="include\cef_scheme.h">
       <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="include\cef_find_handler.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="include\cef_web_urlrequest.h">
-      <Filter>include</Filter>
-    </ClInclude>
     <ClInclude Include="include\cef_xml_reader.h">
       <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="include\cef_proxy_handler.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="include\cef_web_plugin.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="include\cef_nplugin.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="include\cef_print_handler.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="include\cef_v8context_handler.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="include\cef_runnable.h">
+    <ClInclude Include="include\cef_process_message.h">
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="include\cef_base.h">
       <Filter>include</Filter>
     </ClInclude>
+    <ClInclude Include="include\cef_trace_event.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\cef_runnable.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\cef_pack_strings.h">
+      <Filter>include</Filter>
+    </ClInclude>
     <ClInclude Include="include\cef_keyboard_handler.h">
       <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="include\cef_menu_handler.h">
+    <ClInclude Include="include\cef_context_menu_handler.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\cef_geolocation_handler.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\cef_menu_model.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\cef_display_handler.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\cef_pack_resources.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\cef_dialog_handler.h">
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="include\cef_stream.h">
       <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="include\cef_command_line.h">
+    <ClInclude Include="include\cef_url.h">
       <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="include\cef_resource_bundle_handler.h">
+    <ClInclude Include="include\cef_callback.h">
       <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="include\cef_zip_reader.h">
+    <ClInclude Include="include\cef_values.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\cef_response.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\cef_string_visitor.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\cef_task.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\cef_web_plugin.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\cef_path_util.h">
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="include\cef_browser.h">
       <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="include\cef_url.h">
+    <ClInclude Include="include\cef_origin_whitelist.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\cef_zip_reader.h">
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="include\cef_geolocation.h">
@@ -133,25 +148,28 @@
     <ClInclude Include="include\cef_client.h">
       <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="include\cef_content_filter.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="include\cef_drag_handler.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="include\cef_zoom_handler.h">
+    <ClInclude Include="include\cef_load_handler.h">
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="include\cef_focus_handler.h">
       <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="include\cef_display_handler.h">
+    <ClInclude Include="include\cef_process_util.h">
       <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="include\cef_origin_whitelist.h">
+    <ClInclude Include="include\cef_urlrequest.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\cef_render_process_handler.h">
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="include\cef_version.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\cef_browser_process_handler.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\cef_resource_bundle_handler.h">
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="include\internal\cef_string_list.h">
@@ -166,19 +184,13 @@
     <ClInclude Include="include\internal\cef_string_multimap.h">
       <Filter>include\internal</Filter>
     </ClInclude>
-    <ClInclude Include="include\internal\cef_string_map.h">
+    <ClInclude Include="include\internal\cef_export.h">
       <Filter>include\internal</Filter>
     </ClInclude>
     <ClInclude Include="include\internal\cef_win.h">
       <Filter>include\internal</Filter>
     </ClInclude>
-    <ClInclude Include="include\internal\cef_nplugin_types.h">
-      <Filter>include\internal</Filter>
-    </ClInclude>
     <ClInclude Include="include\internal\cef_string_types.h">
-      <Filter>include\internal</Filter>
-    </ClInclude>
-    <ClInclude Include="include\internal\cef_export.h">
       <Filter>include\internal</Filter>
     </ClInclude>
     <ClInclude Include="include\internal\cef_types_wrappers.h">
@@ -190,25 +202,31 @@
     <ClInclude Include="include\internal\cef_string.h">
       <Filter>include\internal</Filter>
     </ClInclude>
-    <ClInclude Include="include\internal\cef_types.h">
-      <Filter>include\internal</Filter>
-    </ClInclude>
     <ClInclude Include="include\internal\cef_tuple.h">
       <Filter>include\internal</Filter>
     </ClInclude>
     <ClInclude Include="include\internal\cef_build.h">
       <Filter>include\internal</Filter>
     </ClInclude>
-    <ClInclude Include="include\internal\cef_string_wrappers.h">
+    <ClInclude Include="include\internal\cef_string_map.h">
       <Filter>include\internal</Filter>
     </ClInclude>
-    <ClInclude Include="include\wrapper\cef_byte_read_handler.h">
-      <Filter>include\wrapper</Filter>
+    <ClInclude Include="include\internal\cef_types.h">
+      <Filter>include\internal</Filter>
+    </ClInclude>
+    <ClInclude Include="include\internal\cef_string_wrappers.h">
+      <Filter>include\internal</Filter>
     </ClInclude>
     <ClInclude Include="include\wrapper\cef_xml_object.h">
       <Filter>include\wrapper</Filter>
     </ClInclude>
+    <ClInclude Include="include\wrapper\cef_byte_read_handler.h">
+      <Filter>include\wrapper</Filter>
+    </ClInclude>
     <ClInclude Include="include\wrapper\cef_zip_archive.h">
+      <Filter>include\wrapper</Filter>
+    </ClInclude>
+    <ClInclude Include="include\wrapper\cef_stream_resource_handler.h">
       <Filter>include\wrapper</Filter>
     </ClInclude>
     <ClInclude Include="cefclient\binding_test.h">
@@ -217,73 +235,70 @@
     <ClCompile Include="cefclient\performance_test_tests.cpp">
       <Filter>cefclient</Filter>
     </ClCompile>
-    <ClInclude Include="cefclient\uiplugin.h">
-      <Filter>cefclient</Filter>
-    </ClInclude>
-    <ClInclude Include="cefclient\Resource.h">
+    <ClInclude Include="cefclient\cefclient.h">
       <Filter>cefclient</Filter>
     </ClInclude>
     <ClCompile Include="cefclient\cefclient_win.cpp">
       <Filter>cefclient</Filter>
     </ClCompile>
-    <ClCompile Include="cefclient\uiplugin_test.cpp">
-      <Filter>cefclient</Filter>
-    </ClCompile>
-    <ClInclude Include="cefclient\extension_test.h">
+    <ClInclude Include="cefclient\window_test.h">
       <Filter>cefclient</Filter>
     </ClInclude>
-    <ClCompile Include="cefclient\extension_test.cpp">
+    <ClCompile Include="cefclient\window_test_win.cpp">
       <Filter>cefclient</Filter>
     </ClCompile>
-    <ClInclude Include="cefclient\client_popup_handler.h">
+    <ClInclude Include="cefclient\string_util.h">
       <Filter>cefclient</Filter>
     </ClInclude>
-    <ClCompile Include="cefclient\clientplugin.cpp">
+    <ClInclude Include="cefclient\resource.h">
+      <Filter>cefclient</Filter>
+    </ClInclude>
+    <ClCompile Include="cefclient\cefclient_osr_widget_win.cpp">
       <Filter>cefclient</Filter>
     </ClCompile>
+    <ClInclude Include="cefclient\resource_util.h">
+      <Filter>cefclient</Filter>
+    </ClInclude>
+    <ClInclude Include="cefclient\dialog_test.h">
+      <Filter>cefclient</Filter>
+    </ClInclude>
     <ClInclude Include="cefclient\client_handler.h">
       <Filter>cefclient</Filter>
     </ClInclude>
-    <ClInclude Include="cefclient\clientplugin.h">
+    <ClInclude Include="cefclient\client_switches.h">
       <Filter>cefclient</Filter>
     </ClInclude>
-    <ClInclude Include="cefclient\osrplugin_test.h">
+    <ClInclude Include="cefclient\dom_test.h">
       <Filter>cefclient</Filter>
     </ClInclude>
-    <ClInclude Include="cefclient\uiplugin_test.h">
+    <ClInclude Include="cefclient\util.h">
       <Filter>cefclient</Filter>
     </ClInclude>
     <ClCompile Include="cefclient\string_util.cpp">
       <Filter>cefclient</Filter>
     </ClCompile>
-    <ClInclude Include="cefclient\cefclient.h">
+    <ClInclude Include="cefclient\cefclient_osr_widget_win.h">
       <Filter>cefclient</Filter>
     </ClInclude>
-    <ClInclude Include="cefclient\osrenderer.h">
+    <ClCompile Include="cefclient\client_switches.cpp">
       <Filter>cefclient</Filter>
-    </ClInclude>
-    <ClInclude Include="cefclient\cefclient_switches.h">
-      <Filter>cefclient</Filter>
-    </ClInclude>
+    </ClCompile>
     <ClCompile Include="cefclient\client_handler.cpp">
       <Filter>cefclient</Filter>
     </ClCompile>
-    <ClInclude Include="cefclient\download_handler.h">
+    <ClCompile Include="cefclient\cefclient.cpp">
       <Filter>cefclient</Filter>
-    </ClInclude>
+    </ClCompile>
     <ClInclude Include="cefclient\scheme_test.h">
-      <Filter>cefclient</Filter>
-    </ClInclude>
-    <ClInclude Include="cefclient\osrplugin.h">
       <Filter>cefclient</Filter>
     </ClInclude>
     <ClCompile Include="cefclient\osrenderer.cpp">
       <Filter>cefclient</Filter>
     </ClCompile>
-    <ResourceCompile Include="cefclient\cefclient.rc">
+    <ClCompile Include="cefclient\client_app_delegates.cpp">
       <Filter>cefclient</Filter>
-    </ResourceCompile>
-    <ClCompile Include="cefclient\cefclient_switches.cpp">
+    </ClCompile>
+    <ClCompile Include="cefclient\dom_test.cpp">
       <Filter>cefclient</Filter>
     </ClCompile>
     <ClInclude Include="cefclient\performance_test.h">
@@ -292,94 +307,82 @@
     <ClCompile Include="cefclient\performance_test.cpp">
       <Filter>cefclient</Filter>
     </ClCompile>
-    <ClInclude Include="cefclient\string_util.h">
-      <Filter>cefclient</Filter>
-    </ClInclude>
-    <ClCompile Include="cefclient\cefclient.cpp">
+    <ClCompile Include="cefclient\dialog_test.cpp">
       <Filter>cefclient</Filter>
     </ClCompile>
-    <ClCompile Include="cefclient\uiplugin.cpp">
+    <ResourceCompile Include="cefclient\cefclient.rc">
       <Filter>cefclient</Filter>
-    </ClCompile>
-    <ClCompile Include="cefclient\download_handler.cpp">
-      <Filter>cefclient</Filter>
-    </ClCompile>
-    <ClInclude Include="cefclient\plugin_test.h">
-      <Filter>cefclient</Filter>
-    </ClInclude>
-    <ClCompile Include="cefclient\osrplugin.cpp">
+    </ResourceCompile>
+    <ClCompile Include="cefclient\client_renderer.cpp">
       <Filter>cefclient</Filter>
     </ClCompile>
     <ClCompile Include="cefclient\scheme_test.cpp">
       <Filter>cefclient</Filter>
     </ClCompile>
+    <ClInclude Include="cefclient\client_app.h">
+      <Filter>cefclient</Filter>
+    </ClInclude>
+    <ClInclude Include="cefclient\client_renderer.h">
+      <Filter>cefclient</Filter>
+    </ClInclude>
+    <ClInclude Include="cefclient\osrenderer.h">
+      <Filter>cefclient</Filter>
+    </ClInclude>
     <ClCompile Include="cefclient\resource_util_win.cpp">
       <Filter>cefclient</Filter>
     </ClCompile>
     <ClCompile Include="cefclient\client_handler_win.cpp">
       <Filter>cefclient</Filter>
     </ClCompile>
-    <ClCompile Include="cefclient\osrplugin_test.cpp">
+    <ClCompile Include="cefclient\client_app.cpp">
       <Filter>cefclient</Filter>
     </ClCompile>
-    <ClInclude Include="cefclient\util.h">
-      <Filter>cefclient</Filter>
-    </ClInclude>
-    <ClCompile Include="cefclient\plugin_test.cpp">
-      <Filter>cefclient</Filter>
-    </ClCompile>
-    <ClInclude Include="cefclient\resource_util.h">
-      <Filter>cefclient</Filter>
-    </ClInclude>
     <ClInclude Include="cefclient\performance_test_setup.h">
       <Filter>cefclient</Filter>
     </ClInclude>
+    <ClCompile Include="cefclient\window_test.cpp">
+      <Filter>cefclient</Filter>
+    </ClCompile>
     <ClCompile Include="cefclient\binding_test.cpp">
       <Filter>cefclient</Filter>
     </ClCompile>
-    <ClCompile Include="cefclient\client_popup_handler.cpp">
-      <Filter>cefclient</Filter>
-    </ClCompile>
-    <None Include="cefclient\res\cefclient.ico">
-      <Filter>cefclient\res</Filter>
-    </None>
-    <None Include="cefclient\res\osrplugin.html">
-      <Filter>cefclient\res</Filter>
-    </None>
-    <None Include="cefclient\res\domaccess.html">
-      <Filter>cefclient\res</Filter>
-    </None>
-    <None Include="cefclient\res\transparency.html">
-      <Filter>cefclient\res</Filter>
-    </None>
-    <None Include="cefclient\res\performance.html">
-      <Filter>cefclient\res</Filter>
-    </None>
-    <None Include="cefclient\res\modalmain.html">
-      <Filter>cefclient\res</Filter>
-    </None>
-    <None Include="cefclient\res\modaldialog.html">
-      <Filter>cefclient\res</Filter>
-    </None>
-    <None Include="cefclient\res\logoball.png">
-      <Filter>cefclient\res</Filter>
-    </None>
-    <None Include="cefclient\res\localstorage.html">
-      <Filter>cefclient\res</Filter>
-    </None>
-    <None Include="cefclient\res\uiplugin.html">
+    <None Include="cefclient\res\small.ico">
       <Filter>cefclient\res</Filter>
     </None>
     <None Include="cefclient\res\xmlhttprequest.html">
       <Filter>cefclient\res</Filter>
     </None>
-    <None Include="cefclient\res\small.ico">
+    <None Include="cefclient\res\cefclient.ico">
       <Filter>cefclient\res</Filter>
     </None>
-    <None Include="cefclient\res\logo.png">
+    <None Include="cefclient\res\domaccess.html">
+      <Filter>cefclient\res</Filter>
+    </None>
+    <None Include="cefclient\res\binding.html">
+      <Filter>cefclient\res</Filter>
+    </None>
+    <None Include="cefclient\res\transparency.html">
+      <Filter>cefclient\res</Filter>
+    </None>
+    <None Include="cefclient\res\window.html">
+      <Filter>cefclient\res</Filter>
+    </None>
+    <None Include="cefclient\res\other_tests.html">
+      <Filter>cefclient\res</Filter>
+    </None>
+    <None Include="cefclient\res\osr_test.html">
+      <Filter>cefclient\res</Filter>
+    </None>
+    <None Include="cefclient\res\performance.html">
+      <Filter>cefclient\res</Filter>
+    </None>
+    <None Include="cefclient\res\localstorage.html">
       <Filter>cefclient\res</Filter>
     </None>
     <None Include="cefclient\res\dialogs.html">
+      <Filter>cefclient\res</Filter>
+    </None>
+    <None Include="cefclient\res\logo.png">
       <Filter>cefclient\res</Filter>
     </None>
   </ItemGroup>

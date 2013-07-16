@@ -1,4 +1,4 @@
-// Copyright (c) 2011 Marshall A. Greenblatt. All rights reserved.
+// Copyright (c) 2012 Marshall A. Greenblatt. All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
 // modification, are permitted provided that the following conditions are
@@ -51,29 +51,15 @@ class CefByteReadHandler : public CefReadHandler {
   // reference can be kept to keep the underlying data source from being
   // released while the reader exists.
   ///
-  CefByteReadHandler(const unsigned char* bytes, size_t size,
+  CefByteReadHandler(const unsigned char* bytes,
+                     size_t size,
                      CefRefPtr<CefBase> source);
 
-  ///
-  // Read raw binary data.
-  ///
-  virtual size_t Read(void* ptr, size_t size, size_t n);
-
-  ///
-  // Seek to the specified offset position. |whence| may be any one of
-  // SEEK_CUR, SEEK_END or SEEK_SET.
-  ///
-  virtual int Seek(int64 offset, int whence);
-
-  ///
-  // Return the current offset position.
-  ///
-  virtual int64 Tell();
-
-  ///
-  // Return non-zero if at end of file.
-  ///
-  virtual int Eof();
+  // CefReadHandler methods.
+  virtual size_t Read(void* ptr, size_t size, size_t n) OVERRIDE;
+  virtual int Seek(int64 offset, int whence) OVERRIDE;
+  virtual int64 Tell() OVERRIDE;
+  virtual int Eof() OVERRIDE;
 
  private:
   const unsigned char* bytes_;

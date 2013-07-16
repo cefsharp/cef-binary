@@ -62,45 +62,77 @@ void CEF_CALLBACK load_handler_on_load_end(struct _cef_load_handler_t* self,
       httpStatusCode);
 }
 
-int CEF_CALLBACK load_handler_on_load_error(struct _cef_load_handler_t* self,
-    cef_browser_t* browser, cef_frame_t* frame,
-    enum cef_handler_errorcode_t errorCode, const cef_string_t* failedUrl,
-    cef_string_t* errorText) {
+void CEF_CALLBACK load_handler_on_load_error(struct _cef_load_handler_t* self,
+    cef_browser_t* browser, cef_frame_t* frame, enum cef_errorcode_t errorCode,
+    const cef_string_t* errorText, const cef_string_t* failedUrl) {
   // AUTO-GENERATED CONTENT - DELETE THIS COMMENT BEFORE MODIFYING
 
   DCHECK(self);
   if (!self)
-    return 0;
+    return;
   // Verify param: browser; type: refptr_diff
   DCHECK(browser);
   if (!browser)
-    return 0;
+    return;
   // Verify param: frame; type: refptr_diff
   DCHECK(frame);
   if (!frame)
-    return 0;
+    return;
   // Verify param: failedUrl; type: string_byref_const
   DCHECK(failedUrl);
   if (!failedUrl)
-    return 0;
-  // Verify param: errorText; type: string_byref
-  DCHECK(errorText);
-  if (!errorText)
-    return 0;
-
-  // Translate param: errorText; type: string_byref
-  CefString errorTextStr(errorText);
+    return;
+  // Unverified params: errorText
 
   // Execute
-  bool _retval = CefLoadHandlerCppToC::Get(self)->OnLoadError(
+  CefLoadHandlerCppToC::Get(self)->OnLoadError(
       CefBrowserCToCpp::Wrap(browser),
       CefFrameCToCpp::Wrap(frame),
       errorCode,
-      CefString(failedUrl),
-      errorTextStr);
+      CefString(errorText),
+      CefString(failedUrl));
+}
 
-  // Return type: bool
-  return _retval;
+void CEF_CALLBACK load_handler_on_render_process_terminated(
+    struct _cef_load_handler_t* self, cef_browser_t* browser,
+    enum cef_termination_status_t status) {
+  // AUTO-GENERATED CONTENT - DELETE THIS COMMENT BEFORE MODIFYING
+
+  DCHECK(self);
+  if (!self)
+    return;
+  // Verify param: browser; type: refptr_diff
+  DCHECK(browser);
+  if (!browser)
+    return;
+
+  // Execute
+  CefLoadHandlerCppToC::Get(self)->OnRenderProcessTerminated(
+      CefBrowserCToCpp::Wrap(browser),
+      status);
+}
+
+void CEF_CALLBACK load_handler_on_plugin_crashed(
+    struct _cef_load_handler_t* self, cef_browser_t* browser,
+    const cef_string_t* plugin_path) {
+  // AUTO-GENERATED CONTENT - DELETE THIS COMMENT BEFORE MODIFYING
+
+  DCHECK(self);
+  if (!self)
+    return;
+  // Verify param: browser; type: refptr_diff
+  DCHECK(browser);
+  if (!browser)
+    return;
+  // Verify param: plugin_path; type: string_byref_const
+  DCHECK(plugin_path);
+  if (!plugin_path)
+    return;
+
+  // Execute
+  CefLoadHandlerCppToC::Get(self)->OnPluginCrashed(
+      CefBrowserCToCpp::Wrap(browser),
+      CefString(plugin_path));
 }
 
 
@@ -111,6 +143,9 @@ CefLoadHandlerCppToC::CefLoadHandlerCppToC(CefLoadHandler* cls)
   struct_.struct_.on_load_start = load_handler_on_load_start;
   struct_.struct_.on_load_end = load_handler_on_load_end;
   struct_.struct_.on_load_error = load_handler_on_load_error;
+  struct_.struct_.on_render_process_terminated =
+      load_handler_on_render_process_terminated;
+  struct_.struct_.on_plugin_crashed = load_handler_on_plugin_crashed;
 }
 
 #ifndef NDEBUG

@@ -11,41 +11,76 @@
 //
 
 #include "libcef_dll/cpptoc/download_handler_cpptoc.h"
+#include "libcef_dll/ctocpp/before_download_callback_ctocpp.h"
+#include "libcef_dll/ctocpp/browser_ctocpp.h"
+#include "libcef_dll/ctocpp/download_item_ctocpp.h"
+#include "libcef_dll/ctocpp/download_item_callback_ctocpp.h"
 
 
 // MEMBER FUNCTIONS - Body may be edited by hand.
 
-int CEF_CALLBACK download_handler_received_data(
-    struct _cef_download_handler_t* self, void* data, int data_size) {
-  // AUTO-GENERATED CONTENT - DELETE THIS COMMENT BEFORE MODIFYING
-
-  DCHECK(self);
-  if (!self)
-    return 0;
-  // Verify param: data; type: simple_byaddr
-  DCHECK(data);
-  if (!data)
-    return 0;
-
-  // Execute
-  bool _retval = CefDownloadHandlerCppToC::Get(self)->ReceivedData(
-      data,
-      data_size);
-
-  // Return type: bool
-  return _retval;
-}
-
-void CEF_CALLBACK download_handler_complete(
-    struct _cef_download_handler_t* self) {
+void CEF_CALLBACK download_handler_on_before_download(
+    struct _cef_download_handler_t* self, cef_browser_t* browser,
+    struct _cef_download_item_t* download_item,
+    const cef_string_t* suggested_name,
+    cef_before_download_callback_t* callback) {
   // AUTO-GENERATED CONTENT - DELETE THIS COMMENT BEFORE MODIFYING
 
   DCHECK(self);
   if (!self)
     return;
+  // Verify param: browser; type: refptr_diff
+  DCHECK(browser);
+  if (!browser)
+    return;
+  // Verify param: download_item; type: refptr_diff
+  DCHECK(download_item);
+  if (!download_item)
+    return;
+  // Verify param: suggested_name; type: string_byref_const
+  DCHECK(suggested_name);
+  if (!suggested_name)
+    return;
+  // Verify param: callback; type: refptr_diff
+  DCHECK(callback);
+  if (!callback)
+    return;
 
   // Execute
-  CefDownloadHandlerCppToC::Get(self)->Complete();
+  CefDownloadHandlerCppToC::Get(self)->OnBeforeDownload(
+      CefBrowserCToCpp::Wrap(browser),
+      CefDownloadItemCToCpp::Wrap(download_item),
+      CefString(suggested_name),
+      CefBeforeDownloadCallbackCToCpp::Wrap(callback));
+}
+
+void CEF_CALLBACK download_handler_on_download_updated(
+    struct _cef_download_handler_t* self, cef_browser_t* browser,
+    struct _cef_download_item_t* download_item,
+    cef_download_item_callback_t* callback) {
+  // AUTO-GENERATED CONTENT - DELETE THIS COMMENT BEFORE MODIFYING
+
+  DCHECK(self);
+  if (!self)
+    return;
+  // Verify param: browser; type: refptr_diff
+  DCHECK(browser);
+  if (!browser)
+    return;
+  // Verify param: download_item; type: refptr_diff
+  DCHECK(download_item);
+  if (!download_item)
+    return;
+  // Verify param: callback; type: refptr_diff
+  DCHECK(callback);
+  if (!callback)
+    return;
+
+  // Execute
+  CefDownloadHandlerCppToC::Get(self)->OnDownloadUpdated(
+      CefBrowserCToCpp::Wrap(browser),
+      CefDownloadItemCToCpp::Wrap(download_item),
+      CefDownloadItemCallbackCToCpp::Wrap(callback));
 }
 
 
@@ -54,8 +89,8 @@ void CEF_CALLBACK download_handler_complete(
 CefDownloadHandlerCppToC::CefDownloadHandlerCppToC(CefDownloadHandler* cls)
     : CefCppToC<CefDownloadHandlerCppToC, CefDownloadHandler,
         cef_download_handler_t>(cls) {
-  struct_.struct_.received_data = download_handler_received_data;
-  struct_.struct_.complete = download_handler_complete;
+  struct_.struct_.on_before_download = download_handler_on_before_download;
+  struct_.struct_.on_download_updated = download_handler_on_download_updated;
 }
 
 #ifndef NDEBUG

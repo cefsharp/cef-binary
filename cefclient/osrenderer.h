@@ -4,6 +4,7 @@
 
 #ifndef CEF_TESTS_CEFCLIENT_OSRENDERER_H_
 #define CEF_TESTS_CEFCLIENT_OSRENDERER_H_
+#pragma once
 
 #include "include/cef_browser.h"
 #include "include/cef_render_handler.h"
@@ -31,7 +32,7 @@ class ClientOSRenderer {
   void OnPaint(CefRefPtr<CefBrowser> browser,
                CefRenderHandler::PaintElementType type,
                const CefRenderHandler::RectList& dirtyRects,
-               const void* buffer);
+               const void* buffer, int width, int height);
 
   // Apply spin.
   void SetSpin(float spinX, float spinY);
@@ -42,6 +43,12 @@ class ClientOSRenderer {
   int GetViewWidth() { return view_width_; }
   int GetViewHeight() { return view_height_; }
 
+  const CefRect& popup_rect() const { return popup_rect_; }
+  const CefRect& original_popup_rect() const { return original_popup_rect_; }
+
+  CefRect GetPopupRectInWebView(const CefRect& original_rect);
+  void ClearPopupRects();
+
  private:
   bool transparent_;
   bool initialized_;
@@ -49,9 +56,10 @@ class ClientOSRenderer {
   int view_width_;
   int view_height_;
   CefRect popup_rect_;
+  CefRect original_popup_rect_;
   float spin_x_;
   float spin_y_;
 };
 
-#endif  // CEF_TESTS_CEFCLIENT_OSR_RENDERER_H_
+#endif  // CEF_TESTS_CEFCLIENT_OSRENDERER_H_
 

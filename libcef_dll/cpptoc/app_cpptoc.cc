@@ -11,12 +11,34 @@
 //
 
 #include "libcef_dll/cpptoc/app_cpptoc.h"
-#include "libcef_dll/cpptoc/proxy_handler_cpptoc.h"
+#include "libcef_dll/cpptoc/browser_process_handler_cpptoc.h"
+#include "libcef_dll/cpptoc/render_process_handler_cpptoc.h"
 #include "libcef_dll/cpptoc/resource_bundle_handler_cpptoc.h"
+#include "libcef_dll/ctocpp/command_line_ctocpp.h"
 #include "libcef_dll/ctocpp/scheme_registrar_ctocpp.h"
 
 
 // MEMBER FUNCTIONS - Body may be edited by hand.
+
+void CEF_CALLBACK app_on_before_command_line_processing(struct _cef_app_t* self,
+    const cef_string_t* process_type,
+    struct _cef_command_line_t* command_line) {
+  // AUTO-GENERATED CONTENT - DELETE THIS COMMENT BEFORE MODIFYING
+
+  DCHECK(self);
+  if (!self)
+    return;
+  // Verify param: command_line; type: refptr_diff
+  DCHECK(command_line);
+  if (!command_line)
+    return;
+  // Unverified params: process_type
+
+  // Execute
+  CefAppCppToC::Get(self)->OnBeforeCommandLineProcessing(
+      CefString(process_type),
+      CefCommandLineCToCpp::Wrap(command_line));
+}
 
 void CEF_CALLBACK app_on_register_custom_schemes(struct _cef_app_t* self,
     struct _cef_scheme_registrar_t* registrar) {
@@ -51,7 +73,7 @@ struct _cef_resource_bundle_handler_t* CEF_CALLBACK app_get_resource_bundle_hand
   return CefResourceBundleHandlerCppToC::Wrap(_retval);
 }
 
-struct _cef_proxy_handler_t* CEF_CALLBACK app_get_proxy_handler(
+struct _cef_browser_process_handler_t* CEF_CALLBACK app_get_browser_process_handler(
     struct _cef_app_t* self) {
   // AUTO-GENERATED CONTENT - DELETE THIS COMMENT BEFORE MODIFYING
 
@@ -60,11 +82,27 @@ struct _cef_proxy_handler_t* CEF_CALLBACK app_get_proxy_handler(
     return NULL;
 
   // Execute
-  CefRefPtr<CefProxyHandler> _retval = CefAppCppToC::Get(self)->GetProxyHandler(
-      );
+  CefRefPtr<CefBrowserProcessHandler> _retval = CefAppCppToC::Get(
+      self)->GetBrowserProcessHandler();
 
   // Return type: refptr_same
-  return CefProxyHandlerCppToC::Wrap(_retval);
+  return CefBrowserProcessHandlerCppToC::Wrap(_retval);
+}
+
+struct _cef_render_process_handler_t* CEF_CALLBACK app_get_render_process_handler(
+    struct _cef_app_t* self) {
+  // AUTO-GENERATED CONTENT - DELETE THIS COMMENT BEFORE MODIFYING
+
+  DCHECK(self);
+  if (!self)
+    return NULL;
+
+  // Execute
+  CefRefPtr<CefRenderProcessHandler> _retval = CefAppCppToC::Get(
+      self)->GetRenderProcessHandler();
+
+  // Return type: refptr_same
+  return CefRenderProcessHandlerCppToC::Wrap(_retval);
 }
 
 
@@ -72,9 +110,12 @@ struct _cef_proxy_handler_t* CEF_CALLBACK app_get_proxy_handler(
 
 CefAppCppToC::CefAppCppToC(CefApp* cls)
     : CefCppToC<CefAppCppToC, CefApp, cef_app_t>(cls) {
+  struct_.struct_.on_before_command_line_processing =
+      app_on_before_command_line_processing;
   struct_.struct_.on_register_custom_schemes = app_on_register_custom_schemes;
   struct_.struct_.get_resource_bundle_handler = app_get_resource_bundle_handler;
-  struct_.struct_.get_proxy_handler = app_get_proxy_handler;
+  struct_.struct_.get_browser_process_handler = app_get_browser_process_handler;
+  struct_.struct_.get_render_process_handler = app_get_render_process_handler;
 }
 
 #ifndef NDEBUG

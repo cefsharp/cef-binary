@@ -35,51 +35,28 @@ class CefBrowserCToCpp
   virtual ~CefBrowserCToCpp() {}
 
   // CefBrowser methods
-  virtual void ParentWindowWillClose() OVERRIDE;
-  virtual void CloseBrowser() OVERRIDE;
+  virtual CefRefPtr<CefBrowserHost> GetHost() OVERRIDE;
   virtual bool CanGoBack() OVERRIDE;
   virtual void GoBack() OVERRIDE;
   virtual bool CanGoForward() OVERRIDE;
   virtual void GoForward() OVERRIDE;
+  virtual bool IsLoading() OVERRIDE;
   virtual void Reload() OVERRIDE;
   virtual void ReloadIgnoreCache() OVERRIDE;
   virtual void StopLoad() OVERRIDE;
-  virtual void SetFocus(bool enable) OVERRIDE;
-  virtual CefWindowHandle GetWindowHandle() OVERRIDE;
-  virtual CefWindowHandle GetOpenerWindowHandle() OVERRIDE;
   virtual int GetIdentifier() OVERRIDE;
+  virtual bool IsSame(CefRefPtr<CefBrowser> that) OVERRIDE;
   virtual bool IsPopup() OVERRIDE;
   virtual bool HasDocument() OVERRIDE;
-  virtual CefRefPtr<CefClient> GetClient() OVERRIDE;
   virtual CefRefPtr<CefFrame> GetMainFrame() OVERRIDE;
   virtual CefRefPtr<CefFrame> GetFocusedFrame() OVERRIDE;
+  virtual CefRefPtr<CefFrame> GetFrame(int64 identifier) OVERRIDE;
   virtual CefRefPtr<CefFrame> GetFrame(const CefString& name) OVERRIDE;
+  virtual size_t GetFrameCount() OVERRIDE;
+  virtual void GetFrameIdentifiers(std::vector<int64>& identifiers) OVERRIDE;
   virtual void GetFrameNames(std::vector<CefString>& names) OVERRIDE;
-  virtual void Find(int identifier, const CefString& searchText, bool forward,
-      bool matchCase, bool findNext) OVERRIDE;
-  virtual void StopFinding(bool clearSelection) OVERRIDE;
-  virtual double GetZoomLevel() OVERRIDE;
-  virtual void SetZoomLevel(double zoomLevel) OVERRIDE;
-  virtual void ClearHistory() OVERRIDE;
-  virtual void ShowDevTools() OVERRIDE;
-  virtual void CloseDevTools() OVERRIDE;
-  virtual bool IsWindowRenderingDisabled() OVERRIDE;
-  virtual bool GetSize(PaintElementType type, int& width, int& height) OVERRIDE;
-  virtual void SetSize(PaintElementType type, int width, int height) OVERRIDE;
-  virtual bool IsPopupVisible() OVERRIDE;
-  virtual void HidePopup() OVERRIDE;
-  virtual void Invalidate(const CefRect& dirtyRect) OVERRIDE;
-  virtual bool GetImage(PaintElementType type, int width, int height,
-      void* buffer) OVERRIDE;
-  virtual void SendKeyEvent(KeyType type, const CefKeyInfo& keyInfo,
-      int modifiers) OVERRIDE;
-  virtual void SendMouseClickEvent(int x, int y, MouseButtonType type,
-      bool mouseUp, int clickCount) OVERRIDE;
-  virtual void SendMouseMoveEvent(int x, int y, bool mouseLeave) OVERRIDE;
-  virtual void SendMouseWheelEvent(int x, int y, int deltaX,
-      int deltaY) OVERRIDE;
-  virtual void SendFocusEvent(bool setFocus) OVERRIDE;
-  virtual void SendCaptureLostEvent() OVERRIDE;
+  virtual bool SendProcessMessage(CefProcessId target_process,
+      CefRefPtr<CefProcessMessage> message) OVERRIDE;
 };
 
 #endif  // USING_CEF_SHARED

@@ -3,13 +3,12 @@
 // can be found in the LICENSE file.
 
 #include "cefclient/performance_test.h"
-#include "include/cef_v8.h"
 
 #include <algorithm>
 #include <string>
 
+#include "include/wrapper/cef_stream_resource_handler.h"
 #include "cefclient/performance_test_setup.h"
-#include "cefclient/resource_util.h"
 
 namespace performance_test {
 
@@ -19,8 +18,6 @@ const size_t kDefaultIterations = 100000;
 #else
 const size_t kDefaultIterations = 10000;
 #endif
-
-const char kTestUrl[] = "http://tests/performance";
 
 namespace {
 
@@ -80,25 +77,37 @@ class V8Handler : public CefV8Handler {
   IMPLEMENT_REFCOUNTING(V8Handler);
 };
 
+// Handle bindings in the render process.
+class RenderDelegate : public ClientApp::RenderDelegate {
+ public:
+  RenderDelegate() {
+  }
+
+  virtual void OnContextCreated(CefRefPtr<ClientApp> app,
+                                  CefRefPtr<CefBrowser> browser,
+                                  CefRefPtr<CefFrame> frame,
+                                  CefRefPtr<CefV8Context> context) OVERRIDE {
+    CefRefPtr<CefV8Value> object = context->GetGlobal();
+
+    CefRefPtr<CefV8Handler> handler = new V8Handler();
+
+    // Bind test functions.
+    object->SetValue(kGetPerfTests,
+        CefV8Value::CreateFunction(kGetPerfTests, handler),
+            V8_PROPERTY_ATTRIBUTE_READONLY);
+    object->SetValue(kRunPerfTest,
+        CefV8Value::CreateFunction(kRunPerfTest, handler),
+            V8_PROPERTY_ATTRIBUTE_READONLY);
+  }
+
+ private:
+  IMPLEMENT_REFCOUNTING(RenderDelegate);
+};
+
 }  // namespace
 
-void InitTest(CefRefPtr<CefBrowser> browser,
-              CefRefPtr<CefFrame> frame,
-              CefRefPtr<CefV8Value> object) {
-  CefRefPtr<CefV8Handler> handler = new V8Handler();
-
-  // Bind test functions.
-  object->SetValue(kGetPerfTests,
-      CefV8Value::CreateFunction(kGetPerfTests, handler),
-          V8_PROPERTY_ATTRIBUTE_READONLY);
-  object->SetValue(kRunPerfTest,
-      CefV8Value::CreateFunction(kRunPerfTest, handler),
-          V8_PROPERTY_ATTRIBUTE_READONLY);
-}
-
-void RunTest(CefRefPtr<CefBrowser> browser) {
-  // Load the test URL.
-  browser->GetMainFrame()->LoadURL(kTestUrl);
+void CreateRenderDelegates(ClientApp::RenderDelegateSet& delegates) {
+  delegates.insert(new RenderDelegate);
 }
 
 }  // namespace performance_test

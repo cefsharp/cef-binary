@@ -13,14 +13,13 @@
 #include "libcef_dll/cpptoc/display_handler_cpptoc.h"
 #include "libcef_dll/ctocpp/browser_ctocpp.h"
 #include "libcef_dll/ctocpp/frame_ctocpp.h"
-#include "libcef_dll/transfer_util.h"
 
 
 // MEMBER FUNCTIONS - Body may be edited by hand.
 
-void CEF_CALLBACK display_handler_on_nav_state_change(
-    struct _cef_display_handler_t* self, cef_browser_t* browser, int canGoBack,
-    int canGoForward) {
+void CEF_CALLBACK display_handler_on_loading_state_change(
+    struct _cef_display_handler_t* self, cef_browser_t* browser, int isLoading,
+    int canGoBack, int canGoForward) {
   // AUTO-GENERATED CONTENT - DELETE THIS COMMENT BEFORE MODIFYING
 
   DCHECK(self);
@@ -32,8 +31,9 @@ void CEF_CALLBACK display_handler_on_nav_state_change(
     return;
 
   // Execute
-  CefDisplayHandlerCppToC::Get(self)->OnNavStateChange(
+  CefDisplayHandlerCppToC::Get(self)->OnLoadingStateChange(
       CefBrowserCToCpp::Wrap(browser),
+      isLoading?true:false,
       canGoBack?true:false,
       canGoForward?true:false);
 }
@@ -66,31 +66,6 @@ void CEF_CALLBACK display_handler_on_address_change(
       CefString(url));
 }
 
-void CEF_CALLBACK display_handler_on_contents_size_change(
-    struct _cef_display_handler_t* self, cef_browser_t* browser,
-    struct _cef_frame_t* frame, int width, int height) {
-  // AUTO-GENERATED CONTENT - DELETE THIS COMMENT BEFORE MODIFYING
-
-  DCHECK(self);
-  if (!self)
-    return;
-  // Verify param: browser; type: refptr_diff
-  DCHECK(browser);
-  if (!browser)
-    return;
-  // Verify param: frame; type: refptr_diff
-  DCHECK(frame);
-  if (!frame)
-    return;
-
-  // Execute
-  CefDisplayHandlerCppToC::Get(self)->OnContentsSizeChange(
-      CefBrowserCToCpp::Wrap(browser),
-      CefFrameCToCpp::Wrap(frame),
-      width,
-      height);
-}
-
 void CEF_CALLBACK display_handler_on_title_change(
     struct _cef_display_handler_t* self, cef_browser_t* browser,
     const cef_string_t* title) {
@@ -109,33 +84,6 @@ void CEF_CALLBACK display_handler_on_title_change(
   CefDisplayHandlerCppToC::Get(self)->OnTitleChange(
       CefBrowserCToCpp::Wrap(browser),
       CefString(title));
-}
-
-void CEF_CALLBACK display_handler_on_favicon_urlchange(
-    struct _cef_display_handler_t* self, cef_browser_t* browser,
-    cef_string_list_t icon_urls) {
-  // AUTO-GENERATED CONTENT - DELETE THIS COMMENT BEFORE MODIFYING
-
-  DCHECK(self);
-  if (!self)
-    return;
-  // Verify param: browser; type: refptr_diff
-  DCHECK(browser);
-  if (!browser)
-    return;
-  // Verify param: icon_urls; type: string_vec_byref_const
-  DCHECK(icon_urls);
-  if (!icon_urls)
-    return;
-
-  // Translate param: icon_urls; type: string_vec_byref_const
-  std::vector<CefString> icon_urlsList;
-  transfer_string_list_contents(icon_urls, icon_urlsList);
-
-  // Execute
-  CefDisplayHandlerCppToC::Get(self)->OnFaviconURLChange(
-      CefBrowserCToCpp::Wrap(browser),
-      icon_urlsList);
 }
 
 int CEF_CALLBACK display_handler_on_tooltip(struct _cef_display_handler_t* self,
@@ -165,7 +113,7 @@ int CEF_CALLBACK display_handler_on_tooltip(struct _cef_display_handler_t* self,
 
 void CEF_CALLBACK display_handler_on_status_message(
     struct _cef_display_handler_t* self, cef_browser_t* browser,
-    const cef_string_t* value, enum cef_handler_statustype_t type) {
+    const cef_string_t* value) {
   // AUTO-GENERATED CONTENT - DELETE THIS COMMENT BEFORE MODIFYING
 
   DCHECK(self);
@@ -180,8 +128,7 @@ void CEF_CALLBACK display_handler_on_status_message(
   // Execute
   CefDisplayHandlerCppToC::Get(self)->OnStatusMessage(
       CefBrowserCToCpp::Wrap(browser),
-      CefString(value),
-      type);
+      CefString(value));
 }
 
 int CEF_CALLBACK display_handler_on_console_message(
@@ -215,12 +162,10 @@ int CEF_CALLBACK display_handler_on_console_message(
 CefDisplayHandlerCppToC::CefDisplayHandlerCppToC(CefDisplayHandler* cls)
     : CefCppToC<CefDisplayHandlerCppToC, CefDisplayHandler,
         cef_display_handler_t>(cls) {
-  struct_.struct_.on_nav_state_change = display_handler_on_nav_state_change;
+  struct_.struct_.on_loading_state_change =
+      display_handler_on_loading_state_change;
   struct_.struct_.on_address_change = display_handler_on_address_change;
-  struct_.struct_.on_contents_size_change =
-      display_handler_on_contents_size_change;
   struct_.struct_.on_title_change = display_handler_on_title_change;
-  struct_.struct_.on_favicon_urlchange = display_handler_on_favicon_urlchange;
   struct_.struct_.on_tooltip = display_handler_on_tooltip;
   struct_.struct_.on_status_message = display_handler_on_status_message;
   struct_.struct_.on_console_message = display_handler_on_console_message;

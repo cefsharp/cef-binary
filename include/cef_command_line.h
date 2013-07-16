@@ -1,4 +1,4 @@
-// Copyright (c) 2011 Marshall A. Greenblatt. All rights reserved.
+// Copyright (c) 2012 Marshall A. Greenblatt. All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
 // modification, are permitted provided that the following conditions are
@@ -61,8 +61,35 @@ class CefCommandLine : public virtual CefBase {
   ///
   // Create a new CefCommandLine instance.
   ///
-  /*--cef(revision_check)--*/
+  /*--cef(api_hash_check)--*/
   static CefRefPtr<CefCommandLine> CreateCommandLine();
+
+  ///
+  // Returns the singleton global CefCommandLine object. The returned object
+  // will be read-only.
+  ///
+  /*--cef(api_hash_check)--*/
+  static CefRefPtr<CefCommandLine> GetGlobalCommandLine();
+
+  ///
+  // Returns true if this object is valid. Do not call any other methods if this
+  // function returns false.
+  ///
+  /*--cef()--*/
+  virtual bool IsValid() =0;
+
+  ///
+  // Returns true if the values of this object are read-only. Some APIs may
+  // expose read-only objects.
+  ///
+  /*--cef()--*/
+  virtual bool IsReadOnly() =0;
+
+  ///
+  // Returns a writable copy of this object.
+  ///
+  /*--cef()--*/
+  virtual CefRefPtr<CefCommandLine> Copy() =0;
 
   ///
   // Initialize the command line with the specified |argc| and |argv| values.
@@ -78,6 +105,20 @@ class CefCommandLine : public virtual CefBase {
   ///
   /*--cef()--*/
   virtual void InitFromString(const CefString& command_line) =0;
+
+  ///
+  // Reset the command-line switches and arguments but leave the program
+  // component unchanged.
+  ///
+  /*--cef()--*/
+  virtual void Reset() =0;
+
+  ///
+  // Retrieve the original command line string as a vector of strings.
+  // The argv array: { program, [(--|-|/)switch[=value]]*, [--], [argument]* }
+  ///
+  /*--cef()--*/
+  virtual void GetArgv(std::vector<CefString>& argv) =0;
 
   ///
   // Constructs and returns the represented command line string. Use this method
@@ -155,6 +196,13 @@ class CefCommandLine : public virtual CefBase {
   ///
   /*--cef()--*/
   virtual void AppendArgument(const CefString& argument) =0;
+
+  ///
+  // Insert a command before the current command.
+  // Common for debuggers, like "valgrind" or "gdb --args".
+  ///
+  /*--cef()--*/
+  virtual void PrependWrapper(const CefString& wrapper) =0;
 };
 
 #endif  // CEF_INCLUDE_CEF_COMMAND_LINE_H_

@@ -56,17 +56,17 @@ typedef struct _cef_render_handler_t {
   cef_base_t base;
 
   ///
+  // Called to retrieve the root window rectangle in screen coordinates. Return
+  // true (1) if the rectangle was provided.
+  ///
+  int (CEF_CALLBACK *get_root_screen_rect)(struct _cef_render_handler_t* self,
+      struct _cef_browser_t* browser, cef_rect_t* rect);
+
+  ///
   // Called to retrieve the view rectangle which is relative to screen
   // coordinates. Return true (1) if the rectangle was provided.
   ///
   int (CEF_CALLBACK *get_view_rect)(struct _cef_render_handler_t* self,
-      struct _cef_browser_t* browser, cef_rect_t* rect);
-
-  ///
-  // Called to retrieve the simulated screen rectangle. Return true (1) if the
-  // rectangle was provided.
-  ///
-  int (CEF_CALLBACK *get_screen_rect)(struct _cef_render_handler_t* self,
       struct _cef_browser_t* browser, cef_rect_t* rect);
 
   ///
@@ -76,6 +76,18 @@ typedef struct _cef_render_handler_t {
   int (CEF_CALLBACK *get_screen_point)(struct _cef_render_handler_t* self,
       struct _cef_browser_t* browser, int viewX, int viewY, int* screenX,
       int* screenY);
+
+  ///
+  // Called to allow the client to fill in the CefScreenInfo object with
+  // appropriate values. Return true (1) if the |screen_info| structure has been
+  // modified.
+  //
+  // If the screen info rectangle is left NULL the rectangle from GetViewRect
+  // will be used. If the rectangle is still NULL or invalid popups may not be
+  // drawn correctly.
+  ///
+  int (CEF_CALLBACK *get_screen_info)(struct _cef_render_handler_t* self,
+      struct _cef_browser_t* browser, struct _cef_screen_info_t* screen_info);
 
   ///
   // Called when the browser wants to show or hide the popup widget. The popup
@@ -95,15 +107,13 @@ typedef struct _cef_render_handler_t {
   // Called when an element should be painted. |type| indicates whether the
   // element is the view or the popup widget. |buffer| contains the pixel data
   // for the whole image. |dirtyRects| contains the set of rectangles that need
-  // to be repainted. On Windows |buffer| will be width*height*4 bytes in size
-  // and represents a BGRA image with an upper-left origin. The
-  // cef_browser_tSettings.animation_frame_rate value controls the rate at which
-  // this function is called.
+  // to be repainted. On Windows |buffer| will be |width|*|height|*4 bytes in
+  // size and represents a BGRA image with an upper-left origin.
   ///
   void (CEF_CALLBACK *on_paint)(struct _cef_render_handler_t* self,
       struct _cef_browser_t* browser, enum cef_paint_element_type_t type,
-      size_t dirtyRectsCount, cef_rect_t const* dirtyRects,
-      const void* buffer);
+      size_t dirtyRectsCount, cef_rect_t const* dirtyRects, const void* buffer,
+      int width, int height);
 
   ///
   // Called when the browser window's cursor has changed.

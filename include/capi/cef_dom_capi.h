@@ -47,7 +47,7 @@ extern "C" {
 
 ///
 // Structure to implement for visiting the DOM. The functions of this structure
-// will be called on the UI thread.
+// will be called on the render process main thread.
 ///
 typedef struct _cef_domvisitor_t {
   ///
@@ -69,7 +69,7 @@ typedef struct _cef_domvisitor_t {
 
 ///
 // Structure used to represent a DOM document. The functions of this structure
-// should only be called on the UI thread.
+// should only be called on the render process main thread thread.
 ///
 typedef struct _cef_domdocument_t {
   ///
@@ -181,7 +181,7 @@ typedef struct _cef_domdocument_t {
 
 ///
 // Structure used to represent a DOM node. The functions of this structure
-// should only be called on the UI thread.
+// should only be called on the render process main thread.
 ///
 typedef struct _cef_domnode_t {
   ///
@@ -204,6 +204,11 @@ typedef struct _cef_domnode_t {
   // Returns true (1) if this is an element node.
   ///
   int (CEF_CALLBACK *is_element)(struct _cef_domnode_t* self);
+
+  ///
+  // Returns true (1) if this is an editable node.
+  ///
+  int (CEF_CALLBACK *is_editable)(struct _cef_domnode_t* self);
 
   ///
   // Returns true (1) if this is a form control element node.
@@ -356,7 +361,7 @@ typedef struct _cef_domnode_t {
 
 ///
 // Structure used to represent a DOM event. The functions of this structure
-// should only be called on the UI thread.
+// should only be called on the render process main thread.
 ///
 typedef struct _cef_domevent_t {
   ///
@@ -414,7 +419,7 @@ typedef struct _cef_domevent_t {
 
 ///
 // Structure to implement for handling DOM events. The functions of this
-// structure will be called on the UI thread.
+// structure will be called on the render process main thread.
 ///
 typedef struct _cef_domevent_listener_t {
   ///
