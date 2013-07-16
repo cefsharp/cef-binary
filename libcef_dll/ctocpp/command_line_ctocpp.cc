@@ -18,9 +18,9 @@
 // STATIC METHODS - Body may be edited by hand.
 
 CefRefPtr<CefCommandLine> CefCommandLine::CreateCommandLine() {
-  int build_revision = cef_build_revision();
-  if (build_revision != CEF_REVISION) {
-    // The libcef build revision does not match the CEF API revision.
+  const char* api_hash = cef_api_hash(0);
+  if (strcmp(api_hash, CEF_API_HASH_PLATFORM)) {
+    // The libcef API hash does not match the current header API hash.
     DCHECK(false);
     return NULL;
   }
@@ -34,8 +34,64 @@ CefRefPtr<CefCommandLine> CefCommandLine::CreateCommandLine() {
   return CefCommandLineCToCpp::Wrap(_retval);
 }
 
+CefRefPtr<CefCommandLine> CefCommandLine::GetGlobalCommandLine() {
+  const char* api_hash = cef_api_hash(0);
+  if (strcmp(api_hash, CEF_API_HASH_PLATFORM)) {
+    // The libcef API hash does not match the current header API hash.
+    DCHECK(false);
+    return NULL;
+  }
+
+  // AUTO-GENERATED CONTENT - DELETE THIS COMMENT BEFORE MODIFYING
+
+  // Execute
+  cef_command_line_t* _retval = cef_command_line_get_global();
+
+  // Return type: refptr_same
+  return CefCommandLineCToCpp::Wrap(_retval);
+}
+
 
 // VIRTUAL METHODS - Body may be edited by hand.
+
+bool CefCommandLineCToCpp::IsValid() {
+  if (CEF_MEMBER_MISSING(struct_, is_valid))
+    return false;
+
+  // AUTO-GENERATED CONTENT - DELETE THIS COMMENT BEFORE MODIFYING
+
+  // Execute
+  int _retval = struct_->is_valid(struct_);
+
+  // Return type: bool
+  return _retval?true:false;
+}
+
+bool CefCommandLineCToCpp::IsReadOnly() {
+  if (CEF_MEMBER_MISSING(struct_, is_read_only))
+    return false;
+
+  // AUTO-GENERATED CONTENT - DELETE THIS COMMENT BEFORE MODIFYING
+
+  // Execute
+  int _retval = struct_->is_read_only(struct_);
+
+  // Return type: bool
+  return _retval?true:false;
+}
+
+CefRefPtr<CefCommandLine> CefCommandLineCToCpp::Copy() {
+  if (CEF_MEMBER_MISSING(struct_, copy))
+    return NULL;
+
+  // AUTO-GENERATED CONTENT - DELETE THIS COMMENT BEFORE MODIFYING
+
+  // Execute
+  cef_command_line_t* _retval = struct_->copy(struct_);
+
+  // Return type: refptr_same
+  return CefCommandLineCToCpp::Wrap(_retval);
+}
 
 void CefCommandLineCToCpp::InitFromArgv(int argc, const char* const* argv) {
   if (CEF_MEMBER_MISSING(struct_, init_from_argv))
@@ -68,6 +124,40 @@ void CefCommandLineCToCpp::InitFromString(const CefString& command_line) {
   // Execute
   struct_->init_from_string(struct_,
       command_line.GetStruct());
+}
+
+void CefCommandLineCToCpp::Reset() {
+  if (CEF_MEMBER_MISSING(struct_, reset))
+    return;
+
+  // AUTO-GENERATED CONTENT - DELETE THIS COMMENT BEFORE MODIFYING
+
+  // Execute
+  struct_->reset(struct_);
+}
+
+void CefCommandLineCToCpp::GetArgv(std::vector<CefString>& argv) {
+  if (CEF_MEMBER_MISSING(struct_, get_argv))
+    return;
+
+  // AUTO-GENERATED CONTENT - DELETE THIS COMMENT BEFORE MODIFYING
+
+  // Translate param: argv; type: string_vec_byref
+  cef_string_list_t argvList = cef_string_list_alloc();
+  DCHECK(argvList);
+  if (argvList)
+    transfer_string_list_contents(argv, argvList);
+
+  // Execute
+  struct_->get_argv(struct_,
+      argvList);
+
+  // Restore param:argv; type: string_vec_byref
+  if (argvList) {
+    argv.clear();
+    transfer_string_list_contents(argvList, argv);
+    cef_string_list_free(argvList);
+  }
 }
 
 CefString CefCommandLineCToCpp::GetCommandLineString() {
@@ -282,6 +372,22 @@ void CefCommandLineCToCpp::AppendArgument(const CefString& argument) {
   // Execute
   struct_->append_argument(struct_,
       argument.GetStruct());
+}
+
+void CefCommandLineCToCpp::PrependWrapper(const CefString& wrapper) {
+  if (CEF_MEMBER_MISSING(struct_, prepend_wrapper))
+    return;
+
+  // AUTO-GENERATED CONTENT - DELETE THIS COMMENT BEFORE MODIFYING
+
+  // Verify param: wrapper; type: string_byref_const
+  DCHECK(!wrapper.empty());
+  if (wrapper.empty())
+    return;
+
+  // Execute
+  struct_->prepend_wrapper(struct_,
+      wrapper.GetStruct());
 }
 
 

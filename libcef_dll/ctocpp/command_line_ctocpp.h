@@ -18,6 +18,7 @@
 #pragma message("Warning: "__FILE__" may be accessed wrapper-side only")
 #else  // USING_CEF_SHARED
 
+#include <vector>
 #include "include/cef_command_line.h"
 #include "include/capi/cef_command_line_capi.h"
 #include "libcef_dll/ctocpp/ctocpp.h"
@@ -34,8 +35,13 @@ class CefCommandLineCToCpp
   virtual ~CefCommandLineCToCpp() {}
 
   // CefCommandLine methods
+  virtual bool IsValid() OVERRIDE;
+  virtual bool IsReadOnly() OVERRIDE;
+  virtual CefRefPtr<CefCommandLine> Copy() OVERRIDE;
   virtual void InitFromArgv(int argc, const char* const* argv) OVERRIDE;
   virtual void InitFromString(const CefString& command_line) OVERRIDE;
+  virtual void Reset() OVERRIDE;
+  virtual void GetArgv(std::vector<CefString>& argv) OVERRIDE;
   virtual CefString GetCommandLineString() OVERRIDE;
   virtual CefString GetProgram() OVERRIDE;
   virtual void SetProgram(const CefString& program) OVERRIDE;
@@ -49,6 +55,7 @@ class CefCommandLineCToCpp
   virtual bool HasArguments() OVERRIDE;
   virtual void GetArguments(ArgumentList& arguments) OVERRIDE;
   virtual void AppendArgument(const CefString& argument) OVERRIDE;
+  virtual void PrependWrapper(const CefString& wrapper) OVERRIDE;
 };
 
 #endif  // USING_CEF_SHARED

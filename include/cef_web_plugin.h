@@ -38,30 +38,7 @@
 #define CEF_INCLUDE_CEF_WEB_PLUGIN_H_
 
 #include "include/cef_base.h"
-
-class CefWebPluginInfo;
-
-///
-// Returns the number of installed web plugins. This method must be called on
-// the UI thread.
-///
-/*--cef()--*/
-size_t CefGetWebPluginCount();
-
-///
-// Returns information for web plugin at the specified zero-based index. This
-// method must be called on the UI thread.
-///
-/*--cef()--*/
-CefRefPtr<CefWebPluginInfo> CefGetWebPluginInfo(int index);
-
-///
-// Returns information for web plugin with the specified name. This method must
-// be called on the UI thread.
-///
-/*--cef(capi_name=cef_get_web_plugin_info_byname)--*/
-CefRefPtr<CefWebPluginInfo> CefGetWebPluginInfo(const CefString& name);
-
+#include "include/cef_browser.h"
 
 ///
 // Information about a specific web plugin.
@@ -93,5 +70,109 @@ class CefWebPluginInfo : public virtual CefBase {
   /*--cef()--*/
   virtual CefString GetDescription() =0;
 };
+
+///
+// Interface to implement for visiting web plugin information. The methods of
+// this class will be called on the browser process UI thread.
+///
+/*--cef(source=client)--*/
+class CefWebPluginInfoVisitor : public virtual CefBase {
+ public:
+  ///
+  // Method that will be called once for each plugin. |count| is the 0-based
+  // index for the current plugin. |total| is the total number of plugins.
+  // Return false to stop visiting plugins. This method may never be called if
+  // no plugins are found.
+  ///
+  /*--cef()--*/
+  virtual bool Visit(CefRefPtr<CefWebPluginInfo> info, int count, int total) =0;
+};
+
+///
+// Visit web plugin information. Can be called on any thread in the browser
+// process.
+///
+/*--cef()--*/
+void CefVisitWebPluginInfo(CefRefPtr<CefWebPluginInfoVisitor> visitor);
+
+///
+// Cause the plugin list to refresh the next time it is accessed regardless
+// of whether it has already been loaded. Can be called on any thread in the
+// browser process.
+///
+/*--cef()--*/
+void CefRefreshWebPlugins();
+
+///
+// Add a plugin path (directory + file). This change may not take affect until
+// after CefRefreshWebPlugins() is called. Can be called on any thread in the
+// browser process.
+///
+/*--cef()--*/
+void CefAddWebPluginPath(const CefString& path);
+
+///
+// Add a plugin directory. This change may not take affect until after
+// CefRefreshWebPlugins() is called. Can be called on any thread in the browser
+// process.
+///
+/*--cef()--*/
+void CefAddWebPluginDirectory(const CefString& dir);
+
+///
+// Remove a plugin path (directory + file). This change may not take affect
+// until after CefRefreshWebPlugins() is called. Can be called on any thread in
+// the browser process.
+///
+/*--cef()--*/
+void CefRemoveWebPluginPath(const CefString& path);
+
+///
+// Unregister an internal plugin. This may be undone the next time
+// CefRefreshWebPlugins() is called. Can be called on any thread in the browser
+// process.
+///
+/*--cef()--*/
+void CefUnregisterInternalWebPlugin(const CefString& path);
+
+///
+// Force a plugin to shutdown. Can be called on any thread in the browser
+// process but will be executed on the IO thread.
+///
+/*--cef()--*/
+void CefForceWebPluginShutdown(const CefString& path);
+
+///
+// Register a plugin crash. Can be called on any thread in the browser process
+// but will be executed on the IO thread.
+///
+/*--cef()--*/
+void CefRegisterWebPluginCrash(const CefString& path);
+
+///
+// Interface to implement for receiving unstable plugin information. The methods
+// of this class will be called on the browser process IO thread.
+///
+/*--cef(source=client)--*/
+class CefWebPluginUnstableCallback : public virtual CefBase {
+ public:
+  ///
+  // Method that will be called for the requested plugin. |unstable| will be
+  // true if the plugin has reached the crash count threshold of 3 times in 120
+  // seconds.
+  ///
+  /*--cef()--*/
+  virtual void IsUnstable(const CefString& path,
+                          bool unstable) =0;
+};
+
+///
+// Query if a plugin is unstable. Can be called on any thread in the browser
+// process.
+///
+/*--cef()--*/
+void CefIsWebPluginUnstable(const CefString& path,
+                            CefRefPtr<CefWebPluginUnstableCallback> callback);
+
 
 #endif  // CEF_INCLUDE_CEF_WEB_PLUGIN_H_

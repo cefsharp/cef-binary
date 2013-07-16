@@ -36,6 +36,7 @@ class CefFrameCToCpp
   virtual ~CefFrameCToCpp() {}
 
   // CefFrame methods
+  virtual bool IsValid() OVERRIDE;
   virtual void Undo() OVERRIDE;
   virtual void Redo() OVERRIDE;
   virtual void Cut() OVERRIDE;
@@ -43,18 +44,15 @@ class CefFrameCToCpp
   virtual void Paste() OVERRIDE;
   virtual void Delete() OVERRIDE;
   virtual void SelectAll() OVERRIDE;
-  virtual void Print() OVERRIDE;
   virtual void ViewSource() OVERRIDE;
-  virtual CefString GetSource() OVERRIDE;
-  virtual CefString GetText() OVERRIDE;
+  virtual void GetSource(CefRefPtr<CefStringVisitor> visitor) OVERRIDE;
+  virtual void GetText(CefRefPtr<CefStringVisitor> visitor) OVERRIDE;
   virtual void LoadRequest(CefRefPtr<CefRequest> request) OVERRIDE;
   virtual void LoadURL(const CefString& url) OVERRIDE;
   virtual void LoadString(const CefString& string_val,
       const CefString& url) OVERRIDE;
-  virtual void LoadStream(CefRefPtr<CefStreamReader> stream,
-      const CefString& url) OVERRIDE;
-  virtual void ExecuteJavaScript(const CefString& jsCode,
-      const CefString& scriptUrl, int startLine) OVERRIDE;
+  virtual void ExecuteJavaScript(const CefString& code,
+      const CefString& script_url, int start_line) OVERRIDE;
   virtual bool IsMain() OVERRIDE;
   virtual bool IsFocused() OVERRIDE;
   virtual CefString GetName() OVERRIDE;
@@ -62,8 +60,8 @@ class CefFrameCToCpp
   virtual CefRefPtr<CefFrame> GetParent() OVERRIDE;
   virtual CefString GetURL() OVERRIDE;
   virtual CefRefPtr<CefBrowser> GetBrowser() OVERRIDE;
-  virtual void VisitDOM(CefRefPtr<CefDOMVisitor> visitor) OVERRIDE;
   virtual CefRefPtr<CefV8Context> GetV8Context() OVERRIDE;
+  virtual void VisitDOM(CefRefPtr<CefDOMVisitor> visitor) OVERRIDE;
 };
 
 #endif  // USING_CEF_SHARED

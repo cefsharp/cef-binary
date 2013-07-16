@@ -11,14 +11,27 @@
 //
 
 #include "libcef_dll/cpptoc/domvisitor_cpptoc.h"
+#include "libcef_dll/cpptoc/string_visitor_cpptoc.h"
 #include "libcef_dll/ctocpp/browser_ctocpp.h"
 #include "libcef_dll/ctocpp/frame_ctocpp.h"
 #include "libcef_dll/ctocpp/request_ctocpp.h"
-#include "libcef_dll/ctocpp/stream_reader_ctocpp.h"
 #include "libcef_dll/ctocpp/v8context_ctocpp.h"
 
 
 // VIRTUAL METHODS - Body may be edited by hand.
+
+bool CefFrameCToCpp::IsValid() {
+  if (CEF_MEMBER_MISSING(struct_, is_valid))
+    return false;
+
+  // AUTO-GENERATED CONTENT - DELETE THIS COMMENT BEFORE MODIFYING
+
+  // Execute
+  int _retval = struct_->is_valid(struct_);
+
+  // Return type: bool
+  return _retval?true:false;
+}
 
 void CefFrameCToCpp::Undo() {
   if (CEF_MEMBER_MISSING(struct_, undo))
@@ -90,16 +103,6 @@ void CefFrameCToCpp::SelectAll() {
   struct_->select_all(struct_);
 }
 
-void CefFrameCToCpp::Print() {
-  if (CEF_MEMBER_MISSING(struct_, print))
-    return;
-
-  // AUTO-GENERATED CONTENT - DELETE THIS COMMENT BEFORE MODIFYING
-
-  // Execute
-  struct_->print(struct_);
-}
-
 void CefFrameCToCpp::ViewSource() {
   if (CEF_MEMBER_MISSING(struct_, view_source))
     return;
@@ -110,34 +113,36 @@ void CefFrameCToCpp::ViewSource() {
   struct_->view_source(struct_);
 }
 
-CefString CefFrameCToCpp::GetSource() {
+void CefFrameCToCpp::GetSource(CefRefPtr<CefStringVisitor> visitor) {
   if (CEF_MEMBER_MISSING(struct_, get_source))
-    return CefString();
+    return;
 
   // AUTO-GENERATED CONTENT - DELETE THIS COMMENT BEFORE MODIFYING
 
-  // Execute
-  cef_string_userfree_t _retval = struct_->get_source(struct_);
+  // Verify param: visitor; type: refptr_diff
+  DCHECK(visitor.get());
+  if (!visitor.get())
+    return;
 
-  // Return type: string
-  CefString _retvalStr;
-  _retvalStr.AttachToUserFree(_retval);
-  return _retvalStr;
+  // Execute
+  struct_->get_source(struct_,
+      CefStringVisitorCppToC::Wrap(visitor));
 }
 
-CefString CefFrameCToCpp::GetText() {
+void CefFrameCToCpp::GetText(CefRefPtr<CefStringVisitor> visitor) {
   if (CEF_MEMBER_MISSING(struct_, get_text))
-    return CefString();
+    return;
 
   // AUTO-GENERATED CONTENT - DELETE THIS COMMENT BEFORE MODIFYING
 
-  // Execute
-  cef_string_userfree_t _retval = struct_->get_text(struct_);
+  // Verify param: visitor; type: refptr_diff
+  DCHECK(visitor.get());
+  if (!visitor.get())
+    return;
 
-  // Return type: string
-  CefString _retvalStr;
-  _retvalStr.AttachToUserFree(_retval);
-  return _retvalStr;
+  // Execute
+  struct_->get_text(struct_,
+      CefStringVisitorCppToC::Wrap(visitor));
 }
 
 void CefFrameCToCpp::LoadRequest(CefRefPtr<CefRequest> request) {
@@ -194,46 +199,24 @@ void CefFrameCToCpp::LoadString(const CefString& string_val,
       url.GetStruct());
 }
 
-void CefFrameCToCpp::LoadStream(CefRefPtr<CefStreamReader> stream,
-    const CefString& url) {
-  if (CEF_MEMBER_MISSING(struct_, load_stream))
-    return;
-
-  // AUTO-GENERATED CONTENT - DELETE THIS COMMENT BEFORE MODIFYING
-
-  // Verify param: stream; type: refptr_same
-  DCHECK(stream.get());
-  if (!stream.get())
-    return;
-  // Verify param: url; type: string_byref_const
-  DCHECK(!url.empty());
-  if (url.empty())
-    return;
-
-  // Execute
-  struct_->load_stream(struct_,
-      CefStreamReaderCToCpp::Unwrap(stream),
-      url.GetStruct());
-}
-
-void CefFrameCToCpp::ExecuteJavaScript(const CefString& jsCode,
-    const CefString& scriptUrl, int startLine) {
+void CefFrameCToCpp::ExecuteJavaScript(const CefString& code,
+    const CefString& script_url, int start_line) {
   if (CEF_MEMBER_MISSING(struct_, execute_java_script))
     return;
 
   // AUTO-GENERATED CONTENT - DELETE THIS COMMENT BEFORE MODIFYING
 
-  // Verify param: jsCode; type: string_byref_const
-  DCHECK(!jsCode.empty());
-  if (jsCode.empty())
+  // Verify param: code; type: string_byref_const
+  DCHECK(!code.empty());
+  if (code.empty())
     return;
-  // Unverified params: scriptUrl
+  // Unverified params: script_url
 
   // Execute
   struct_->execute_java_script(struct_,
-      jsCode.GetStruct(),
-      scriptUrl.GetStruct(),
-      startLine);
+      code.GetStruct(),
+      script_url.GetStruct(),
+      start_line);
 }
 
 bool CefFrameCToCpp::IsMain() {
@@ -331,6 +314,19 @@ CefRefPtr<CefBrowser> CefFrameCToCpp::GetBrowser() {
   return CefBrowserCToCpp::Wrap(_retval);
 }
 
+CefRefPtr<CefV8Context> CefFrameCToCpp::GetV8Context() {
+  if (CEF_MEMBER_MISSING(struct_, get_v8context))
+    return NULL;
+
+  // AUTO-GENERATED CONTENT - DELETE THIS COMMENT BEFORE MODIFYING
+
+  // Execute
+  cef_v8context_t* _retval = struct_->get_v8context(struct_);
+
+  // Return type: refptr_same
+  return CefV8ContextCToCpp::Wrap(_retval);
+}
+
 void CefFrameCToCpp::VisitDOM(CefRefPtr<CefDOMVisitor> visitor) {
   if (CEF_MEMBER_MISSING(struct_, visit_dom))
     return;
@@ -345,19 +341,6 @@ void CefFrameCToCpp::VisitDOM(CefRefPtr<CefDOMVisitor> visitor) {
   // Execute
   struct_->visit_dom(struct_,
       CefDOMVisitorCppToC::Wrap(visitor));
-}
-
-CefRefPtr<CefV8Context> CefFrameCToCpp::GetV8Context() {
-  if (CEF_MEMBER_MISSING(struct_, get_v8context))
-    return NULL;
-
-  // AUTO-GENERATED CONTENT - DELETE THIS COMMENT BEFORE MODIFYING
-
-  // Execute
-  cef_v8context_t* _retval = struct_->get_v8context(struct_);
-
-  // Return type: refptr_same
-  return CefV8ContextCToCpp::Wrap(_retval);
 }
 
 

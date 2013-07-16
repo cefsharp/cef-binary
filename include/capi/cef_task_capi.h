@@ -46,34 +46,33 @@ extern "C" {
 
 
 ///
-// CEF maintains multiple internal threads that are used for handling different
-// types of tasks. The UI thread creates the browser window and is used for all
-// interaction with the WebKit rendering engine and V8 JavaScript engine (The UI
-// thread will be the same as the main application thread if cef_initialize() is
-// called with a CefSettings.multi_threaded_message_loop value of false (0).)
-// The IO thread is used for handling schema and network requests. The FILE
-// thread is used for the application cache and other miscellaneous activities.
-// This function will return true (1) if called on the specified thread.
+// Returns true (1) if called on the specified thread. Equivalent to using
+// cef_task_runner_t::GetForThread(threadId)->belongs_to_current_thread().
 ///
 CEF_EXPORT int cef_currently_on(cef_thread_id_t threadId);
 
 ///
-// Post a task for execution on the specified thread. This function may be
-// called on any thread.
+// Post a task for execution on the specified thread. Equivalent to using
+// cef_task_runner_t::GetForThread(threadId)->PostTask(task).
 ///
 CEF_EXPORT int cef_post_task(cef_thread_id_t threadId,
     struct _cef_task_t* task);
 
 ///
-// Post a task for delayed execution on the specified thread. This function may
-// be called on any thread.
+// Post a task for delayed execution on the specified thread. Equivalent to
+// using cef_task_runner_t::GetForThread(threadId)->PostDelayedTask(task,
+// delay_ms).
 ///
 CEF_EXPORT int cef_post_delayed_task(cef_thread_id_t threadId,
     struct _cef_task_t* task, int64 delay_ms);
 
 ///
-// Implement this structure for task execution. The functions of this structure
-// may be called on any thread.
+// Implement this structure for asynchronous task execution. If the task is
+// posted successfully and if the associated message loop is still running then
+// the execute() function will be called on the target thread. If the task fails
+// to post then the task object may be destroyed on the source thread instead of
+// the target thread. For this reason be cautious when performing work in the
+// task object destructor.
 ///
 typedef struct _cef_task_t {
   ///
@@ -82,11 +81,76 @@ typedef struct _cef_task_t {
   cef_base_t base;
 
   ///
-  // Method that will be executed. |threadId| is the thread executing the call.
+  // Method that will be executed on the target thread.
   ///
-  void (CEF_CALLBACK *execute)(struct _cef_task_t* self,
-      cef_thread_id_t threadId);
+  void (CEF_CALLBACK *execute)(struct _cef_task_t* self);
 } cef_task_t;
+
+
+///
+// Structure that asynchronously executes tasks on the associated thread. It is
+// safe to call the functions of this structure on any thread.
+//
+// CEF maintains multiple internal threads that are used for handling different
+// types of tasks in different processes. The cef_thread_id_t definitions in
+// cef_types.h list the common CEF threads. Task runners are also available for
+// other CEF threads as appropriate (for example, V8 WebWorker threads).
+///
+typedef struct _cef_task_runner_t {
+  ///
+  // Base structure.
+  ///
+  cef_base_t base;
+
+  ///
+  // Returns true (1) if this object is pointing to the same task runner as
+  // |that| object.
+  ///
+  int (CEF_CALLBACK *is_same)(struct _cef_task_runner_t* self,
+      struct _cef_task_runner_t* that);
+
+  ///
+  // Returns true (1) if this task runner belongs to the current thread.
+  ///
+  int (CEF_CALLBACK *belongs_to_current_thread)(
+      struct _cef_task_runner_t* self);
+
+  ///
+  // Returns true (1) if this task runner is for the specified CEF thread.
+  ///
+  int (CEF_CALLBACK *belongs_to_thread)(struct _cef_task_runner_t* self,
+      cef_thread_id_t threadId);
+
+  ///
+  // Post a task for execution on the thread associated with this task runner.
+  // Execution will occur asynchronously.
+  ///
+  int (CEF_CALLBACK *post_task)(struct _cef_task_runner_t* self,
+      struct _cef_task_t* task);
+
+  ///
+  // Post a task for delayed execution on the thread associated with this task
+  // runner. Execution will occur asynchronously. Delayed tasks are not
+  // supported on V8 WebWorker threads and will be executed without the
+  // specified delay.
+  ///
+  int (CEF_CALLBACK *post_delayed_task)(struct _cef_task_runner_t* self,
+      struct _cef_task_t* task, int64 delay_ms);
+} cef_task_runner_t;
+
+
+///
+// Returns the task runner for the current thread. Only CEF threads will have
+// task runners. An NULL reference will be returned if this function is called
+// on an invalid thread.
+///
+CEF_EXPORT cef_task_runner_t* cef_task_runner_get_for_current_thread();
+
+///
+// Returns the task runner for the specified CEF thread.
+///
+CEF_EXPORT cef_task_runner_t* cef_task_runner_get_for_thread(
+    cef_thread_id_t threadId);
 
 
 #ifdef __cplusplus

@@ -13,23 +13,30 @@
 #include "libcef_dll/cpptoc/client_cpptoc.h"
 #include "libcef_dll/cpptoc/life_span_handler_cpptoc.h"
 #include "libcef_dll/ctocpp/browser_ctocpp.h"
+#include "libcef_dll/ctocpp/frame_ctocpp.h"
 
 
 // MEMBER FUNCTIONS - Body may be edited by hand.
 
 int CEF_CALLBACK life_span_handler_on_before_popup(
-    struct _cef_life_span_handler_t* self, cef_browser_t* parentBrowser,
+    struct _cef_life_span_handler_t* self, cef_browser_t* browser,
+    cef_frame_t* frame, const cef_string_t* target_url,
+    const cef_string_t* target_frame_name,
     const struct _cef_popup_features_t* popupFeatures,
-    cef_window_info_t* windowInfo, const cef_string_t* url,
-    cef_client_t** client, struct _cef_browser_settings_t* settings) {
+    cef_window_info_t* windowInfo, cef_client_t** client,
+    struct _cef_browser_settings_t* settings, int* no_javascript_access) {
   // AUTO-GENERATED CONTENT - DELETE THIS COMMENT BEFORE MODIFYING
 
   DCHECK(self);
   if (!self)
     return 0;
-  // Verify param: parentBrowser; type: refptr_diff
-  DCHECK(parentBrowser);
-  if (!parentBrowser)
+  // Verify param: browser; type: refptr_diff
+  DCHECK(browser);
+  if (!browser)
+    return 0;
+  // Verify param: frame; type: refptr_diff
+  DCHECK(frame);
+  if (!frame)
     return 0;
   // Verify param: popupFeatures; type: struct_byref_const
   DCHECK(popupFeatures);
@@ -47,7 +54,11 @@ int CEF_CALLBACK life_span_handler_on_before_popup(
   DCHECK(settings);
   if (!settings)
     return 0;
-  // Unverified params: url
+  // Verify param: no_javascript_access; type: bool_byaddr
+  DCHECK(no_javascript_access);
+  if (!no_javascript_access)
+    return 0;
+  // Unverified params: target_url, target_frame_name
 
   // Translate param: popupFeatures; type: struct_byref_const
   CefPopupFeatures popupFeaturesObj;
@@ -66,15 +77,21 @@ int CEF_CALLBACK life_span_handler_on_before_popup(
   CefBrowserSettings settingsObj;
   if (settings)
     settingsObj.AttachTo(*settings);
+  // Translate param: no_javascript_access; type: bool_byaddr
+  bool no_javascript_accessBool = (
+      no_javascript_access && *no_javascript_access)?true:false;
 
   // Execute
   bool _retval = CefLifeSpanHandlerCppToC::Get(self)->OnBeforePopup(
-      CefBrowserCToCpp::Wrap(parentBrowser),
+      CefBrowserCToCpp::Wrap(browser),
+      CefFrameCToCpp::Wrap(frame),
+      CefString(target_url),
+      CefString(target_frame_name),
       popupFeaturesObj,
       windowInfoObj,
-      CefString(url),
       clientPtr,
-      settingsObj);
+      settingsObj,
+      &no_javascript_accessBool);
 
   // Restore param: windowInfo; type: struct_byref
   if (windowInfo)
@@ -92,6 +109,9 @@ int CEF_CALLBACK life_span_handler_on_before_popup(
   // Restore param: settings; type: struct_byref
   if (settings)
     settingsObj.DetachTo(*settings);
+  // Restore param: no_javascript_access; type: bool_byaddr
+  if (no_javascript_access)
+    *no_javascript_access = no_javascript_accessBool?true:false;
 
   // Return type: bool
   return _retval;

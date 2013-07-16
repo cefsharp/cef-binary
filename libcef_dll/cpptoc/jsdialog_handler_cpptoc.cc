@@ -12,14 +12,17 @@
 
 #include "libcef_dll/cpptoc/jsdialog_handler_cpptoc.h"
 #include "libcef_dll/ctocpp/browser_ctocpp.h"
-#include "libcef_dll/ctocpp/frame_ctocpp.h"
+#include "libcef_dll/ctocpp/jsdialog_callback_ctocpp.h"
 
 
 // MEMBER FUNCTIONS - Body may be edited by hand.
 
-int CEF_CALLBACK jsdialog_handler_on_jsalert(
+int CEF_CALLBACK jsdialog_handler_on_jsdialog(
     struct _cef_jsdialog_handler_t* self, cef_browser_t* browser,
-    cef_frame_t* frame, const cef_string_t* message) {
+    const cef_string_t* origin_url, const cef_string_t* accept_lang,
+    enum cef_jsdialog_type_t dialog_type, const cef_string_t* message_text,
+    const cef_string_t* default_prompt_text, cef_jsdialog_callback_t* callback,
+    int* suppress_message) {
   // AUTO-GENERATED CONTENT - DELETE THIS COMMENT BEFORE MODIFYING
 
   DCHECK(self);
@@ -29,25 +32,47 @@ int CEF_CALLBACK jsdialog_handler_on_jsalert(
   DCHECK(browser);
   if (!browser)
     return 0;
-  // Verify param: frame; type: refptr_diff
-  DCHECK(frame);
-  if (!frame)
+  // Verify param: origin_url; type: string_byref_const
+  DCHECK(origin_url);
+  if (!origin_url)
     return 0;
-  // Unverified params: message
+  // Verify param: callback; type: refptr_diff
+  DCHECK(callback);
+  if (!callback)
+    return 0;
+  // Verify param: suppress_message; type: bool_byref
+  DCHECK(suppress_message);
+  if (!suppress_message)
+    return 0;
+  // Unverified params: accept_lang, message_text, default_prompt_text
+
+  // Translate param: suppress_message; type: bool_byref
+  bool suppress_messageBool = (
+      suppress_message && *suppress_message)?true:false;
 
   // Execute
-  bool _retval = CefJSDialogHandlerCppToC::Get(self)->OnJSAlert(
+  bool _retval = CefJSDialogHandlerCppToC::Get(self)->OnJSDialog(
       CefBrowserCToCpp::Wrap(browser),
-      CefFrameCToCpp::Wrap(frame),
-      CefString(message));
+      CefString(origin_url),
+      CefString(accept_lang),
+      dialog_type,
+      CefString(message_text),
+      CefString(default_prompt_text),
+      CefJSDialogCallbackCToCpp::Wrap(callback),
+      suppress_messageBool);
+
+  // Restore param: suppress_message; type: bool_byref
+  if (suppress_message)
+    *suppress_message = suppress_messageBool?true:false;
 
   // Return type: bool
   return _retval;
 }
 
-int CEF_CALLBACK jsdialog_handler_on_jsconfirm(
+int CEF_CALLBACK jsdialog_handler_on_before_unload_dialog(
     struct _cef_jsdialog_handler_t* self, cef_browser_t* browser,
-    cef_frame_t* frame, const cef_string_t* message, int* retval) {
+    const cef_string_t* message_text, int is_reload,
+    cef_jsdialog_callback_t* callback) {
   // AUTO-GENERATED CONTENT - DELETE THIS COMMENT BEFORE MODIFYING
 
   DCHECK(self);
@@ -57,81 +82,38 @@ int CEF_CALLBACK jsdialog_handler_on_jsconfirm(
   DCHECK(browser);
   if (!browser)
     return 0;
-  // Verify param: frame; type: refptr_diff
-  DCHECK(frame);
-  if (!frame)
+  // Verify param: callback; type: refptr_diff
+  DCHECK(callback);
+  if (!callback)
     return 0;
-  // Verify param: retval; type: bool_byref
-  DCHECK(retval);
-  if (!retval)
-    return 0;
-  // Unverified params: message
-
-  // Translate param: retval; type: bool_byref
-  bool retvalBool = (retval && *retval)?true:false;
+  // Unverified params: message_text
 
   // Execute
-  bool _retval = CefJSDialogHandlerCppToC::Get(self)->OnJSConfirm(
+  bool _retval = CefJSDialogHandlerCppToC::Get(self)->OnBeforeUnloadDialog(
       CefBrowserCToCpp::Wrap(browser),
-      CefFrameCToCpp::Wrap(frame),
-      CefString(message),
-      retvalBool);
-
-  // Restore param: retval; type: bool_byref
-  if (retval)
-    *retval = retvalBool?true:false;
+      CefString(message_text),
+      is_reload?true:false,
+      CefJSDialogCallbackCToCpp::Wrap(callback));
 
   // Return type: bool
   return _retval;
 }
 
-int CEF_CALLBACK jsdialog_handler_on_jsprompt(
-    struct _cef_jsdialog_handler_t* self, cef_browser_t* browser,
-    cef_frame_t* frame, const cef_string_t* message,
-    const cef_string_t* defaultValue, int* retval, cef_string_t* result) {
+void CEF_CALLBACK jsdialog_handler_on_reset_dialog_state(
+    struct _cef_jsdialog_handler_t* self, cef_browser_t* browser) {
   // AUTO-GENERATED CONTENT - DELETE THIS COMMENT BEFORE MODIFYING
 
   DCHECK(self);
   if (!self)
-    return 0;
+    return;
   // Verify param: browser; type: refptr_diff
   DCHECK(browser);
   if (!browser)
-    return 0;
-  // Verify param: frame; type: refptr_diff
-  DCHECK(frame);
-  if (!frame)
-    return 0;
-  // Verify param: retval; type: bool_byref
-  DCHECK(retval);
-  if (!retval)
-    return 0;
-  // Verify param: result; type: string_byref
-  DCHECK(result);
-  if (!result)
-    return 0;
-  // Unverified params: message, defaultValue
-
-  // Translate param: retval; type: bool_byref
-  bool retvalBool = (retval && *retval)?true:false;
-  // Translate param: result; type: string_byref
-  CefString resultStr(result);
+    return;
 
   // Execute
-  bool _retval = CefJSDialogHandlerCppToC::Get(self)->OnJSPrompt(
-      CefBrowserCToCpp::Wrap(browser),
-      CefFrameCToCpp::Wrap(frame),
-      CefString(message),
-      CefString(defaultValue),
-      retvalBool,
-      resultStr);
-
-  // Restore param: retval; type: bool_byref
-  if (retval)
-    *retval = retvalBool?true:false;
-
-  // Return type: bool
-  return _retval;
+  CefJSDialogHandlerCppToC::Get(self)->OnResetDialogState(
+      CefBrowserCToCpp::Wrap(browser));
 }
 
 
@@ -140,9 +122,11 @@ int CEF_CALLBACK jsdialog_handler_on_jsprompt(
 CefJSDialogHandlerCppToC::CefJSDialogHandlerCppToC(CefJSDialogHandler* cls)
     : CefCppToC<CefJSDialogHandlerCppToC, CefJSDialogHandler,
         cef_jsdialog_handler_t>(cls) {
-  struct_.struct_.on_jsalert = jsdialog_handler_on_jsalert;
-  struct_.struct_.on_jsconfirm = jsdialog_handler_on_jsconfirm;
-  struct_.struct_.on_jsprompt = jsdialog_handler_on_jsprompt;
+  struct_.struct_.on_jsdialog = jsdialog_handler_on_jsdialog;
+  struct_.struct_.on_before_unload_dialog =
+      jsdialog_handler_on_before_unload_dialog;
+  struct_.struct_.on_reset_dialog_state =
+      jsdialog_handler_on_reset_dialog_state;
 }
 
 #ifndef NDEBUG

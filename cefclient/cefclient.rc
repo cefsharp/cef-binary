@@ -28,17 +28,16 @@ LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
 // Binary
 //
 
+IDS_BINDING BINARY "res\\binding.html"
 IDS_DIALOGS BINARY "res\\dialogs.html"
 IDS_DOMACCESS BINARY "res\\domaccess.html"
 IDS_LOCALSTORAGE BINARY "res\\localstorage.html"
 IDS_LOGO BINARY "res\\logo.png"
-IDS_LOGOBALL BINARY "res\\logoball.png"
-IDS_MODALDIALOG BINARY "res\\modaldialog.html"
-IDS_MODALMAIN BINARY "res\\modalmain.html"
-IDS_OSRPLUGIN BINARY "res\\osrplugin.html"
+IDS_OSRTEST BINARY "res\\osr_test.html"
+IDS_OTHER_TESTS BINARY "res\\other_tests.html"
 IDS_PERFORMANCE BINARY "res\\performance.html"
 IDS_TRANSPARENCY BINARY "res\\transparency.html"
-IDS_UIPLUGIN BINARY "res\\uiplugin.html"
+IDS_WINDOW BINARY "res\\window.html"
 IDS_XMLHTTPREQUEST BINARY "res\\xmlhttprequest.html"
 
 /////////////////////////////////////////////////////////////////////////////
@@ -56,14 +55,10 @@ IDI_SMALL               ICON                    "res\small.ico"
 // Menu
 //
 
-IDC_CEFCLIENT MENU 
+IDC_CEFCLIENT MENU
 BEGIN
     POPUP "&File"
     BEGIN
-        MENUITEM "&Find...",                    ID_FIND
-        MENUITEM SEPARATOR
-        MENUITEM "&Print...",                   ID_PRINT
-        MENUITEM SEPARATOR
         MENUITEM "E&xit",                       IDM_EXIT
     END
     POPUP "&Help"
@@ -74,37 +69,15 @@ BEGIN
     BEGIN
         MENUITEM "Get Source",                  ID_TESTS_GETSOURCE
         MENUITEM "Get Text",                    ID_TESTS_GETTEXT
-        MENUITEM "JavaScript Binding Handler",  ID_TESTS_JAVASCRIPT_BINDING
-        MENUITEM "JavaScript Extension Handler",ID_TESTS_JAVASCRIPT_EXTENSION
-        MENUITEM "JavaScript Execute",          ID_TESTS_JAVASCRIPT_EXECUTE
-        MENUITEM "JavaScript Invoke",           ID_TESTS_JAVASCRIPT_INVOKE
-        MENUITEM "Performance Tests",           ID_TESTS_PERFORMANCE
-        MENUITEM "Dialogs",                     ID_TESTS_DIALOGS
-        MENUITEM "Plugin",                      ID_TESTS_PLUGIN
-        MENUITEM "Plugin Info",                 ID_TESTS_PLUGIN_INFO
         MENUITEM "Popup Window",                ID_TESTS_POPUP
-        MENUITEM "Transparent Popup Window",    ID_TESTS_TRANSPARENT_POPUP
         MENUITEM "Request",                     ID_TESTS_REQUEST
-        MENUITEM "Scheme Handler",              ID_TESTS_SCHEME_HANDLER
-        MENUITEM "UI App Example",              ID_TESTS_UIAPP
-        MENUITEM "Off-Screen Rendering Example",ID_TESTS_OSRAPP
-        MENUITEM "Transparent Off-Screen Rendering Example",ID_TESTS_TRANSPARENT_OSRAPP
-        MENUITEM "Local Storage",               ID_TESTS_LOCALSTORAGE
-        MENUITEM "XMLHttpRequest",              ID_TESTS_XMLHTTPREQUEST
-        MENUITEM "WebURLRequest",               ID_TESTS_WEBURLREQUEST
-        MENUITEM "DOM Access",                  ID_TESTS_DOMACCESS
-        MENUITEM "Accelerated 2D Canvas",       ID_TESTS_ACCELERATED2DCANVAS
-        MENUITEM "Accelerated Layers",          ID_TESTS_ACCELERATEDLAYERS
-        MENUITEM "WebGL",                       ID_TESTS_WEBGL
-        MENUITEM "Drag && Drop",                ID_TESTS_DRAGDROP
-        MENUITEM "Geolocation",                 ID_TESTS_GEOLOCATION
+        MENUITEM "Plugin Info",                 ID_TESTS_PLUGIN_INFO
         MENUITEM "Zoom In",                     ID_TESTS_ZOOM_IN
         MENUITEM "Zoom Out",                    ID_TESTS_ZOOM_OUT
-        MENUITEM "Reset Zoom",                  ID_TESTS_ZOOM_RESET
-        MENUITEM "Show Developer Tools",        ID_TESTS_DEVTOOLS_SHOW
-        MENUITEM "Close Developer Tools",       ID_TESTS_DEVTOOLS_CLOSE
-        MENUITEM "Modal Dialog",                ID_TESTS_MODALDIALOG
-        MENUITEM "Get Image",                   ID_TESTS_GETIMAGE
+        MENUITEM "Zoom Reset",                  ID_TESTS_ZOOM_RESET
+        MENUITEM "Begin Tracing",               ID_TESTS_TRACING_BEGIN
+        MENUITEM "End Tracing",                 ID_TESTS_TRACING_END
+        MENUITEM "Other Tests",                 ID_TESTS_OTHER_TESTS
    END
 END
 
@@ -114,7 +87,7 @@ END
 // Accelerator
 //
 
-IDC_CEFCLIENT ACCELERATORS 
+IDC_CEFCLIENT ACCELERATORS
 BEGIN
     "?",            IDM_ABOUT,              ASCII,  ALT
     "/",            IDM_ABOUT,              ASCII,  ALT
@@ -144,12 +117,12 @@ END
 // TEXTINCLUDE
 //
 
-1 TEXTINCLUDE 
+1 TEXTINCLUDE
 BEGIN
     "resource.h\0"
 END
 
-2 TEXTINCLUDE 
+2 TEXTINCLUDE
 BEGIN
     "#define APSTUDIO_HIDDEN_SYMBOLS\r\n"
     "#include ""windows.h""\r\n"
@@ -157,7 +130,7 @@ BEGIN
     "\0"
 END
 
-3 TEXTINCLUDE 
+3 TEXTINCLUDE
 BEGIN
     "\r\n"
     "\0"
@@ -171,10 +144,11 @@ END
 // String Table
 //
 
-STRINGTABLE 
+STRINGTABLE
 BEGIN
     IDS_APP_TITLE           "cefclient"
     IDC_CEFCLIENT           "CEFCLIENT"
+    IDS_OSR_WIDGET_CLASS    "CEFCLIENT-OSR-WIDGET"
 END
 
 #endif    // English (U.S.) resources

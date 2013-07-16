@@ -18,6 +18,10 @@ function show_prompt() {
     document.getElementById('pm').innerText = "Hello " + name + "!";
 }
 
+window.onbeforeunload = function() {
+  return 'This is an onbeforeunload message.';
+}
+
 function update_time() {
   document.getElementById('time').innerText = new Date().toLocaleString();
 }
@@ -25,6 +29,20 @@ function update_time() {
 function setup() {
   update_time();
   setInterval(update_time, 1000);
+}
+
+function show_file_dialog(element, test) {
+  var message = 'DialogTest.' + test;
+  var target = document.getElementById(element);
+
+  // Register for the callback from OnFileDialogDismissed in dialog_test.cpp.
+  app.setMessageCallback(message, function(msg, paths) {
+    target.innerText = paths.join();
+    app.removeMessageCallback(message);
+  });
+
+  // This will result in a call to OnProcessMessageReceived in dialog_test.cpp.
+  app.sendMessage(message);
 }
 
 window.addEventListener('load', setup, false);
@@ -37,6 +55,9 @@ Click a button to show the associated dialog type.
 <br/><input type="button" onclick="show_confirm();" value="Show Confirm"> <span id="cm"></span>
 <br/><input type="button" onclick="show_prompt();" value="Show Prompt"> <span id="pm"></span>
 <br/>input type="file": <input type="file" name="pic" accept="text/*,.js,.css,image/*">
+<br/><input type="button" onclick="show_file_dialog('fo', 'FileOpen');" value="Show File Open"> <span id="fo"></span>
+<br/><input type="button" onclick="show_file_dialog('fom', 'FileOpenMultiple');" value="Show File Open Multiple"> <span id="fom"></span>
+<br/><input type="button" onclick="show_file_dialog('fs', 'FileSave');" value="Show File Save"> <span id="fs"></span>
 <p id="time"></p>
 </form>
 </body>

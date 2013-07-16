@@ -3,7 +3,6 @@
 // that can be found in the LICENSE file.
 
 #include "cefclient/osrenderer.h"
-#include "cefclient/util.h"
 
 #if defined(OS_WIN)
 #include <gl/gl.h>
@@ -13,6 +12,8 @@
 #else
 #error Platform is not supported.
 #endif
+
+#include "cefclient/util.h"
 
 #ifndef GL_BGR
 #define GL_BGR 0x80E0
@@ -26,13 +27,13 @@
 
 
 ClientOSRenderer::ClientOSRenderer(bool transparent)
-  : transparent_(transparent),
-    initialized_(false),
-    texture_id_(0),
-    view_width_(0),
-    view_height_(0),
-    spin_x_(0),
-    spin_y_(0) {
+    : transparent_(transparent),
+      initialized_(false),
+      texture_id_(0),
+      view_width_(0),
+      view_height_(0),
+      spin_x_(0),
+      spin_y_(0) {
 }
 
 ClientOSRenderer::~ClientOSRenderer() {
@@ -141,24 +142,48 @@ void ClientOSRenderer::Render() {
 void ClientOSRenderer::OnPopupShow(CefRefPtr<CefBrowser> browser,
                                    bool show) {
   if (!show) {
-    // Invalidate the previous popup rectangle so that it will be repainted.
-    browser->Invalidate(popup_rect_);
-
     // Clear the popup rectangle.
-    popup_rect_.Set(0, 0, 0, 0);
+    ClearPopupRects();
   }
 }
 
 void ClientOSRenderer::OnPopupSize(CefRefPtr<CefBrowser> browser,
                                    const CefRect& rect) {
-  if (rect.width > 0 && rect.height > 0)
-    popup_rect_ = rect;
+  if (rect.width <= 0 || rect.height <= 0)
+    return;
+  original_popup_rect_ = rect;
+  popup_rect_ = GetPopupRectInWebView(original_popup_rect_);
+}
+
+CefRect ClientOSRenderer::GetPopupRectInWebView(const CefRect& original_rect) {
+  CefRect rc(original_rect);
+  // if x or y are negative, move them to 0.
+  if (rc.x < 0)
+    rc.x = 0;
+  if (rc.y < 0)
+    rc.y = 0;
+  // if popup goes outside the view, try to reposition origin
+  if (rc.x + rc.width > view_width_)
+    rc.x = view_width_ - rc.width;
+  if (rc.y + rc.height > view_height_)
+    rc.y = view_height_ - rc.height;
+  // if x or y became negative, move them to 0 again.
+  if (rc.x < 0)
+    rc.x = 0;
+  if (rc.y < 0)
+    rc.y = 0;
+  return rc;
+}
+
+void ClientOSRenderer::ClearPopupRects() {
+  popup_rect_.Set(0, 0, 0, 0);
+  original_popup_rect_.Set(0, 0, 0, 0);
 }
 
 void ClientOSRenderer::OnPaint(CefRefPtr<CefBrowser> browser,
                                CefRenderHandler::PaintElementType type,
                                const CefRenderHandler::RectList& dirtyRects,
-                               const void* buffer) {
+                               const void* buffer, int width, int height) {
   if (!initialized_)
     Initialize();
 
@@ -177,8 +202,8 @@ void ClientOSRenderer::OnPaint(CefRefPtr<CefBrowser> browser,
     int old_width = view_width_;
     int old_height = view_height_;
 
-    // Retrieve the current size of the browser view.
-    browser->GetSize(type, view_width_, view_height_);
+    view_width_ = width;
+    view_height_ = height;
 
     glPixelStorei(GL_UNPACK_ROW_LENGTH, view_width_);
 
@@ -204,8 +229,8 @@ void ClientOSRenderer::OnPaint(CefRefPtr<CefBrowser> browser,
              popup_rect_.height > 0) {
     int skip_pixels = 0, x = popup_rect_.x;
     int skip_rows = 0, y = popup_rect_.y;
-    int width = popup_rect_.width;
-    int height = popup_rect_.height;
+    int w = width;
+    int h = height;
 
     // Adjust the popup to fit inside the view.
     if (x < 0) {
@@ -216,16 +241,16 @@ void ClientOSRenderer::OnPaint(CefRefPtr<CefBrowser> browser,
       skip_rows = -y;
       y = 0;
     }
-    if (x + width > view_width_)
-      width -= x + width - view_width_;
-    if (y + height > view_height_)
-      height -= y + height - view_height_;
+    if (x + w > view_width_)
+      w -= x + w - view_width_;
+    if (y + h > view_height_)
+      h -= y + h - view_height_;
 
     // Update the popup rectangle.
-    glPixelStorei(GL_UNPACK_ROW_LENGTH, popup_rect_.width);
+    glPixelStorei(GL_UNPACK_ROW_LENGTH, width);
     glPixelStorei(GL_UNPACK_SKIP_PIXELS, skip_pixels);
     glPixelStorei(GL_UNPACK_SKIP_ROWS, skip_rows);
-    glTexSubImage2D(GL_TEXTURE_2D, 0, x, y, width, height, GL_BGRA,
+    glTexSubImage2D(GL_TEXTURE_2D, 0, x, y, w, h, GL_BGRA,
                     GL_UNSIGNED_INT_8_8_8_8_REV, buffer);
   }
 

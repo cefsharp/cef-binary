@@ -1,18 +1,17 @@
-Chromium Embedded Framework (CEF) Binary Distribution
+Chromium Embedded Framework (CEF) Standard Binary Distribution for Windows
 -------------------------------------------------------------------------------
 
-Date:             March 04, 2013
+Date:             May 08, 2013
 
-CEF Version:      1.1364.1123
-CEF URL:          https://chromiumembedded.googlecode.com/svn/branches/1364/cef1@1123
+CEF Version:      3.1453.1255
+CEF URL:          https://chromiumembedded.googlecode.com/svn/branches/1453/cef3@1255
 
-Chromium Verison: 25.0.1364.152
-Chromium URL:     http://src.chromium.org/svn/branches/1364/src@185281
-
+Chromium Verison: 27.0.1453.73
+Chromium URL:     http://src.chromium.org/svn/branches/1453/src@197225
 
 This distribution contains all components necessary to build and distribute an
-application using CEF. Please see the LICENSING section of this document for
-licensing terms and conditions.
+application using CEF on the Windows platform. Please see the LICENSING
+section of this document for licensing terms and conditions.
 
 
 CONTENTS
@@ -21,25 +20,25 @@ CONTENTS
 cefclient   Contains the cefclient sample application configured to build
             using the files in this distribution.
 
-Debug       Contains libcef.dll and other components required to run the debug
-            version of CEF-based applications. Also acts as the build target for
-            the Debug build of cefclient.
+Debug       Contains libcef.dll, libcef.lib and other components required to
+            build and run the debug version of CEF-based applications. By
+            default these files should be placed in the same directory as the
+            executable and will be copied there as part of the build process.
 
-docs        Contains C++ API documentation generated from the CEF header files.
-
-include     Contains all required CEF and NPAPI-related header files.  Read
-            the include/internal/npapi/README-TRANSFER.txt file for more
-            information about the NPAPI-related header files.
-
-lib         Contains Debug and Release versions of the libcef.lib library file
-            that all CEF-based applications must link against.
+include     Contains all required CEF header files.
 
 libcef_dll  Contains the source code for the libcef_dll_wrapper static library
             that all applications using the CEF C++ API must link against.
 
-Release     Contains libcef.dll and other components required to run the release
-            version of CEF-based applications. Also acts as the build target for
-            the Release build of cefclient.
+Release     Contains libcef.dll, libcef.lib and other components required to
+            build and run the release version of CEF-based applications. By
+            default these files should be placed in the same directory as the
+            executable and will be copied there as part of the build process.
+
+Resources   Contains resources required by libcef.dll. By default these files
+            should be placed in the same directory as libcef.dll. By default
+            these files should be placed in the same directory as libcef.dll
+            and will be copied there as part of the build process.
 
 
 USAGE
@@ -91,21 +90,23 @@ Optional components:
   using CefSettings.locales_dir_path.
 
 * Other resources
+    cef.pak
     devtools_resources.pak
   Note: Contains WebKit image and inspector resources. Pack file loading can be
   disabled completely using CefSettings.pack_loading_disabled. The resources
   directory path can be customized using CefSettings.resources_dir_path.
 
+* FFmpeg audio and video support
+    ffmpegsumo.dll
+  Note: Without this component HTML5 audio and video will not function.
+
 * Angle and Direct3D support
-    d3dcompiler_43.dll
-    d3dx9_43.dll
+    d3dcompiler_43.dll (required for Windows XP)
+    d3dcompiler_46.dll (required for Windows Vista and newer)
     libEGL.dll
     libGLESv2.dll
-  Note: Without these components the default ANGLE_IN_PROCESS graphics
-  implementation for HTML5 accelerated content like 2D canvas, 3D CSS and
-  WebGL will not function. To use the desktop GL graphics implementation which
-  does not require these components (and does not work on all systems) set
-  CefSettings.graphics_implementation to DESKTOP_IN_PROCESS.
+  Note: Without these components HTML5 accelerated content like 2D canvas, 3D
+  CSS and WebGL will not function.
 
 
 LICENSING
@@ -113,7 +114,6 @@ LICENSING
 
 The CEF project is BSD licensed. Please read the LICENSE.txt file included with
 this binary distribution for licensing terms and conditions. Other software
-included in this distribution is provided under other licenses. Please visit the
-below link for complete Chromium and third-party licensing information.
-
-http://code.google.com/chromium/terms.html 
+included in this distribution is provided under other licenses. Please visit
+"about:credits" in a CEF-based application for complete Chromium and third-party
+licensing information.

@@ -70,19 +70,13 @@ typedef struct _cef_focus_handler_t {
   // focus to be set or true (1) to cancel setting the focus.
   ///
   int (CEF_CALLBACK *on_set_focus)(struct _cef_focus_handler_t* self,
-      struct _cef_browser_t* browser, enum cef_handler_focus_source_t source);
+      struct _cef_browser_t* browser, enum cef_focus_source_t source);
 
   ///
-  // Called when a new node in the the browser gets focus. The |node| value may
-  // be NULL if no specific node has gained focus. The node object passed to
-  // this function represents a snapshot of the DOM at the time this function is
-  // executed. DOM objects are only valid for the scope of this function. Do not
-  // keep references to or attempt to access any DOM objects outside the scope
-  // of this function.
+  // Called when the browser component has received focus.
   ///
-  void (CEF_CALLBACK *on_focused_node_changed)(
-      struct _cef_focus_handler_t* self, struct _cef_browser_t* browser,
-      struct _cef_frame_t* frame, struct _cef_domnode_t* node);
+  void (CEF_CALLBACK *on_got_focus)(struct _cef_focus_handler_t* self,
+      struct _cef_browser_t* browser);
 } cef_focus_handler_t;
 
 

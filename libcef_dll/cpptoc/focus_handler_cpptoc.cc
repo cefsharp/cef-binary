@@ -12,8 +12,6 @@
 
 #include "libcef_dll/cpptoc/focus_handler_cpptoc.h"
 #include "libcef_dll/ctocpp/browser_ctocpp.h"
-#include "libcef_dll/ctocpp/domnode_ctocpp.h"
-#include "libcef_dll/ctocpp/frame_ctocpp.h"
 
 
 // MEMBER FUNCTIONS - Body may be edited by hand.
@@ -37,7 +35,7 @@ void CEF_CALLBACK focus_handler_on_take_focus(struct _cef_focus_handler_t* self,
 }
 
 int CEF_CALLBACK focus_handler_on_set_focus(struct _cef_focus_handler_t* self,
-    cef_browser_t* browser, enum cef_handler_focus_source_t source) {
+    cef_browser_t* browser, enum cef_focus_source_t source) {
   // AUTO-GENERATED CONTENT - DELETE THIS COMMENT BEFORE MODIFYING
 
   DCHECK(self);
@@ -57,9 +55,8 @@ int CEF_CALLBACK focus_handler_on_set_focus(struct _cef_focus_handler_t* self,
   return _retval;
 }
 
-void CEF_CALLBACK focus_handler_on_focused_node_changed(
-    struct _cef_focus_handler_t* self, cef_browser_t* browser,
-    struct _cef_frame_t* frame, cef_domnode_t* node) {
+void CEF_CALLBACK focus_handler_on_got_focus(struct _cef_focus_handler_t* self,
+    cef_browser_t* browser) {
   // AUTO-GENERATED CONTENT - DELETE THIS COMMENT BEFORE MODIFYING
 
   DCHECK(self);
@@ -69,13 +66,10 @@ void CEF_CALLBACK focus_handler_on_focused_node_changed(
   DCHECK(browser);
   if (!browser)
     return;
-  // Unverified params: frame, node
 
   // Execute
-  CefFocusHandlerCppToC::Get(self)->OnFocusedNodeChanged(
-      CefBrowserCToCpp::Wrap(browser),
-      CefFrameCToCpp::Wrap(frame),
-      CefDOMNodeCToCpp::Wrap(node));
+  CefFocusHandlerCppToC::Get(self)->OnGotFocus(
+      CefBrowserCToCpp::Wrap(browser));
 }
 
 
@@ -86,8 +80,7 @@ CefFocusHandlerCppToC::CefFocusHandlerCppToC(CefFocusHandler* cls)
         cls) {
   struct_.struct_.on_take_focus = focus_handler_on_take_focus;
   struct_.struct_.on_set_focus = focus_handler_on_set_focus;
-  struct_.struct_.on_focused_node_changed =
-      focus_handler_on_focused_node_changed;
+  struct_.struct_.on_got_focus = focus_handler_on_got_focus;
 }
 
 #ifndef NDEBUG

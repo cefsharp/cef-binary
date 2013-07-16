@@ -56,10 +56,11 @@ typedef struct _cef_display_handler_t {
   cef_base_t base;
 
   ///
-  // Called when the navigation state has changed.
+  // Called when the loading state has changed.
   ///
-  void (CEF_CALLBACK *on_nav_state_change)(struct _cef_display_handler_t* self,
-      struct _cef_browser_t* browser, int canGoBack, int canGoForward);
+  void (CEF_CALLBACK *on_loading_state_change)(
+      struct _cef_display_handler_t* self, struct _cef_browser_t* browser,
+      int isLoading, int canGoBack, int canGoForward);
 
   ///
   // Called when a frame's address has changed.
@@ -69,30 +70,18 @@ typedef struct _cef_display_handler_t {
       const cef_string_t* url);
 
   ///
-  // Called when the size of the content area has changed.
-  ///
-  void (CEF_CALLBACK *on_contents_size_change)(
-      struct _cef_display_handler_t* self, struct _cef_browser_t* browser,
-      struct _cef_frame_t* frame, int width, int height);
-
-  ///
   // Called when the page title changes.
   ///
   void (CEF_CALLBACK *on_title_change)(struct _cef_display_handler_t* self,
       struct _cef_browser_t* browser, const cef_string_t* title);
 
   ///
-  // Called when the Favicon URL for a page changes.
-  ///
-  void (CEF_CALLBACK *on_favicon_urlchange)(struct _cef_display_handler_t* self,
-      struct _cef_browser_t* browser, cef_string_list_t icon_urls);
-
-  ///
   // Called when the browser is about to display a tooltip. |text| contains the
   // text that will be displayed in the tooltip. To handle the display of the
   // tooltip yourself return true (1). Otherwise, you can optionally modify
   // |text| and then return false (0) to allow the browser to display the
-  // tooltip.
+  // tooltip. When window rendering is disabled the application is responsible
+  // for drawing tooltips and the return value is ignored.
   ///
   int (CEF_CALLBACK *on_tooltip)(struct _cef_display_handler_t* self,
       struct _cef_browser_t* browser, cef_string_t* text);
@@ -103,8 +92,7 @@ typedef struct _cef_display_handler_t {
   // status message type.
   ///
   void (CEF_CALLBACK *on_status_message)(struct _cef_display_handler_t* self,
-      struct _cef_browser_t* browser, const cef_string_t* value,
-      enum cef_handler_statustype_t type);
+      struct _cef_browser_t* browser, const cef_string_t* value);
 
   ///
   // Called to display a console message. Return true (1) to stop the message
