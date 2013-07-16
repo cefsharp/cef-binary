@@ -3,3 +3,4 @@
 *.user
 *.log
 _ReSharper*
+out
