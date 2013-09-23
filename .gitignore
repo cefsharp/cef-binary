@@ -5,3 +5,4 @@
 *.log
 _ReSharper*
 out
+*Thumbs.db
