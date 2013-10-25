@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <Filter Include="include">
@@ -18,7 +18,7 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <None Include="cefclient.gyp"/>
+    <None Include="cefclient.gyp" />
     <ClInclude Include="include\cef_trace.h">
       <Filter>include</Filter>
     </ClInclude>
@@ -394,5 +394,8 @@
     <None Include="cefclient\res\logo.png">
       <Filter>cefclient\res</Filter>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="binary_distrib\cef_binary_3.1547.1412_windows\cefclient.gyp" />
   </ItemGroup>
 </Project>
