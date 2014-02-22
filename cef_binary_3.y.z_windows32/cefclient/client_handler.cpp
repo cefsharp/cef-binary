@@ -189,15 +189,6 @@ bool ClientHandler::OnContextMenuCommand(
   }
 }
 
-void ClientHandler::OnLoadingStateChange(CefRefPtr<CefBrowser> browser,
-                                         bool isLoading,
-                                         bool canGoBack,
-                                         bool canGoForward) {
-  REQUIRE_UI_THREAD();
-  SetLoading(isLoading);
-  SetNavState(canGoBack, canGoForward);
-}
-
 bool ClientHandler::OnConsoleMessage(CefRefPtr<CefBrowser> browser,
                                      const CefString& message,
                                      const CefString& source,
@@ -268,7 +259,7 @@ bool ClientHandler::OnDragEnter(CefRefPtr<CefBrowser> browser,
   REQUIRE_UI_THREAD();
 
   // Forbid dragging of link URLs.
-  if (dragData->IsLink())
+  if (mask & DRAG_OPERATION_LINK)
     return true;
 
   return false;
@@ -392,27 +383,18 @@ void ClientHandler::OnBeforeClose(CefRefPtr<CefBrowser> browser) {
   }
 }
 
-void ClientHandler::OnLoadStart(CefRefPtr<CefBrowser> browser,
-                                CefRefPtr<CefFrame> frame) {
+void ClientHandler::OnLoadingStateChange(CefRefPtr<CefBrowser> browser,
+                                         bool isLoading,
+                                         bool canGoBack,
+                                         bool canGoForward) {
   REQUIRE_UI_THREAD();
 
-  if (m_BrowserId == browser->GetIdentifier() && frame->IsMain()) {
-    // We've just started loading a page
-    SetLoading(true);
-  }
-}
+  SetLoading(isLoading);
+  SetNavState(canGoBack, canGoForward);
 
-void ClientHandler::OnLoadEnd(CefRefPtr<CefBrowser> browser,
-                              CefRefPtr<CefFrame> frame,
-                              int httpStatusCode) {
-  REQUIRE_UI_THREAD();
-
-  if (m_BrowserId == browser->GetIdentifier() && frame->IsMain()) {
-    // We've just finished loading a page
-    SetLoading(false);
-
+  if (!isLoading) {
     // Continue the DOM test.
-    if (frame->GetURL() == dom_test::kTestUrl)
+    if (browser->GetMainFrame()->GetURL() == dom_test::kTestUrl)
       dom_test::OnLoadEnd(browser);
   }
 }
@@ -438,22 +420,11 @@ void ClientHandler::OnLoadError(CefRefPtr<CefBrowser> browser,
 
   // Display a load error message.
   std::stringstream ss;
-  ss << "<html><body><h2>Failed to load URL " << std::string(failedUrl) <<
+  ss << "<html><body bgcolor=\"white\">"
+        "<h2>Failed to load URL " << std::string(failedUrl) <<
         " with error " << std::string(errorText) << " (" << errorCode <<
         ").</h2></body></html>";
   frame->LoadString(ss.str(), failedUrl);
-}
-
-void ClientHandler::OnRenderProcessTerminated(CefRefPtr<CefBrowser> browser,
-                                              TerminationStatus status) {
-  // Load the startup URL if that's not the website that we terminated on.
-  CefRefPtr<CefFrame> frame = browser->GetMainFrame();
-  std::string url = frame->GetURL();
-  std::transform(url.begin(), url.end(), url.begin(), tolower);
-
-  std::string startupURL = GetStartupURL();
-  if (url.find(startupURL) != 0)
-    frame->LoadURL(startupURL);
 }
 
 CefRefPtr<CefResourceHandler> ClientHandler::GetResourceHandler(
@@ -469,12 +440,14 @@ CefRefPtr<CefResourceHandler> ClientHandler::GetResourceHandler(
         // Show the request contents.
         std::string dump;
         DumpRequestContents(request, dump);
+        std::string str = "<html><body bgcolor=\"white\"><pre>" + dump +
+                          "</pre></body></html>";
         CefRefPtr<CefStreamReader> stream =
             CefStreamReader::CreateForData(
-                static_cast<void*>(const_cast<char*>(dump.c_str())),
-                dump.size());
+                static_cast<void*>(const_cast<char*>(str.c_str())),
+                str.size());
         ASSERT(stream.get());
-        return new CefStreamResourceHandler("text/plain", stream);
+        return new CefStreamResourceHandler("text/html", stream);
       } else {
         // Load the resource from file.
         CefRefPtr<CefStreamReader> stream =
@@ -507,6 +480,18 @@ void ClientHandler::OnProtocolExecution(CefRefPtr<CefBrowser> browser,
   // Allow OS execution of Spotify URIs.
   if (urlStr.find("spotify:") == 0)
     allow_os_execution = true;
+}
+
+void ClientHandler::OnRenderProcessTerminated(CefRefPtr<CefBrowser> browser,
+                                              TerminationStatus status) {
+  // Load the startup URL if that's not the website that we terminated on.
+  CefRefPtr<CefFrame> frame = browser->GetMainFrame();
+  std::string url = frame->GetURL();
+  std::transform(url.begin(), url.end(), url.begin(), tolower);
+
+  std::string startupURL = GetStartupURL();
+  if (url.find(startupURL) != 0)
+    frame->LoadURL(startupURL);
 }
 
 bool ClientHandler::GetRootScreenRect(CefRefPtr<CefBrowser> browser,

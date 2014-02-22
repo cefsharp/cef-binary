@@ -41,6 +41,7 @@
 #include "include/cef_base.h"
 #include "include/cef_frame.h"
 #include "include/cef_process_message.h"
+#include "include/cef_request_context.h"
 #include <vector>
 
 class CefBrowserHost;
@@ -224,26 +225,32 @@ class CefBrowserHost : public virtual CefBase {
   ///
   // Create a new browser window using the window parameters specified by
   // |windowInfo|. All values will be copied internally and the actual window
-  // will be created on the UI thread. This method can be called on any browser
-  // process thread and will not block.
+  // will be created on the UI thread. If |request_context| is empty the
+  // global request context will be used. This method can be called on any
+  // browser process thread and will not block.
   ///
-  /*--cef(optional_param=client,optional_param=url)--*/
+  /*--cef(optional_param=client,optional_param=url,
+          optional_param=request_context)--*/
   static bool CreateBrowser(const CefWindowInfo& windowInfo,
                             CefRefPtr<CefClient> client,
                             const CefString& url,
-                            const CefBrowserSettings& settings);
+                            const CefBrowserSettings& settings,
+                            CefRefPtr<CefRequestContext> request_context);
 
   ///
   // Create a new browser window using the window parameters specified by
-  // |windowInfo|. This method can only be called on the browser process UI
+  // |windowInfo|. If |request_context| is empty the global request context
+  // will be used. This method can only be called on the browser process UI
   // thread.
   ///
-  /*--cef(optional_param=client,optional_param=url)--*/
+  /*--cef(optional_param=client,optional_param=url,
+          optional_param=request_context)--*/
   static CefRefPtr<CefBrowser> CreateBrowserSync(
       const CefWindowInfo& windowInfo,
       CefRefPtr<CefClient> client,
       const CefString& url,
-      const CefBrowserSettings& settings);
+      const CefBrowserSettings& settings,
+      CefRefPtr<CefRequestContext> request_context);
 
   ///
   // Returns the hosted browser object.
@@ -301,6 +308,12 @@ class CefBrowserHost : public virtual CefBase {
   virtual CefRefPtr<CefClient> GetClient() =0;
 
   ///
+  // Returns the request context for this browser.
+  ///
+  /*--cef()--*/
+  virtual CefRefPtr<CefRequestContext> GetRequestContext() =0;
+
+  ///
   // Returns the DevTools URL for this browser. If |http_scheme| is true the
   // returned URL will use the http scheme instead of the chrome-devtools
   // scheme. Remote debugging can be enabled by specifying the
@@ -352,6 +365,29 @@ class CefBrowserHost : public virtual CefBase {
   ///
   /*--cef()--*/
   virtual void StartDownload(const CefString& url) =0;
+
+  ///
+  // Print the current browser contents.
+  ///
+  /*--cef()--*/
+  virtual void Print() =0;
+
+  ///
+  // Search for |searchText|. |identifier| can be used to have multiple searches
+  // running simultaniously. |forward| indicates whether to search forward or
+  // backward within the page. |matchCase| indicates whether the search should
+  // be case-sensitive. |findNext| indicates whether this is the first request
+  // or a follow-up.
+  ///
+  /*--cef()--*/
+  virtual void Find(int identifier, const CefString& searchText,
+                    bool forward, bool matchCase, bool findNext) =0;
+
+  ///
+  // Cancel all searches that are currently going on.
+  ///
+  /*--cef()--*/
+  virtual void StopFinding(bool clearSelection) =0;
 
   ///
   // Set whether mouse cursor change is disabled.
@@ -472,7 +508,6 @@ class CefBrowserHost : public virtual CefBase {
   ///
   /*--cef()--*/
   virtual void HandleKeyEventAfterTextInputClient(CefEventHandle keyEvent) =0;
-
 };
 
 #endif  // CEF_INCLUDE_CEF_BROWSER_H_

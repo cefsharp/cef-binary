@@ -50,15 +50,6 @@
 class CefDisplayHandler : public virtual CefBase {
  public:
   ///
-  // Called when the loading state has changed.
-  ///
-  /*--cef()--*/
-  virtual void OnLoadingStateChange(CefRefPtr<CefBrowser> browser,
-                                    bool isLoading,
-                                    bool canGoBack,
-                                    bool canGoForward) {}
-
-  ///
   // Called when a frame's address has changed.
   ///
   /*--cef()--*/

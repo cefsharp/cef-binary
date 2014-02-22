@@ -47,7 +47,8 @@ extern "C" {
 
 ///
 // Implement this structure to handle events related to browser load status. The
-// functions of this structure will be called on the UI thread.
+// functions of this structure will be called on the browser process UI thread
+// or render process main thread (TID_RENDERER).
 ///
 typedef struct _cef_load_handler_t {
   ///
@@ -56,12 +57,23 @@ typedef struct _cef_load_handler_t {
   cef_base_t base;
 
   ///
+  // Called when the loading state has changed. This callback will be executed
+  // twice -- once when loading is initiated either programmatically or by user
+  // action, and once when loading is terminated due to completion, cancellation
+  // of failure.
+  ///
+  void (CEF_CALLBACK *on_loading_state_change)(struct _cef_load_handler_t* self,
+      struct _cef_browser_t* browser, int isLoading, int canGoBack,
+      int canGoForward);
+
+  ///
   // Called when the browser begins loading a frame. The |frame| value will
   // never be NULL -- call the is_main() function to check if this frame is the
   // main frame. Multiple frames may be loading at the same time. Sub-frames may
   // start or continue loading after the main frame load has ended. This
   // function may not be called for a particular frame if the load request for
-  // that frame fails.
+  // that frame fails. For notification of overall browser load status use
+  // OnLoadingStateChange instead.
   ///
   void (CEF_CALLBACK *on_load_start)(struct _cef_load_handler_t* self,
       struct _cef_browser_t* browser, struct _cef_frame_t* frame);
@@ -79,30 +91,15 @@ typedef struct _cef_load_handler_t {
       int httpStatusCode);
 
   ///
-  // Called when the browser fails to load a resource. |errorCode| is the error
-  // code number, |errorText| is the error text and and |failedUrl| is the URL
-  // that failed to load. See net\base\net_error_list.h for complete
-  // descriptions of the error codes.
+  // Called when the resource load for a navigation fails or is canceled.
+  // |errorCode| is the error code number, |errorText| is the error text and
+  // |failedUrl| is the URL that failed to load. See net\base\net_error_list.h
+  // for complete descriptions of the error codes.
   ///
   void (CEF_CALLBACK *on_load_error)(struct _cef_load_handler_t* self,
       struct _cef_browser_t* browser, struct _cef_frame_t* frame,
       enum cef_errorcode_t errorCode, const cef_string_t* errorText,
       const cef_string_t* failedUrl);
-
-  ///
-  // Called when the render process terminates unexpectedly. |status| indicates
-  // how the process terminated.
-  ///
-  void (CEF_CALLBACK *on_render_process_terminated)(
-      struct _cef_load_handler_t* self, struct _cef_browser_t* browser,
-      enum cef_termination_status_t status);
-
-  ///
-  // Called when a plugin has crashed. |plugin_path| is the path of the plugin
-  // that crashed.
-  ///
-  void (CEF_CALLBACK *on_plugin_crashed)(struct _cef_load_handler_t* self,
-      struct _cef_browser_t* browser, const cef_string_t* plugin_path);
 } cef_load_handler_t;
 
 

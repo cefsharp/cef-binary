@@ -56,13 +56,6 @@ typedef struct _cef_display_handler_t {
   cef_base_t base;
 
   ///
-  // Called when the loading state has changed.
-  ///
-  void (CEF_CALLBACK *on_loading_state_change)(
-      struct _cef_display_handler_t* self, struct _cef_browser_t* browser,
-      int isLoading, int canGoBack, int canGoForward);
-
-  ///
   // Called when a frame's address has changed.
   ///
   void (CEF_CALLBACK *on_address_change)(struct _cef_display_handler_t* self,
