@@ -2,6 +2,7 @@
 // reserved. Use of this source code is governed by a BSD-style license that
 // can be found in the LICENSE file.
 
+#include <algorithm>
 #include "include/wrapper/cef_byte_read_handler.h"
 #include <stdlib.h>
 #include "libcef_dll/cef_logging.h"
