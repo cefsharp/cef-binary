@@ -14,7 +14,7 @@ The original README for CEF can be found here: [README.txt](cef_binary_3.y.z_win
 
 # Architecture
 
-Note to self: Add a diagram here based on: http://codepen.io/anon/pen/mkLvD explaining that this is the red layer with the native code from the upstream CEF (and Chromium projects)
+Note to self: Add a diagram here based on: http://codepen.io/jornh/full/Iyebk explaining that this is the red layer with the native code from the upstream CEF (and Chromium projects)
 
 TODO: Explain each of the red pieces along the lines of this rough plan (subject to change):
 Foundation z: NuGets
