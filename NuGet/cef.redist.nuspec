@@ -1,0 +1,32 @@
+<?xml version="1.0"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+  <metadata>
+    <id>cef.redist</id>
+    <version>$version$</version>
+    <authors>The Chromium Embedded Framework Authors</authors>
+    <owners>The CefSharp Authors</owners>
+    <projectUrl>https://github.com/cefsharp/cef-binary</projectUrl>
+    <iconUrl>https://raw.github.com/jornh/cef-binary/fdc5894d5eb456ec3f389c37b2eeb6458e47a115/NuGet/cef32x32.gif</iconUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>CEF - the Chromium Embedded Framework.
+    NOTE: This package is maintained on behalf of the CEF authors by the CefSharp project at http://github.com/cefsharp/cef-binary</description>
+    <tags>chrome chromium native embedded browser CEF nativepackage</tags>
+    <copyright>Copyright © 2008-2013</copyright>
+  </metadata>
+  <files>
+<!-- 
+  CEF/Chromium files 
+-->
+    <file src="..\cef_binary_3.y.z_windows32\Release\icudt.dll" target="CEF\x86" />
+    <file src="..\cef_binary_3.y.z_windows64\Release\icudt.dll" target="CEF\x64" />
+    <file src="..\cef_binary_3.y.z_windows32\Release\libcef.dll" target="CEF\x86"/>
+    <file src="..\cef_binary_3.y.z_windows64\Release\libcef.dll" target="CEF\x64"/>
+
+    <file src="..\cef_binary_3.y.z_windows32\Resources\cef.pak" target="CEF\"/>
+    <file src="..\cef_binary_3.y.z_windows32\Resources\devtools_resources.pak" target="CEF\"/>
+    <file src="..\cef_binary_3.y.z_windows32\Resources\locales\en-US.pak" target="CEF\locales"/>
+
+<!--    <file src="Cef.props" target="build" /> -->
+    <file src="Cef.targets" target="build" />
+  </files>
+</package>
