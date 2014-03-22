@@ -8,7 +8,7 @@ The modifications allow us to:
 
 - Re-package and distribute CEF `.dll` and `.pak` files in a piecemeal fashion using http://nuget.org (this is useful for both Xilium.CefGlue and CefSharp developers and users alike)
 - Build `libcef_dll_wrapper.lib`s as mentioned above for [CefSharp](http://github.com/cefsharp/CefSharp)
-- Have a place to pick CEF `ìnclude` files for inclusion downstream (by `git ` etc.)
+- Have a place to pick CEF `include` files for inclusion downstream (by `git submodule` vendor folders etc.)
 
 The original README for CEF can be found here: [README.txt](cef_binary_3.y.z_windows32/README.txt). It has some useful details about which CEF pieces are needed for what (e.g. browser developer tools, language support, different HTML5 features, WebGL support etc.)
 
