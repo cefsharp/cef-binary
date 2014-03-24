@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+  <metadata>
+    <id>cef.sdk</id>
+    <version>$version$</version>
+    <title>CEF SDK</title>
+    <authors>The Chromium Embedded Framework Authors</authors>
+    <owners>The CefSharp Authors</owners>
+    <projectUrl>https://github.com/cefsharp/cef-binary</projectUrl>
+    <iconUrl>https://raw.github.com/cefsharp/cef-binary/native-nuget/NuGet/cef128x128.gif</iconUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>CEF - Chromium Embedded Framework.
+    NOTE: This package is maintained on behalf of the CEF authors by the CefSharp project at http://github.com/cefsharp/cef-binary</description>
+    <tags>chrome chromium native embedded browser CEF nativepackage</tags>
+    <copyright>Copyright © 2008-2014</copyright>
+  </metadata>
+  <files>
+<!-- 
+  CEF/Chromium files 
+-->
+    <file src="..\CEF\**\*.*" target="CEF" />
+  </files>
+</package>
