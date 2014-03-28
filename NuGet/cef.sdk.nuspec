@@ -4,10 +4,11 @@
     <id>cef.sdk</id>
     <version>$version$</version>
     <title>CEF SDK</title>
-    <authors>The Chromium Embedded Framework Authors</authors>
+    <authors>The CEF Authors</authors>
     <owners>The CefSharp Authors</owners>
     <projectUrl>https://github.com/cefsharp/cef-binary</projectUrl>
-    <iconUrl>https://raw.github.com/cefsharp/cef-binary/native-nuget/NuGet/cef128x128.gif</iconUrl>
+    <iconUrl>https://raw.github.com/cefsharp/cef-binary/master/NuGet/cef128x128.gif</iconUrl>
+    <licenseUrl>https://raw.github.com/cefsharp/cef-binary/master/cef_binary_3.y.z_windows32/LICENSE.txt</licenseUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>CEF - Chromium Embedded Framework.
     NOTE: This package is maintained on behalf of the CEF authors by the CefSharp project at http://github.com/cefsharp/cef-binary</description>
@@ -19,5 +20,7 @@
   CEF/Chromium files 
 -->
     <file src="..\CEF\**\*.*" target="CEF" />
+    
+    <file src="cef.sdk.props" target="build" />
   </files>
 </package>
