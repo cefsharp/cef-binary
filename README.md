@@ -2,13 +2,13 @@
 
 This is a repackaging fork of the Chromium Embedded Framework (CEF) binary distribution files for Windows, found at http://www.magpcss.net/cef_downloads/. 
 
-To make it work properly for developers on VS2010, VS2012 and VS2013 wanting to develop [CefSharp](http://github.com/cefsharp/CefSharp), we need to do some local modifications to make the project compile properly. This purpose of this repository is to track and maintain these modifications.
+To make it work properly for developers on VS2010, VS2012 and VS2013 wanting to develop [CefSharp](http://github.com/cefsharp/CefSharp), we need to do some local modifications ([use dynamic linking](https://code.google.com/p/chromiumembedded/wiki/LinkingDifferentRunTimeLibraries)) to make CefSharp.Core compile properly. This purpose of this repository is to track and maintain these modifications as well as tooling for maintaining the NuGet packages.
 
 The modifications allow us to:
 
 - Re-package and distribute CEF `.dll` and `.pak` files in a piecemeal fashion using http://nuget.org (this is useful for both Xilium.CefGlue and CefSharp developers and users alike)
 - Build `libcef_dll_wrapper.lib`s as mentioned above for [CefSharp](http://github.com/cefsharp/CefSharp)
-- Have a place to pick CEF `include` files for inclusion downstream (by `git submodule` vendor folders etc.)
+- Have a place to pick CEF `include` files for easy inclusion downstream (by `git submodule` vendor folders etc.)
 
 The original README for CEF can be found here: [README.txt](cef_binary_3.y.z_windows32/README.txt). It has some useful details about which CEF pieces are needed for what (e.g. browser developer tools, language support, different HTML5 features, WebGL support etc.)
 
@@ -26,7 +26,7 @@ Foundation z: NuGets
 - C.Foundation.WebGL (incl d*dxxxx43|46)
 - C.F.MDwrapper
 
-## Easy
+  ## Easy
 
 - C.F.Bundle.x64(NoLang)
 - C.F.Bundle.Win32
