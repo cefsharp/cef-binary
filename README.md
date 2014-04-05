@@ -1,6 +1,6 @@
 # README
 
-This is a repackaging fork of the Chromium Embedded Framework (CEF) binary distribution files for Windows, found at http://www.magpcss.net/cef_downloads/. 
+This is a repackaging fork of the Chromium Embedded Framework (CEF) binary distribution files for Windows, found at http://www.magpcss.net/cef_downloads/ into [these NuGet packages](https://www.nuget.org/packages?q=Id%3A%22cef.redist%22%2C%22cef.sdk%22)
 
 To make it work properly for developers on VS2010, VS2012 and VS2013 wanting to develop [CefSharp](http://github.com/cefsharp/CefSharp), we need to do some local modifications ([use dynamic linking](https://code.google.com/p/chromiumembedded/wiki/LinkingDifferentRunTimeLibraries)) to make CefSharp.Core compile properly. This purpose of this repository is to track and maintain these modifications as well as tooling for maintaining the NuGet packages.
 
