@@ -1,4 +1,8 @@
 cef/*
+cef_binary_3.y.z_windows32/*
+!cef_binary_3.y.z_windows32/.empty
+cef_binary_3.y.z_windows64/*
+!cef_binary_3.y.z_windows64/.empty
 
 *.nupkg
 *.sdf
