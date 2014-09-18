@@ -206,6 +206,7 @@ function Msvs
         "/p:PlatformToolset=$Toolchain",
         "/p:Platform=$Arch",
         "/p:PreferredToolArchitecture=$Arch"
+        "/p:ConfigurationType=StaticLibrary"
     )
 
     $StartInfo = New-Object System.Diagnostics.ProcessStartInfo
