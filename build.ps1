@@ -176,7 +176,11 @@ function Msvs
     }
 
     $CefProject = TernaryReturn ($Platform -eq 'x86') $Cef32vcx $Cef64vcx
-    $RuntimeLibrary = TernaryReturn ($Configuration -eq 'Debug') 'MultiThreadedDebugDLL' 'MultiThreadedDLL'
+    if($Platform -eq 'x64') {
+        $RuntimeLibrary = TernaryReturn ($Configuration -eq 'Debug') 'MultiThreadedDebugDLL' 'MultiThreadedDLL'
+    } else {
+        $RuntimeLibrary = TernaryReturn ($Configuration -eq 'Debug') 'MultiThreadedDebugDLL' 'MultiThreaded'
+    }
 
     $VCVarsAll = Join-Path $VXXCommonTools vcvarsall.bat
     if (-not (Test-Path $VCVarsAll)) {
