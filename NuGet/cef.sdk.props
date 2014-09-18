@@ -8,7 +8,7 @@
                Include="$(MSBuildThisFileDirectory)..\CefSharp\x64\CefSharp.dll" />
   </ItemGroup>
   <PropertyGroup>
-    <CefSdkVer>cef.sdk.3.1650.1562-pre2</CefSdkVer>
+    <CefSdkVer>cef.sdk.3.1750.1738-pre0</CefSdkVer>
   </PropertyGroup>
 
 </Project>
