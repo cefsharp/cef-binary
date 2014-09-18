@@ -311,6 +311,10 @@ function Nupkg
         Die "Please install nuget. More information available at: http://docs.nuget.org/docs/start-here/installing-nuget"
     }
 
+    (Get-Content .\nuget\cef.sdk.props) `
+        -replace '<CefSdkVer>.*<\/CefSdkVer>', "<CefSdkVer>cef.sdk.$Version</CefSdkVer>" |
+        Out-File .\nuget\cef.sdk.props
+
     . $nuget pack nuget\cef.redist.nuspec -NoPackageAnalysis -Version $Version -OutputDirectory nuget
     . $nuget pack nuget\cef.sdk.nuspec -NoPackageAnalysis -Version $Version -OutputDirectory nuget
 }
