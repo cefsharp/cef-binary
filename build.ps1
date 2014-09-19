@@ -6,7 +6,10 @@ param(
     [string] $Version = "3.1750.1738-pre0"
 )
 
+Import-Module BitsTransfer
+
 $WorkingDir = split-path -parent $MyInvocation.MyCommand.Definition
+$ToolsDir = Join-Path $WorkingDir .tools
 
 $Cef = Join-Path $WorkingDir 'cef'
 $CefInclude = Join-Path $Cef 'include'
@@ -14,6 +17,9 @@ $Cef32 = Join-Path $WorkingDir 'cef_binary_3.y.z_windows32'
 $Cef32vcx =Join-Path $Cef32 'libcef_dll_wrapper.vcxproj'
 $Cef64 = Join-Path $WorkingDir  'cef_binary_3.y.z_windows64'
 $Cef64vcx =Join-Path $Cef64 'libcef_dll_wrapper.vcxproj'
+
+$Cef32Url = "http://software.odinkapital.no/opensource/cef/cef_binary_3.1750.1738_windows32.zip"
+$Cef64Url = "http://software.odinkapital.no/opensource/cef/cef_binary_3.1750.1738_windows64.zip"
 
 # https://github.com/jbake/Powershell_scripts/blob/master/Invoke-BatchFile.ps1
 function Invoke-BatchFile 
@@ -96,11 +102,46 @@ function TernaryReturn
 
 }
 
+function Unzip 
+{
+    param(
+        [Parameter(Position = 0, ValueFromPipeline = $true)]
+        [string] $Filename,
+        [Parameter(Position = 1, ValueFromPipeline = $true)]
+        [string] $ExtractToDestination
+    )
+    $ShellApp = New-Object -Com shell.application
+    $Zip = $ShellApp.namespace($Filename)
+    if(-not (Test-Path $ExtractToDestination)) {
+        New-Item -ItemType Directory -Path $ExtractToDestination | Out-Null
+    }
+    $Destination = $ShellApp.namespace($ExtractToDestination)
+    $Destination.Copyhere($Zip.items())
+}
+
 function Bootstrap
 {
   param()
      
   Write-Diagnostic "Bootstrapping"
+
+  if(-not (Test-Path $ToolsDir)) {
+    New-Item -ItemType Directory -Path $ToolsDir | Out-Null
+  }
+
+  if(-not (Test-Path $Cef32vcx)) {
+    Write-Output "Downloading $Cef32Url"
+    Start-BitsTransfer $Cef32Url $ToolsDir\cef_binary_windows32.zip
+    Write-Output "Extracting..."
+    Unzip $ToolsDir\cef_binary_windows32.zip $Cef32
+  }
+
+  if(-not (Test-Path $Cef64vcx)) {
+    Write-Output "Downloading $Cef64Url"
+    Start-BitsTransfer $Cef64Url $ToolsDir\cef_binary_windows64.zip
+    Write-Output "Extracting..."
+    Unzip $ToolsDir\cef_binary_windows64.zip $Cef64
+  }
 
   if (Test-Path($Cef)) {
     Remove-Item $Cef -Recurse | Out-Null

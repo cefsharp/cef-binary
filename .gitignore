@@ -1,3 +1,4 @@
+.tools/*
 cef/*
 cef_binary_3.y.z_windows32/*
 !cef_binary_3.y.z_windows32/.empty
