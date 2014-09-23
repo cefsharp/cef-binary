@@ -311,7 +311,7 @@ function CreateCefSdk
 
 function Nupkg
 {
-    $nuget = Join-Path $env:LOCALAPPDATA .\NuGet\NuGet.exe
+    $nuget = Join-Path $WorkingDir 'NuGet\NuGet.exe'
     if(-not (Test-Path $nuget)) {
         Die "Please install nuget. More information available at: http://docs.nuget.org/docs/start-here/installing-nuget"
     }
@@ -324,8 +324,15 @@ function Nupkg
     [System.IO.File]::WriteAllLines($Filename, $Text)
 
     # Build packages
-    . $nuget pack nuget\cef.redist.nuspec -NoPackageAnalysis -Version $Version -OutputDirectory nuget
-    . $nuget pack nuget\cef.sdk.nuspec -NoPackageAnalysis -Version $Version -OutputDirectory nuget
+	. $nuget pack nuget\cef.redist.nuspec -NoPackageAnalysis -Version $Version -OutputDirectory nuget -Properties Configuration=Debug;DotConfiguration=.Debug;Platform=x86
+	. $nuget pack nuget\cef.redist.nuspec -NoPackageAnalysis -Version $Version -OutputDirectory nuget -Properties Configuration=Release;DotConfiguration=.Release;Platform=x86
+	. $nuget pack nuget\cef.redist.nuspec -NoPackageAnalysis -Version $Version -OutputDirectory nuget -Properties Configuration=Release;DotConfiguration=;Platform=x86
+
+	. $nuget pack nuget\cef.redist.nuspec -NoPackageAnalysis -Version $Version -OutputDirectory nuget -Properties Configuration=Debug;DotConfiguration=.Debug;Platform=x64
+	. $nuget pack nuget\cef.redist.nuspec -NoPackageAnalysis -Version $Version -OutputDirectory nuget -Properties Configuration=Release;DotConfiguration=.Release;Platform=x64
+	. $nuget pack nuget\cef.redist.nuspec -NoPackageAnalysis -Version $Version -OutputDirectory nuget -Properties Configuration=Release;DotConfiguration=;Platform=x64 
+
+	. $nuget pack nuget\cef.sdk.nuspec -NoPackageAnalysis -Version $Version -OutputDirectory nuget
 }
 
 Bootstrap
