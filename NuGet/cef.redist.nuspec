@@ -7,7 +7,7 @@
     <owners>The CefSharp Authors</owners>
     <projectUrl>https://github.com/cefsharp/cef-binary</projectUrl>
     <iconUrl>https://raw.github.com/cefsharp/cef-binary/master/NuGet/cef128x128.gif</iconUrl>
-    <licenseUrl>https://raw.github.com/cefsharp/cef-binary/master/cef_binary_3.y.z_$Platform$/LICENSE.txt</licenseUrl>
+    <licenseUrl>https://raw.github.com/cefsharp/cef-binary/master/cef_binary_3.y.z_$CPlatform$/LICENSE.txt</licenseUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>CEF - the Chromium Embedded Framework.
     NOTE: This package is maintained on behalf of the CEF authors by the CefSharp project at http://github.com/cefsharp/cef-binary</description>
@@ -18,11 +18,11 @@
 <!-- 
   CEF/Chromium files 
 -->
-    <file src="..\cef_binary_3.y.z_$Platform$\$Configuration$\*.dll" target="CEF\$Platform$" />
-    <file src="..\cef_binary_3.y.z_$Platform$\Resources\cef.pak" target="CEF\"/>
-    <file src="..\cef_binary_3.y.z_$Platform$\Resources\devtools_resources.pak" target="CEF\"/>
-    <file src="..\cef_binary_3.y.z_$Platform$\Resources\locales\en-US.pak" target="CEF\locales"/>
+    <file src="..\cef_binary_3.y.z_$CPlatform$\$Configuration$\*.dll" target="CEF\$Platform$" />
+    <file src="..\cef_binary_3.y.z_$CPlatform$\Resources\cef.pak" target="CEF\"/>
+    <file src="..\cef_binary_3.y.z_$CPlatform$\Resources\devtools_resources.pak" target="CEF\"/>
+    <file src="..\cef_binary_3.y.z_$CPlatform$\Resources\locales\en-US.pak" target="CEF\locales"/>
 
-    <file src="cef.redist.targets" target="build\cef.redist.$Platform$$DotConfiguration$.targets" />
+    <file src="cef.redist.targets" target="build\cef.redist.targets" />
   </files>
 </package>

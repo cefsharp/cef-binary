@@ -324,13 +324,13 @@ function Nupkg
     [System.IO.File]::WriteAllLines($Filename, $Text)
 
     # Build packages
-	. $nuget pack nuget\cef.redist.nuspec -NoPackageAnalysis -Version $Version -OutputDirectory nuget -Properties 'Configuration=Debug;DotConfiguration=.Debug;Platform=x86;'
-	. $nuget pack nuget\cef.redist.nuspec -NoPackageAnalysis -Version $Version -OutputDirectory nuget -Properties 'Configuration=Release;DotConfiguration=.Release;Platform=x86;'
-	. $nuget pack nuget\cef.redist.nuspec -NoPackageAnalysis -Version $Version -OutputDirectory nuget -Properties 'Configuration=Release;DotConfiguration=;Platform=x86;'
+	. $nuget pack nuget\cef.redist.nuspec -NoPackageAnalysis -Version $Version -OutputDirectory nuget -Properties 'Configuration=Debug;DotConfiguration=.Debug;Platform=x86;CPlatform=windows32;'
+	. $nuget pack nuget\cef.redist.nuspec -NoPackageAnalysis -Version $Version -OutputDirectory nuget -Properties 'Configuration=Release;DotConfiguration=.Release;Platform=x86;CPlatform=windows32;'
+	. $nuget pack nuget\cef.redist.nuspec -NoPackageAnalysis -Version $Version -OutputDirectory nuget -Properties 'Configuration=Release;DotConfiguration=;Platform=x86;CPlatform=windows32;'
 
-	. $nuget pack nuget\cef.redist.nuspec -NoPackageAnalysis -Version $Version -OutputDirectory nuget -Properties 'Configuration=Debug;DotConfiguration=.Debug;Platform=x64;'
-	. $nuget pack nuget\cef.redist.nuspec -NoPackageAnalysis -Version $Version -OutputDirectory nuget -Properties 'Configuration=Release;DotConfiguration=.Release;Platform=x64;'
-	. $nuget pack nuget\cef.redist.nuspec -NoPackageAnalysis -Version $Version -OutputDirectory nuget -Properties 'Configuration=Release;DotConfiguration=;Platform=x64;'
+	. $nuget pack nuget\cef.redist.nuspec -NoPackageAnalysis -Version $Version -OutputDirectory nuget -Properties 'Configuration=Debug;DotConfiguration=.Debug;Platform=x64;CPlatform=windows64;'
+	. $nuget pack nuget\cef.redist.nuspec -NoPackageAnalysis -Version $Version -OutputDirectory nuget -Properties 'Configuration=Release;DotConfiguration=.Release;Platform=x64;CPlatform=windows64;'
+	. $nuget pack nuget\cef.redist.nuspec -NoPackageAnalysis -Version $Version -OutputDirectory nuget -Properties 'Configuration=Release;DotConfiguration=;Platform=x64;CPlatform=windows64;'
 
 	. $nuget pack nuget\cef.sdk.nuspec -NoPackageAnalysis -Version $Version -OutputDirectory nuget
 }
