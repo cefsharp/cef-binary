@@ -6,3 +6,5 @@
 _ReSharper*
 out
 *Thumbs.db
+CEF
+*.nupkg
