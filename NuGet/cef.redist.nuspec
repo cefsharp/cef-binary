@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
   <metadata>
-    <id>cef.redist</id>
+    <id>cef.redist.$Platform$$DotConfiguration$</id>
     <version>$version$</version>
     <authors>The Chromium Embedded Framework Authors</authors>
     <owners>The CefSharp Authors</owners>
@@ -18,7 +18,7 @@
 <!-- 
   CEF/Chromium files 
 -->
-    <file src="..\cef_binary_3.y.z_windows32\Release\*.dll" target="CEF\x86" />
+    <file src="..\cef_binary_3.y.z_$Platform$\$Configuration$\*.dll" target="CEF\$Platform$" />
 <!--    <file src="..\cef_binary_3.y.z_windows64\Release\*.dll" target="CEF\x64" />
 -->
     <file src="..\cef_binary_3.y.z_windows32\Resources\cef.pak" target="CEF\"/>
@@ -26,6 +26,6 @@
     <file src="..\cef_binary_3.y.z_windows32\Resources\locales\en-US.pak" target="CEF\locales"/>
 
 <!--    <file src="Cef.props" target="build" /> -->
-    <file src="cef.redist.targets" target="build" />
+    <file src="cef.redist.targets" target="build\cef.redist.$Platform$$DotConfiguration$.targets" />
   </files>
 </package>
