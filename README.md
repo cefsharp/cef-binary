@@ -10,7 +10,7 @@ The modifications allow us to:
 - Build `libcef_dll_wrapper.lib`s as mentioned above for [CefSharp](http://github.com/cefsharp/CefSharp)
 - Have a place to pick CEF `include` files for easy inclusion downstream (by `git submodule` vendor folders etc.)
 
-The original README for CEF can be found here: [README.txt](cef_binary_3.y.z_windows32/README.txt). It has some useful details about which CEF pieces are needed for what (e.g. browser developer tools, language support, different HTML5 features, WebGL support etc.)
+The original README for CEF can be found here: [README.txt](README.txt). It has some useful details about which CEF pieces are needed for what (e.g. browser developer tools, language support, different HTML5 features, WebGL support etc.)
 
 # Architecture
 
