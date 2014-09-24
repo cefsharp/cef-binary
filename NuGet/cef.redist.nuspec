@@ -7,7 +7,7 @@
     <owners>The CefSharp Authors</owners>
     <projectUrl>https://github.com/cefsharp/cef-binary</projectUrl>
     <iconUrl>https://raw.github.com/cefsharp/cef-binary/master/NuGet/cef128x128.gif</iconUrl>
-    <licenseUrl>https://raw.github.com/cefsharp/cef-binary/master/cef_binary_3.y.z_windows32/LICENSE.txt</licenseUrl>
+    <licenseUrl>https://raw.github.com/cefsharp/cef-binary/master/LICENSE.txt</licenseUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>CEF - the Chromium Embedded Framework.
     NOTE: This package is maintained on behalf of the CEF authors by the CefSharp project at http://github.com/cefsharp/cef-binary</description>
