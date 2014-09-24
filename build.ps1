@@ -1,5 +1,5 @@
 param(
-    [ValidateSet("vs2013", "vs2012", "vs2010", "nupkg")]
+    [ValidateSet("vs2013", "vs2012", "vs2010", "nupkg", "nupkg-only")]
     [Parameter(Position = 0)] 
     [string] $Target = "nupkg",
     [Parameter(Position = 1)]
@@ -376,6 +376,9 @@ switch -Exact ($Target) {
         VSX v120
         VSX v110
         #VSX v100
+        Nupkg
+    }
+	"nupkg-only" {
         Nupkg
     }
     "vs2013" {
