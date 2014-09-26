@@ -218,9 +218,9 @@ function Msvs
 
     $CefProject = TernaryReturn ($Platform -eq 'x86') $Cef32vcx $Cef64vcx
 	
-	#Manually change project file to compile using /MDd and /MD
-	(Get-Content $CefProject) | Foreach-Object {$_ -replace "<RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>", '<RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>'} | Set-Content $CefProject
-	(Get-Content $CefProject) | Foreach-Object {$_ -replace "<RuntimeLibrary>MultiThreaded</RuntimeLibrary>", '<RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>'} | Set-Content $CefProject
+    #Manually change project file to compile using /MDd and /MD
+    (Get-Content $CefProject) | Foreach-Object {$_ -replace "<RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>", '<RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>'} | Set-Content $CefProject
+    (Get-Content $CefProject) | Foreach-Object {$_ -replace "<RuntimeLibrary>MultiThreaded</RuntimeLibrary>", '<RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>'} | Set-Content $CefProject
 
     $VCVarsAll = Join-Path $VXXCommonTools vcvarsall.bat
     if (-not (Test-Path $VCVarsAll)) {
