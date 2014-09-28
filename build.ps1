@@ -3,7 +3,7 @@ param(
     [Parameter(Position = 0)] 
     [string] $Target = "nupkg",
     [Parameter(Position = 1)]
-    [string] $Version = "3.1750.1738-pre0"
+    [string] $Version = "3.1750.1738-pre1"
 )
 
 Import-Module BitsTransfer
@@ -217,11 +217,10 @@ function Msvs
     }
 
     $CefProject = TernaryReturn ($Platform -eq 'x86') $Cef32vcx $Cef64vcx
-    if($Platform -eq 'x64') {
-        $RuntimeLibrary = TernaryReturn ($Configuration -eq 'Debug') 'MultiThreadedDebugDLL' 'MultiThreadedDLL'
-    } else {
-        $RuntimeLibrary = TernaryReturn ($Configuration -eq 'Debug') 'MultiThreadedDebugDLL' 'MultiThreaded'
-    }
+	
+    #Manually change project file to compile using /MDd and /MD
+    (Get-Content $CefProject) | Foreach-Object {$_ -replace "<RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>", '<RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>'} | Set-Content $CefProject
+    (Get-Content $CefProject) | Foreach-Object {$_ -replace "<RuntimeLibrary>MultiThreaded</RuntimeLibrary>", '<RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>'} | Set-Content $CefProject
 
     $VCVarsAll = Join-Path $VXXCommonTools vcvarsall.bat
     if (-not (Test-Path $VCVarsAll)) {
@@ -245,7 +244,6 @@ function Msvs
         "$CefProject",
         "/t:rebuild",
         "/p:VisualStudioVersion=$VisualStudioVersion",
-        "/p:RuntimeLibrary=$RuntimeLibrary",
         "/p:Configuration=$Configuration",
         "/p:PlatformTarget=$PlatformTarget",
         "/p:PlatformToolset=$Toolchain",
