@@ -248,7 +248,7 @@ function Msvs
         "/p:PlatformTarget=$PlatformTarget",
         "/p:PlatformToolset=$Toolchain",
         "/p:Platform=$Arch",
-        "/p:PreferredToolArchitecture=$Arch"
+        "/p:PreferredToolArchitecture=$Arch",
         "/p:ConfigurationType=StaticLibrary"
     )
 
