@@ -3,7 +3,7 @@ param(
     [Parameter(Position = 0)] 
     [string] $Target = "nupkg",
     [Parameter(Position = 1)]
-    [string] $Version = "3.1750.1738-pre2"
+    [string] $Version = "3.1750.1738"
 )
 
 Import-Module BitsTransfer
