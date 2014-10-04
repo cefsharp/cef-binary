@@ -367,6 +367,18 @@ function Nupkg
     . $nuget pack nuget\cef.sdk.nuspec -NoPackageAnalysis -Version $Version -OutputDirectory nuget
 }
 
+function DownloadNuget()
+{
+	$nuget = Join-Path $env:LOCALAPPDATA .\nuget\NuGet.exe
+    if(-not (Test-Path $nuget))
+	{
+		$client = New-Object System.Net.WebClient;
+		$client.DownloadFile('http://nuget.org/nuget.exe', $nuget);
+	}
+}
+
+DownloadNuget
+
 Bootstrap
 
 switch -Exact ($Target) {
