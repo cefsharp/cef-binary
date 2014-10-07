@@ -143,7 +143,7 @@ function Bootstrap
     Unzip $ToolsDir\cef_binary_windows64.zip $Cef64
   }
 
-  if ($Target -ne "nupkg-only" -and (Test-Path($Cef))) {
+  if (Test-Path($Cef)) {
     Remove-Item $Cef -Recurse | Out-Null
   }
 
