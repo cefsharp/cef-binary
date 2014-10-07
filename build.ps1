@@ -373,6 +373,9 @@ function Nupkg
     . $Nuget pack nuget\cef.redist.nuspec -NoPackageAnalysis -Version $Version -Properties 'Configuration=Debug;DotConfiguration=.Debug;Platform=x86;CPlatform=windows32;' -OutputDirectory nuget
     . $Nuget pack nuget\cef.redist.nuspec -NoPackageAnalysis -Version $Version -Properties 'Configuration=Release;DotConfiguration=.Release;Platform=x86;CPlatform=windows32;' -OutputDirectory nuget
 	
+    # Build 32bit sdk package
+    . $Nuget pack nuget\cef.sdk.nuspec -NoPackageAnalysis -Version $Cef32Version -OutputDirectory nuget
+
     # Write 64bit sdk version
     $Filename = Resolve-Path ".\nuget\cef.sdk.props"
     $Text = (Get-Content $Filename) -replace '<CefSdkVer>.*<\/CefSdkVer>', "<CefSdkVer>cef.sdk.$Cef64Version</CefSdkVer>"
@@ -387,8 +390,8 @@ function Nupkg
     . $Nuget pack nuget\cef.redist.nuspec -NoPackageAnalysis -Version $Version -Properties 'Configuration=Debug;DotConfiguration=.Debug;Platform=x64;CPlatform=windows64;' -OutputDirectory nuget
     . $Nuget pack nuget\cef.redist.nuspec -NoPackageAnalysis -Version $Version -Properties 'Configuration=Release;DotConfiguration=.Release;Platform=x64;CPlatform=windows64;' -OutputDirectory nuget
 	
-    # Build sdk package
-    . $Nuget pack nuget\cef.sdk.nuspec -NoPackageAnalysis -Version $Version -OutputDirectory nuget
+    # Build 64bit sdk package
+    . $Nuget pack nuget\cef.sdk.nuspec -NoPackageAnalysis -Version $Cef64Version -OutputDirectory nuget
 }
 
 function DownloadNuget()
