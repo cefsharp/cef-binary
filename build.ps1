@@ -350,8 +350,10 @@ function CreateCefSdk
 
 function Nupkg
 {
-    $nuget = Join-Path $env:LOCALAPPDATA .\nuget\NuGet.exe
-    if(-not (Test-Path $nuget)) {
+    Write-Diagnostic "Building nuget package"
+
+    $Nuget = Join-Path $env:LOCALAPPDATA .\nuget\NuGet.exe
+    if(-not (Test-Path $Nuget)) {
         Die "Please install nuget. More information available at: http://docs.nuget.org/docs/start-here/installing-nuget"
     }
 
@@ -386,11 +388,11 @@ function Nupkg
 
 function DownloadNuget()
 {
-	$nuget = Join-Path $env:LOCALAPPDATA .\nuget\NuGet.exe
-    if(-not (Test-Path $nuget))
+	$Nuget = Join-Path $env:LOCALAPPDATA .\nuget\NuGet.exe
+    if(-not (Test-Path $Nuget))
 	{
-		$client = New-Object System.Net.WebClient;
-		$client.DownloadFile('http://nuget.org/nuget.exe', $nuget);
+		$Client = New-Object System.Net.WebClient;
+		$Client.DownloadFile('http://nuget.org/nuget.exe', $Nuget);
 	}
 }
 
