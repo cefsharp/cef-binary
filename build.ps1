@@ -3,7 +3,7 @@ param(
     [Parameter(Position = 0)] 
     [string] $Target = "nupkg",
     [Parameter(Position = 1)]
-    [string] $Version = "3.1750.1738"
+    [string] $Version = "3.2062.1856"
 )
 
 Import-Module BitsTransfer
@@ -18,8 +18,8 @@ $Cef32vcx =Join-Path $Cef32 'libcef_dll_wrapper.vcxproj'
 $Cef64 = Join-Path $WorkingDir  'cef_binary_3.y.z_windows64'
 $Cef64vcx =Join-Path $Cef64 'libcef_dll_wrapper.vcxproj'
 
-$Cef32Url = "http://software.odinkapital.no/opensource/cef/cef_binary_3.1750.1738_windows32.zip"
-$Cef64Url = "http://software.odinkapital.no/opensource/cef/cef_binary_3.1750.1738_windows64.zip"
+$Cef32Url = "http://software.odinkapital.no/opensource/cef/cef_binary_3.2062.1856_windows32.zip"
+$Cef64Url = "http://software.odinkapital.no/opensource/cef/cef_binary_3.2062.1841_windows64.zip"
 
 # https://github.com/jbake/Powershell_scripts/blob/master/Invoke-BatchFile.ps1
 function Invoke-BatchFile 
