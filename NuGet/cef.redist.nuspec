@@ -17,6 +17,7 @@
   <files>
     <file src="..\cef_binary_3.y.z_$CPlatform$\$Configuration$\*.dll" target="CEF\$Platform$" />
 	
+    <file src="..\cef_binary_3.y.z_$CPlatform$\Resources\icudtl.dat" target="CEF\"/>
     <file src="..\cef_binary_3.y.z_$CPlatform$\Resources\cef.pak" target="CEF\"/>
     <file src="..\cef_binary_3.y.z_$CPlatform$\Resources\devtools_resources.pak" target="CEF\"/>
     <file src="..\cef_binary_3.y.z_$CPlatform$\Resources\locales\en-US.pak" target="CEF\locales"/>
