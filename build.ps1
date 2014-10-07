@@ -370,8 +370,8 @@ function Nupkg
     $Xml.Save($RedistTargetsFilename)
 	
     # Build 32bit packages
-    . $Nuget pack nuget\cef.redist.nuspec -NoPackageAnalysis -Version $Version -Properties 'Configuration=Debug;DotConfiguration=.Debug;Platform=x86;CPlatform=windows32;' -OutputDirectory nuget
-    . $Nuget pack nuget\cef.redist.nuspec -NoPackageAnalysis -Version $Version -Properties 'Configuration=Release;DotConfiguration=.Release;Platform=x86;CPlatform=windows32;' -OutputDirectory nuget
+    . $Nuget pack nuget\cef.redist.nuspec -NoPackageAnalysis -Version $Cef32Version -Properties 'Configuration=Debug;DotConfiguration=.Debug;Platform=x86;CPlatform=windows32;' -OutputDirectory nuget
+    . $Nuget pack nuget\cef.redist.nuspec -NoPackageAnalysis -Version $Cef32Version -Properties 'Configuration=Release;DotConfiguration=.Release;Platform=x86;CPlatform=windows32;' -OutputDirectory nuget
 	
     # Build 32bit sdk package
     . $Nuget pack nuget\cef.sdk.nuspec -NoPackageAnalysis -Version $Cef32Version -OutputDirectory nuget
@@ -387,8 +387,8 @@ function Nupkg
     $Xml.Save($RedistTargetsFilename)
 	
     # Build 64bit packages
-    . $Nuget pack nuget\cef.redist.nuspec -NoPackageAnalysis -Version $Version -Properties 'Configuration=Debug;DotConfiguration=.Debug;Platform=x64;CPlatform=windows64;' -OutputDirectory nuget
-    . $Nuget pack nuget\cef.redist.nuspec -NoPackageAnalysis -Version $Version -Properties 'Configuration=Release;DotConfiguration=.Release;Platform=x64;CPlatform=windows64;' -OutputDirectory nuget
+    . $Nuget pack nuget\cef.redist.nuspec -NoPackageAnalysis -Version $Cef64Version -Properties 'Configuration=Debug;DotConfiguration=.Debug;Platform=x64;CPlatform=windows64;' -OutputDirectory nuget
+    . $Nuget pack nuget\cef.redist.nuspec -NoPackageAnalysis -Version $Cef64Version -Properties 'Configuration=Release;DotConfiguration=.Release;Platform=x64;CPlatform=windows64;' -OutputDirectory nuget
 	
     # Build 64bit sdk package
     . $Nuget pack nuget\cef.sdk.nuspec -NoPackageAnalysis -Version $Cef64Version -OutputDirectory nuget
