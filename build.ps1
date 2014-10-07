@@ -123,6 +123,10 @@ function Bootstrap
 {
   param()
      
+  if($Target -eq "nupkg-only") {
+    return
+  }
+
   Write-Diagnostic "Bootstrapping"
 
   if(-not (Test-Path $ToolsDir)) {
