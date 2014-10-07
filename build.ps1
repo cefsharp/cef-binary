@@ -3,7 +3,7 @@ param(
     [Parameter(Position = 0)] 
     [string] $Target = "nupkg",
     [Parameter(Position = 1)]
-    [string] $Version = "3.2062.1856"
+    [string] $Version = "3.1750.1738-pre2"
 )
 
 Import-Module BitsTransfer
@@ -362,8 +362,25 @@ function Nupkg
     $Text = (Get-Content $Filename) -replace '<CefSdkVer>.*<\/CefSdkVer>', "<CefSdkVer>cef.sdk.$Version</CefSdkVer>"
     [System.IO.File]::WriteAllLines($Filename, $Text)
 
-    # Build packages
-    . $nuget pack nuget\cef.redist.nuspec -NoPackageAnalysis -Version $Version -OutputDirectory nuget
+    $RedistTargetsFilename = Resolve-Path ".\nuget\cef.redist.targets"
+	
+    [xml]$xml = Get-Content $RedistTargetsFilename
+    $xml.Project.Target | Foreach-Object { $_.Name = 'CefRedistCopyDllPak32'}
+    $xml.Save($RedistTargetsFilename)
+	
+    # Build 32bit packages
+    . $nuget pack nuget\cef.redist.nuspec -NoPackageAnalysis -Version $Version -Properties 'Configuration=Debug;DotConfiguration=.Debug;Platform=x86;CPlatform=windows32;' -OutputDirectory nuget
+    . $nuget pack nuget\cef.redist.nuspec -NoPackageAnalysis -Version $Version -Properties 'Configuration=Release;DotConfiguration=.Release;Platform=x86;CPlatform=windows32;' -OutputDirectory nuget
+	
+    [xml]$xml = Get-Content $RedistTargetsFilename
+    $xml.Project.Target | Foreach-Object { $_.Name = 'CefRedistCopyDllPak64'}
+    $xml.Save($RedistTargetsFilename)
+	
+    # Build 64bit packages
+    . $nuget pack nuget\cef.redist.nuspec -NoPackageAnalysis -Version $Version -Properties 'Configuration=Debug;DotConfiguration=.Debug;Platform=x64;CPlatform=windows64;' -OutputDirectory nuget
+    . $nuget pack nuget\cef.redist.nuspec -NoPackageAnalysis -Version $Version -Properties 'Configuration=Release;DotConfiguration=.Release;Platform=x64;CPlatform=windows64;' -OutputDirectory nuget
+	
+    # Build sdk package
     . $nuget pack nuget\cef.sdk.nuspec -NoPackageAnalysis -Version $Version -OutputDirectory nuget
 }
 
