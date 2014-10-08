@@ -16,10 +16,9 @@ $Cef32vcx =Join-Path $Cef32 'libcef_dll_wrapper.vcxproj'
 $Cef64 = Join-Path $WorkingDir  'cef_binary_3.y.z_windows64'
 $Cef64vcx =Join-Path $Cef64 'libcef_dll_wrapper.vcxproj'
 
-$Cef32Version = "3.2062.1856"
-$Cef32Url = "http://software.odinkapital.no/opensource/cef/cef_binary_{0}_windows32.zip" -f $Cef32Version
-$Cef64Version = "3.2062.1841"
-$Cef64Url = "http://software.odinkapital.no/opensource/cef/cef_binary_{0}_windows64.zip" -f $Cef64Version
+$CefVersion = "3.2062.1856"
+$Cef32Url = "http://software.odinkapital.no/opensource/cef/cef_binary_{0}_windows32.zip" -f $CefVersion
+$Cef64Url = "http://software.odinkapital.no/opensource/cef/cef_binary_{0}_windows64.zip" -f $CefVersion
 
 # https://github.com/jbake/Powershell_scripts/blob/master/Invoke-BatchFile.ps1
 function Invoke-BatchFile 
@@ -361,12 +360,8 @@ function Nupkg
         Die "Please install nuget. More information available at: http://docs.nuget.org/docs/start-here/installing-nuget"
     }
 
+    # Redist target
     $RedistTargetsFilename = Resolve-Path ".\nuget\cef.redist.targets"
-
-    # Write 32bit sdk version
-    $Filename = Resolve-Path ".\nuget\cef.sdk.props"
-    $Text = (Get-Content $Filename) -replace '<CefSdkVer>.*<\/CefSdkVer>', "<CefSdkVer>cef.sdk.$Cef32Version</CefSdkVer>"
-    [System.IO.File]::WriteAllLines($Filename, $Text)
 
     # Write 32bit redist target
     [xml]$Xml = Get-Content $RedistTargetsFilename
@@ -374,25 +369,24 @@ function Nupkg
     $Xml.Save($RedistTargetsFilename)
 	
     # Build 32bit packages
-    . $Nuget pack nuget\cef.redist.nuspec -NoPackageAnalysis -Version $Cef32Version -Properties 'Configuration=Debug;DotConfiguration=.Debug;Platform=x86;CPlatform=windows32;' -OutputDirectory nuget
-    . $Nuget pack nuget\cef.redist.nuspec -NoPackageAnalysis -Version $Cef32Version -Properties 'Configuration=Release;DotConfiguration=.Release;Platform=x86;CPlatform=windows32;' -OutputDirectory nuget
+    . $Nuget pack nuget\cef.redist.nuspec -NoPackageAnalysis -Version $CefVersion -Properties 'Configuration=Debug;DotConfiguration=.Debug;Platform=x86;CPlatform=windows32;' -OutputDirectory nuget
+    . $Nuget pack nuget\cef.redist.nuspec -NoPackageAnalysis -Version $CefVersion -Properties 'Configuration=Release;DotConfiguration=.Release;Platform=x86;CPlatform=windows32;' -OutputDirectory nuget
 	
-    # Write 64bit sdk version
-    $Filename = Resolve-Path ".\nuget\cef.sdk.props"
-    $Text = (Get-Content $Filename) -replace '<CefSdkVer>.*<\/CefSdkVer>', "<CefSdkVer>cef.sdk.$Cef64Version</CefSdkVer>"
-    [System.IO.File]::WriteAllLines($Filename, $Text)
-
     # Write 64bit redist target
     [xml]$Xml = Get-Content $RedistTargetsFilename
     $Xml.Project.Target | Foreach-Object { $_.Name = 'CefRedistCopyDllPak64'}
     $Xml.Save($RedistTargetsFilename)
 	
     # Build 64bit packages
-    . $Nuget pack nuget\cef.redist.nuspec -NoPackageAnalysis -Version $Cef64Version -Properties 'Configuration=Debug;DotConfiguration=.Debug;Platform=x64;CPlatform=windows64;' -OutputDirectory nuget
-    . $Nuget pack nuget\cef.redist.nuspec -NoPackageAnalysis -Version $Cef64Version -Properties 'Configuration=Release;DotConfiguration=.Release;Platform=x64;CPlatform=windows64;' -OutputDirectory nuget
+    . $Nuget pack nuget\cef.redist.nuspec -NoPackageAnalysis -Version $CefVersion -Properties 'Configuration=Debug;DotConfiguration=.Debug;Platform=x64;CPlatform=windows64;' -OutputDirectory nuget
+    . $Nuget pack nuget\cef.redist.nuspec -NoPackageAnalysis -Version $CefVersion -Properties 'Configuration=Release;DotConfiguration=.Release;Platform=x64;CPlatform=windows64;' -OutputDirectory nuget
 	
-    # Sdk contains x86/x64 dependencies
-    . $Nuget pack nuget\cef.sdk.nuspec -NoPackageAnalysis -Version $Cef64Version -OutputDirectory nuget
+    # Build sdk
+    $Filename = Resolve-Path ".\nuget\cef.sdk.props"
+    $Text = (Get-Content $Filename) -replace '<CefSdkVer>.*<\/CefSdkVer>', "<CefSdkVer>cef.sdk.$CefVersion</CefSdkVer>"
+    [System.IO.File]::WriteAllLines($Filename, $Text)
+
+    . $Nuget pack nuget\cef.sdk.nuspec -NoPackageAnalysis -Version $CefVersion -OutputDirectory nuget
 }
 
 function DownloadNuget()
