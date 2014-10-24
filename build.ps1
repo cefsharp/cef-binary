@@ -115,7 +115,7 @@ function Unzip
         New-Item -ItemType Directory -Path $ExtractToDestination | Out-Null
     }
     $Destination = $ShellApp.namespace($ExtractToDestination)
-    $Destination.Copyhere($Zip.items())
+    $Destination.Copyhere($Zip.items(), 0x10)
 }
 
 function Bootstrap
