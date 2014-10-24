@@ -115,7 +115,17 @@ function Unzip
         New-Item -ItemType Directory -Path $ExtractToDestination | Out-Null
     }
     $Destination = $ShellApp.namespace($ExtractToDestination)
-    $Destination.Copyhere($Zip.items(), 0x10)
+	
+	# Extract the First Folder within the zip
+	foreach($item In $Zip.items()) 
+	{ 
+      if ($item.GetFolder -ne $Null) 
+      {
+	    $Destination.Copyhere($item.GetFolder.items(), 0x10)
+		
+		break;
+      }
+	}
 }
 
 function Bootstrap
