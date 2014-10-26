@@ -143,24 +143,28 @@ function Bootstrap
     New-Item -ItemType Directory -Path $ToolsDir | Out-Null
   }
 
-  if(-not (Test-Path $ToolsDir\cef_binary_windows32.zip)) {
-	Write-Output "Downloading $Cef32Url"
-    Start-BitsTransfer $Cef32Url $ToolsDir\cef_binary_windows32.zip
+  if((-not (Test-Path $ToolsDir\cef_binary_windows32.zip)) -and (-not (Test-Path $Cef32vcx))) {
+    if(-not (Test-Path $ToolsDir\cef_binary_windows32.zip)) {
+	  Write-Output "Downloading $Cef32Url"
+      Start-BitsTransfer $Cef32Url $ToolsDir\cef_binary_windows32.zip
+    }
+  
+    if(-not (Test-Path $Cef32vcx)) {
+      Write-Output "Extracting..."
+      Unzip $ToolsDir\cef_binary_windows32.zip $Cef32
+    }
   }
   
-  if(-not (Test-Path $Cef32vcx)) {
-    Write-Output "Extracting..."
-    Unzip $ToolsDir\cef_binary_windows32.zip $Cef32
-  }
+  if((-not (Test-Path $ToolsDir\cef_binary_windows64.zip)) -and (-not (Test-Path $Cef64vcx))) {
+    if(-not (Test-Path $ToolsDir\cef_binary_windows64.zip)) {
+      Write-Output "Downloading $Cef64Url"
+      Start-BitsTransfer $Cef64Url $ToolsDir\cef_binary_windows64.zip
+    }
   
-  if(-not (Test-Path $ToolsDir\cef_binary_windows64.zip)) {
-    Write-Output "Downloading $Cef64Url"
-    Start-BitsTransfer $Cef64Url $ToolsDir\cef_binary_windows64.zip
-  }
-  
-  if(-not (Test-Path $Cef64vcx)) {
-    Write-Output "Extracting..."
-    Unzip $ToolsDir\cef_binary_windows64.zip $Cef64
+    if(-not (Test-Path $Cef64vcx)) {
+      Write-Output "Extracting..."
+      Unzip $ToolsDir\cef_binary_windows64.zip $Cef64
+    }
   }
 
   if (Test-Path($Cef)) {
