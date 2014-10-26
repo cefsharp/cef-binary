@@ -17,7 +17,7 @@ $Cef64 = Join-Path $WorkingDir  'cef_binary_3.y.z_windows64'
 $Cef64vcx =Join-Path $Cef64 'libcef_dll_wrapper.vcxproj'
 
 $CefVersion = "3.2062.1856"
-$CefPackageVersion = "3.2062.1856-pre0"
+$CefPackageVersion = "3.2062.1856-pre1"
 $Cef32Url = "http://software.odinkapital.no/opensource/cef/cef_binary_{0}_windows32.zip" -f $CefVersion
 $Cef64Url = "http://software.odinkapital.no/opensource/cef/cef_binary_{0}_windows64.zip" -f $CefVersion
 
