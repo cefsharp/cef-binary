@@ -1,9 +1,7 @@
 param(
     [ValidateSet("vs2013", "vs2012", "vs2010", "nupkg", "nupkg-only")]
     [Parameter(Position = 0)] 
-    [string] $Target = "nupkg",
-    [Parameter(Position = 1)]
-    [string] $Version = "3.1750.1738"
+    [string] $Target = "nupkg"
 )
 
 Import-Module BitsTransfer
@@ -18,8 +16,10 @@ $Cef32vcx =Join-Path $Cef32 'libcef_dll_wrapper.vcxproj'
 $Cef64 = Join-Path $WorkingDir  'cef_binary_3.y.z_windows64'
 $Cef64vcx =Join-Path $Cef64 'libcef_dll_wrapper.vcxproj'
 
-$Cef32Url = "http://software.odinkapital.no/opensource/cef/cef_binary_3.1750.1738_windows32.zip"
-$Cef64Url = "http://software.odinkapital.no/opensource/cef/cef_binary_3.1750.1738_windows64.zip"
+$CefVersion = "3.2062.1898"
+$CefPackageVersion = "3.2062.1898"
+$Cef32Url = "http://software.odinkapital.no/opensource/cef/cef_binary_{0}_windows32.zip" -f $CefVersion
+$Cef64Url = "http://software.odinkapital.no/opensource/cef/cef_binary_{0}_windows64.zip" -f $CefVersion
 
 # https://github.com/jbake/Powershell_scripts/blob/master/Invoke-BatchFile.ps1
 function Invoke-BatchFile 
@@ -116,31 +116,55 @@ function Unzip
         New-Item -ItemType Directory -Path $ExtractToDestination | Out-Null
     }
     $Destination = $ShellApp.namespace($ExtractToDestination)
-    $Destination.Copyhere($Zip.items())
+	
+	# Extract the First Folder within the zip
+	foreach($item In $Zip.items()) 
+	{ 
+      if ($item.GetFolder -ne $Null) 
+      {
+	    $Destination.Copyhere($item.GetFolder.items(), 0x10)
+		
+		break;
+      }
+	}
 }
 
 function Bootstrap
 {
   param()
      
+  if($Target -eq "nupkg-only") {
+    return
+  }
+
   Write-Diagnostic "Bootstrapping"
 
   if(-not (Test-Path $ToolsDir)) {
     New-Item -ItemType Directory -Path $ToolsDir | Out-Null
   }
 
-  if(-not (Test-Path $Cef32vcx)) {
-    Write-Output "Downloading $Cef32Url"
-    Start-BitsTransfer $Cef32Url $ToolsDir\cef_binary_windows32.zip
-    Write-Output "Extracting..."
-    Unzip $ToolsDir\cef_binary_windows32.zip $Cef32
+  if((-not (Test-Path $ToolsDir\cef_binary_windows32.zip)) -and (-not (Test-Path $Cef32vcx))) {
+    if(-not (Test-Path $ToolsDir\cef_binary_windows32.zip)) {
+	  Write-Output "Downloading $Cef32Url"
+      Start-BitsTransfer $Cef32Url $ToolsDir\cef_binary_windows32.zip
+    }
+  
+    if(-not (Test-Path $Cef32vcx)) {
+      Write-Output "Extracting..."
+      Unzip $ToolsDir\cef_binary_windows32.zip $Cef32
+    }
   }
-
-  if(-not (Test-Path $Cef64vcx)) {
-    Write-Output "Downloading $Cef64Url"
-    Start-BitsTransfer $Cef64Url $ToolsDir\cef_binary_windows64.zip
-    Write-Output "Extracting..."
-    Unzip $ToolsDir\cef_binary_windows64.zip $Cef64
+  
+  if((-not (Test-Path $ToolsDir\cef_binary_windows64.zip)) -and (-not (Test-Path $Cef64vcx))) {
+    if(-not (Test-Path $ToolsDir\cef_binary_windows64.zip)) {
+      Write-Output "Downloading $Cef64Url"
+      Start-BitsTransfer $Cef64Url $ToolsDir\cef_binary_windows64.zip
+    }
+  
+    if(-not (Test-Path $Cef64vcx)) {
+      Write-Output "Extracting..."
+      Unzip $ToolsDir\cef_binary_windows64.zip $Cef64
+    }
   }
 
   if (Test-Path($Cef)) {
@@ -350,30 +374,49 @@ function CreateCefSdk
 
 function Nupkg
 {
-    $nuget = Join-Path $env:LOCALAPPDATA .\nuget\NuGet.exe
-    if(-not (Test-Path $nuget)) {
+    Write-Diagnostic "Building nuget package"
+
+    $Nuget = Join-Path $env:LOCALAPPDATA .\nuget\NuGet.exe
+    if(-not (Test-Path $Nuget)) {
         Die "Please install nuget. More information available at: http://docs.nuget.org/docs/start-here/installing-nuget"
     }
 
-    Write-Diagnostic "Building nuget package"
+    # Redist target
+    $RedistTargetsFilename = Resolve-Path ".\nuget\cef.redist.targets"
 
-    # Save content as UTF8 without adding BOM
+    # Write 32bit redist target
+    [xml]$Xml = Get-Content $RedistTargetsFilename
+    $Xml.Project.Target | Foreach-Object { $_.Name = 'CefRedistCopyDllPak32'}
+    $Xml.Save($RedistTargetsFilename)
+	
+    # Build 32bit packages
+    #. $Nuget pack nuget\cef.redist.nuspec -NoPackageAnalysis -Version $CefPackageVersion -Properties 'Configuration=Debug;DotConfiguration=.Debug;Platform=x86;CPlatform=windows32;' -OutputDirectory nuget
+    . $Nuget pack nuget\cef.redist.nuspec -NoPackageAnalysis -Version $CefPackageVersion -Properties 'Configuration=Release;DotConfiguration=;Platform=x86;CPlatform=windows32;' -OutputDirectory nuget
+	
+    # Write 64bit redist target
+    [xml]$Xml = Get-Content $RedistTargetsFilename
+    $Xml.Project.Target | Foreach-Object { $_.Name = 'CefRedistCopyDllPak64'}
+    $Xml.Save($RedistTargetsFilename)
+	
+    # Build 64bit packages
+    #. $Nuget pack nuget\cef.redist.nuspec -NoPackageAnalysis -Version $CefPackageVersion -Properties 'Configuration=Debug;DotConfiguration=.Debug;Platform=x64;CPlatform=windows64;' -OutputDirectory nuget
+    . $Nuget pack nuget\cef.redist.nuspec -NoPackageAnalysis -Version $CefPackageVersion -Properties 'Configuration=Release;DotConfiguration=;Platform=x64;CPlatform=windows64;' -OutputDirectory nuget
+	
+    # Build sdk
     $Filename = Resolve-Path ".\nuget\cef.sdk.props"
-    $Text = (Get-Content $Filename) -replace '<CefSdkVer>.*<\/CefSdkVer>', "<CefSdkVer>cef.sdk.$Version</CefSdkVer>"
+    $Text = (Get-Content $Filename) -replace '<CefSdkVer>.*<\/CefSdkVer>', "<CefSdkVer>cef.sdk.$CefPackageVersion</CefSdkVer>"
     [System.IO.File]::WriteAllLines($Filename, $Text)
 
-    # Build packages
-    . $nuget pack nuget\cef.redist.nuspec -NoPackageAnalysis -Version $Version -OutputDirectory nuget
-    . $nuget pack nuget\cef.sdk.nuspec -NoPackageAnalysis -Version $Version -OutputDirectory nuget
+    . $Nuget pack nuget\cef.sdk.nuspec -NoPackageAnalysis -Version $CefPackageVersion -OutputDirectory nuget
 }
 
 function DownloadNuget()
 {
-	$nuget = Join-Path $env:LOCALAPPDATA .\nuget\NuGet.exe
-    if(-not (Test-Path $nuget))
+	$Nuget = Join-Path $env:LOCALAPPDATA .\nuget\NuGet.exe
+    if(-not (Test-Path $Nuget))
 	{
-		$client = New-Object System.Net.WebClient;
-		$client.DownloadFile('http://nuget.org/nuget.exe', $nuget);
+		$Client = New-Object System.Net.WebClient;
+		$Client.DownloadFile('http://nuget.org/nuget.exe', $Nuget);
 	}
 }
 
