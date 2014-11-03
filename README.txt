@@ -1,13 +1,15 @@
 Chromium Embedded Framework (CEF) Standard Binary Distribution for Windows
 -------------------------------------------------------------------------------
 
-Date:             June 11, 2014
+Date:             October 29, 2014
 
-CEF Version:      3.1750.1738
-CEF URL:          http://chromiumembedded.googlecode.com/svn/branches/1750/cef3@1738
+CEF Version:      3.2062.1898
+CEF URL:          https://chromiumembedded@bitbucket.org/chromiumembedded/branches-2062-cef3.git
+                  @1898
 
-Chromium Verison: 33.0.1750.170
-Chromium URL:     http://chromiumembedded.googlecode.com/svn/branches/1750/cef3@1738
+Chromium Verison: 37.0.2062.94
+Chromium URL:     https://chromium.googlesource.com/chromium/src.git
+                  @8807db7acee000af6556dc8779996db314f38c7f
 
 This distribution contains all components necessary to build and distribute an
 application using CEF on the Windows platform. Please see the LICENSING
@@ -81,7 +83,7 @@ Required components:
     libcef.dll
 
 * Unicode support
-    icudt.dll
+    icudtl.dat
 
 Optional components:
 
@@ -96,6 +98,8 @@ Optional components:
 
 * Other resources
     cef.pak
+    cef_100_percent.pak
+    cef_200_percent.pak
     devtools_resources.pak
   Note: Contains WebKit image and inspector resources. Pack file loading can be
   disabled completely using CefSettings.pack_loading_disabled. The resources
@@ -105,6 +109,10 @@ Optional components:
     ffmpegsumo.dll
   Note: Without this component HTML5 audio and video will not function.
 
+* PDF support
+    pdf.dll
+  Note: Without this component printing will not function.
+
 * Angle and Direct3D support
     d3dcompiler_43.dll (required for Windows XP)
     d3dcompiler_46.dll (required for Windows Vista and newer)
@@ -112,6 +120,11 @@ Optional components:
     libGLESv2.dll
   Note: Without these components HTML5 accelerated content like 2D canvas, 3D
   CSS and WebGL will not function.
+
+* Windows Vista 64-bit sandbox support (32-bit distributions only)
+    wow_helper.exe
+  Note: Without this component the 32-bit build of CEF will not run on 64-bit
+  Vista machines with the sandbox enabled.
 
 
 LICENSING
