@@ -385,7 +385,9 @@ function Nupkg
     $RedistTargetsFilename = Resolve-Path ".\nuget\cef.redist.targets"
 
     # Write 32bit redist target
-    [xml]$Xml = Get-Content $RedistTargetsFilename
+    [string]$xmlString = Get-Content $RedistTargetsFilename
+    $xmlString = $xmlString.Replace("`$(Platform)", "x86")
+    [xml]$Xml = $xmlString
     $Xml.Project.Target | Foreach-Object { $_.Name = 'CefRedistCopyDllPak32'}
     $Xml.Save($RedistTargetsFilename)
 	
@@ -394,9 +396,12 @@ function Nupkg
     . $Nuget pack nuget\cef.redist.nuspec -NoPackageAnalysis -Version $CefPackageVersion -Properties 'Configuration=Release;DotConfiguration=;Platform=x86;CPlatform=windows32;' -OutputDirectory nuget
 	
     # Write 64bit redist target
-    [xml]$Xml = Get-Content $RedistTargetsFilename
-    $Xml.Project.Target | Foreach-Object { $_.Name = 'CefRedistCopyDllPak64'}
+    [string]$xmlString = Get-Content $RedistTargetsFilename
+    $xmlString = $xmlString.Replace("x86", "x64")
+    [xml]$Xml = $xmlString
+    $Xml.Project.Target | Foreach-Object { $_.Name = 'CefRedistCopyDllPak64'}        
     $Xml.Save($RedistTargetsFilename)
+
 	
     # Build 64bit packages
     #. $Nuget pack nuget\cef.redist.nuspec -NoPackageAnalysis -Version $CefPackageVersion -Properties 'Configuration=Debug;DotConfiguration=.Debug;Platform=x64;CPlatform=windows64;' -OutputDirectory nuget
