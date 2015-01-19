@@ -383,6 +383,7 @@ function Nupkg
 
     # Redist target
     $RedistTargetsFilename = Resolve-Path ".\nuget\cef.redist.targets"
+    [xml]$originalTargetsContents = Get-Content $RedistTargetsFilename
 
     $TemplateTargetsFilename = ".\nuget\cef.redist.template.targets"
     Copy-Item $RedistTargetsFilename $TemplateTargetsFilename
@@ -400,7 +401,8 @@ function Nupkg
     . $Nuget pack nuget\cef.redist.nuspec -NoPackageAnalysis -Version $CefPackageVersion -Properties 'Configuration=Release;DotConfiguration=;Platform=x64;CPlatform=windows64;' -OutputDirectory nuget
 
     Remove-Item $TemplateTargetsFilename
-	
+    $originalTargetsContents.Save($RedistTargetsFilename)
+
     # Build sdk
     $Filename = Resolve-Path ".\nuget\cef.sdk.props"
     $Text = (Get-Content $Filename) -replace '<CefSdkVer>.*<\/CefSdkVer>', "<CefSdkVer>cef.sdk.$CefPackageVersion</CefSdkVer>"
