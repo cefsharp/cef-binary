@@ -383,31 +383,53 @@ function Nupkg
 
     # Redist target
     $RedistTargetsFilename = Resolve-Path ".\nuget\cef.redist.targets"
+    [xml]$originalTargetsContents = Get-Content $RedistTargetsFilename
 
-    # Write 32bit redist target
-    [xml]$Xml = Get-Content $RedistTargetsFilename
-    $Xml.Project.Target | Foreach-Object { $_.Name = 'CefRedistCopyDllPak32'}
-    $Xml.Save($RedistTargetsFilename)
-	
+    $TemplateTargetsFilename = ".\nuget\cef.redist.template.targets"
+    Copy-Item $RedistTargetsFilename $TemplateTargetsFilename
+
+    Edit-TargetsFile 32
+
     # Build 32bit packages
     #. $Nuget pack nuget\cef.redist.nuspec -NoPackageAnalysis -Version $CefPackageVersion -Properties 'Configuration=Debug;DotConfiguration=.Debug;Platform=x86;CPlatform=windows32;' -OutputDirectory nuget
     . $Nuget pack nuget\cef.redist.nuspec -NoPackageAnalysis -Version $CefPackageVersion -Properties 'Configuration=Release;DotConfiguration=;Platform=x86;CPlatform=windows32;' -OutputDirectory nuget
 	
-    # Write 64bit redist target
-    [xml]$Xml = Get-Content $RedistTargetsFilename
-    $Xml.Project.Target | Foreach-Object { $_.Name = 'CefRedistCopyDllPak64'}
-    $Xml.Save($RedistTargetsFilename)
+    Edit-TargetsFile 64
 	
     # Build 64bit packages
     #. $Nuget pack nuget\cef.redist.nuspec -NoPackageAnalysis -Version $CefPackageVersion -Properties 'Configuration=Debug;DotConfiguration=.Debug;Platform=x64;CPlatform=windows64;' -OutputDirectory nuget
     . $Nuget pack nuget\cef.redist.nuspec -NoPackageAnalysis -Version $CefPackageVersion -Properties 'Configuration=Release;DotConfiguration=;Platform=x64;CPlatform=windows64;' -OutputDirectory nuget
-	
+
+    Remove-Item $TemplateTargetsFilename
+    $originalTargetsContents.Save($RedistTargetsFilename)
+
     # Build sdk
     $Filename = Resolve-Path ".\nuget\cef.sdk.props"
     $Text = (Get-Content $Filename) -replace '<CefSdkVer>.*<\/CefSdkVer>', "<CefSdkVer>cef.sdk.$CefPackageVersion</CefSdkVer>"
     [System.IO.File]::WriteAllLines($Filename, $Text)
 
     . $Nuget pack nuget\cef.sdk.nuspec -NoPackageAnalysis -Version $CefPackageVersion -OutputDirectory nuget
+}
+
+function Edit-TargetsFile($platformBitness)
+{
+    if ($platformBitness -eq 32)
+    {
+        $platformDescriptor = "x86"
+    }
+    else
+    {
+        $platformDescriptor = "x64"
+    }
+
+    # Set the appropriate platform directory for the bitness of CEF
+    [string]$xmlString = Get-Content $TemplateTargetsFilename
+    $xmlString = $xmlString.Replace("`$(Platform)", $platformDescriptor)
+
+    # Set the Target name to include the bitness of CEF
+    [xml]$Xml = $xmlString
+    $Xml.Project.Target | Foreach-Object { $_.Name = "CefRedistCopyDllPak${platformBitness}"}
+    $Xml.Save($RedistTargetsFilename)
 }
 
 function DownloadNuget()
