@@ -13,7 +13,7 @@
     <description>CEF - Chromium Embedded Framework.
     NOTE: This package is maintained on behalf of the CEF authors by the CefSharp project at http://github.com/cefsharp/cef-binary</description>
     <tags>chrome chromium native embedded browser CEF nativepackage</tags>
-    <copyright>Copyright © 2008-2014</copyright>
+    <copyright>Copyright © 2008-2015</copyright>
   </metadata>
   <files>
 <!-- 
