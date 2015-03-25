@@ -11,12 +11,12 @@ $WorkingDir = split-path -parent $MyInvocation.MyCommand.Definition
 $Cef = Join-Path $WorkingDir 'cef'
 $CefInclude = Join-Path $Cef 'include'
 $Cef32 = Join-Path $WorkingDir 'cef_binary_3.y.z_windows32'
-$Cef32vcx =Join-Path $Cef32 'libcef_dll_wrapper.vcxproj'
+$Cef32vcx = Join-Path (Join-Path $Cef32 'libcef_dll') 'libcef_dll_wrapper.vcxproj'
 $Cef64 = Join-Path $WorkingDir  'cef_binary_3.y.z_windows64'
-$Cef64vcx =Join-Path $Cef64 'libcef_dll_wrapper.vcxproj'
+$Cef64vcx = Join-Path (Join-Path $Cef64 'libcef_dll') 'libcef_dll_wrapper.vcxproj'
 
-$CefVersion = "3.2171.1979"
-$CefPackageVersion = "3.2171.1979"
+$CefVersion = "3.2171.2069"
+$CefPackageVersion = "3.2171.2069"
 
 # https://github.com/jbake/Powershell_scripts/blob/master/Invoke-BatchFile.ps1
 function Invoke-BatchFile 
@@ -38,7 +38,6 @@ function Invoke-BatchFile
            Set-Content "env:\$($matches[1])" $matches[2]  
        } 
    }  
-
    Remove-Item $tempFile
 }
 
@@ -62,8 +61,8 @@ function Die
     )
 
     Write-Host
-	Write-Error $Message 
-	exit 1
+    Write-Error $Message 
+    exit 1
 
 }
 
@@ -75,8 +74,8 @@ function Warn
     )
 
     Write-Host
-	Write-Host $Message -ForegroundColor Yellow
-	Write-Host
+    Write-Host $Message -ForegroundColor Yellow
+    Write-Host
 
 }
 
@@ -159,6 +158,7 @@ function Msvs
     $PlatformTarget = $null
     $VisualStudioVersion = $null
     $VXXCommonTools = $null
+    $CmakeGenerator = $null
 
     switch -Exact ($Toolchain) {
         'v100' {
@@ -170,11 +170,13 @@ function Msvs
             $PlatformTarget = '4.0'
             $VisualStudioVersion = '11.0'
             $VXXCommonTools = Join-Path $env:VS110COMNTOOLS '..\..\vc'
+            $CmakeGenerator = 'Visual Studio 11 2012'
         }
         'v120' {
             $PlatformTarget = '12.0'
             $VisualStudioVersion = '12.0'
             $VXXCommonTools = Join-Path $env:VS120COMNTOOLS '..\..\vc'
+            $CmakeGenerator = 'Visual Studio 12 2013'
         }
     }
 
@@ -183,7 +185,8 @@ function Msvs
     }
 
     $CefProject = TernaryReturn ($Platform -eq 'x86') $Cef32vcx $Cef64vcx
-	
+    $CefDir = TernaryReturn ($Platform -eq 'x86') $Cef32 $Cef64
+
     #Manually change project file to compile using /MDd and /MD
     (Get-Content $CefProject) | Foreach-Object {$_ -replace "<RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>", '<RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>'} | Set-Content $CefProject
     (Get-Content $CefProject) | Foreach-Object {$_ -replace "<RuntimeLibrary>MultiThreaded</RuntimeLibrary>", '<RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>'} | Set-Content $CefProject
@@ -198,13 +201,19 @@ function Msvs
         $VCXProj = $Cef64vcx
     }
 
-    # Only configure build environment once
-    if($env:CEFSHARP_BUILD_IS_BOOTSTRAPPED -eq $null) {
-        Invoke-BatchFile $VCVarsAll $Platform
-        $env:CEFSHARP_BUILD_IS_BOOTSTRAPPED = $true
-    }
-
     $Arch = TernaryReturn ($Platform -eq 'x64') 'x64' 'win32'
+    $CmakeArch = TernaryReturn ($Platform -eq 'x64') ' Win64' ''
+
+    # Only configure build environment once
+    if ($env:CEFSHARP_BUILD_IS_BOOTSTRAPPED -ne "$Toolchain$Platform") {
+        Invoke-BatchFile $VCVarsAll $Platform
+        pushd $CefDir
+        rm CMakeCache.txt
+        rm -r CMakeFiles
+        cmake -G "$CmakeGenerator$CmakeArch"
+        popd
+        $env:CEFSHARP_BUILD_IS_BOOTSTRAPPED = "$Toolchain$Platform"
+    }
 
     $Arguments = @(
         "$CefProject",
@@ -307,11 +316,10 @@ function CreateCefSdk
     $CefArchDir = TernaryReturn ($Platform -eq 'x64') $Cef64 $Cef32
 
     # cef_binary_3.y.z_windows32\out\debug\lib -> cef\win32\debug\vs2013
-    Copy-Item $CefArchDir\out\$Configuration\lib\libcef_dll_wrapper.lib $Cef\$Arch\$Configuration\$VisualStudioVersion | Out-Null
+    Copy-Item $CefArchDir\libcef_dll\$Configuration\libcef_dll_wrapper.lib $Cef\$Arch\$Configuration\$VisualStudioVersion | Out-Null
 
     # cef_binary_3.y.z_windows32\debug -> cef\win32\debug
     Copy-Item $CefArchDir\$Configuration\libcef.lib $Cef\$Arch\$Configuration | Out-Null
-
 }
 
 function Nupkg
@@ -330,20 +338,20 @@ function Nupkg
     [xml]$Xml = Get-Content $RedistTargetsFilename
     $Xml.Project.Target | Foreach-Object { $_.Name = 'CefRedistCopyDllPak32'}
     $Xml.Save($RedistTargetsFilename)
-	
+
     # Build 32bit packages
     #. $Nuget pack nuget\cef.redist.nuspec -NoPackageAnalysis -Version $CefPackageVersion -Properties 'Configuration=Debug;DotConfiguration=.Debug;Platform=x86;CPlatform=windows32;' -OutputDirectory nuget
     . $Nuget pack nuget\cef.redist.nuspec -NoPackageAnalysis -Version $CefPackageVersion -Properties 'Configuration=Release;DotConfiguration=;Platform=x86;CPlatform=windows32;' -OutputDirectory nuget
-	
+
     # Write 64bit redist target
     [xml]$Xml = Get-Content $RedistTargetsFilename
     $Xml.Project.Target | Foreach-Object { $_.Name = 'CefRedistCopyDllPak64'}
     $Xml.Save($RedistTargetsFilename)
-	
+
     # Build 64bit packages
     #. $Nuget pack nuget\cef.redist.nuspec -NoPackageAnalysis -Version $CefPackageVersion -Properties 'Configuration=Debug;DotConfiguration=.Debug;Platform=x64;CPlatform=windows64;' -OutputDirectory nuget
     . $Nuget pack nuget\cef.redist.nuspec -NoPackageAnalysis -Version $CefPackageVersion -Properties 'Configuration=Release;DotConfiguration=;Platform=x64;CPlatform=windows64;' -OutputDirectory nuget
-	
+
     # Build sdk
     $Filename = Resolve-Path ".\nuget\cef.sdk.props"
     $Text = (Get-Content $Filename) -replace '<CefSdkVer>.*<\/CefSdkVer>', "<CefSdkVer>cef.sdk.$CefPackageVersion</CefSdkVer>"
@@ -354,12 +362,12 @@ function Nupkg
 
 function DownloadNuget()
 {
-	$Nuget = Join-Path $env:LOCALAPPDATA .\nuget\NuGet.exe
+    $Nuget = Join-Path $env:LOCALAPPDATA .\nuget\NuGet.exe
     if(-not (Test-Path $Nuget))
-	{
-		$Client = New-Object System.Net.WebClient;
-		$Client.DownloadFile('http://nuget.org/nuget.exe', $Nuget);
-	}
+    {
+        $Client = New-Object System.Net.WebClient;
+        $Client.DownloadFile('http://nuget.org/nuget.exe', $Nuget);
+    }
 }
 
 DownloadNuget
@@ -373,7 +381,7 @@ switch -Exact ($Target) {
         #VSX v100
         Nupkg
     }
-	"nupkg-only" {
+    "nupkg-only" {
         Nupkg
     }
     "vs2013" {
