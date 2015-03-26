@@ -28,16 +28,19 @@ function Invoke-BatchFile
         [string]$Parameters
    )
 
-   $tempFile = [IO.Path]::GetTempFileName()  
+   $tempFile = [IO.Path]::GetTempFileName()
+   $batFile = [IO.Path]::GetTempFileName() + '.cmd'
 
-   cmd.exe /c " `"$Path`" $Parameters && set > `"$tempFile`" " 
+   Set-Content -Path $batFile -Value "`"$Path`" $Parameters && set > `"$tempFile`""
+
+   $batFile
 
    Get-Content $tempFile | Foreach-Object {   
        if ($_ -match "^(.*?)=(.*)$")  
        { 
            Set-Content "env:\$($matches[1])" $matches[2]  
        } 
-   }  
+   }
    Remove-Item $tempFile
 }
 
@@ -187,9 +190,8 @@ function Msvs
     $CefProject = TernaryReturn ($Platform -eq 'x86') $Cef32vcx $Cef64vcx
     $CefDir = TernaryReturn ($Platform -eq 'x86') $Cef32 $Cef64
 
-    #Manually change project file to compile using /MDd and /MD
-    (Get-Content $CefProject) | Foreach-Object {$_ -replace "<RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>", '<RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>'} | Set-Content $CefProject
-    (Get-Content $CefProject) | Foreach-Object {$_ -replace "<RuntimeLibrary>MultiThreaded</RuntimeLibrary>", '<RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>'} | Set-Content $CefProject
+    $Arch = TernaryReturn ($Platform -eq 'x64') 'x64' 'win32'
+    $CmakeArch = TernaryReturn ($Platform -eq 'x64') ' Win64' ''
 
     $VCVarsAll = Join-Path $VXXCommonTools vcvarsall.bat
     if (-not (Test-Path $VCVarsAll)) {
@@ -201,19 +203,20 @@ function Msvs
         $VCXProj = $Cef64vcx
     }
 
-    $Arch = TernaryReturn ($Platform -eq 'x64') 'x64' 'win32'
-    $CmakeArch = TernaryReturn ($Platform -eq 'x64') ' Win64' ''
-
     # Only configure build environment once
     if ($env:CEFSHARP_BUILD_IS_BOOTSTRAPPED -ne "$Toolchain$Platform") {
         Invoke-BatchFile $VCVarsAll $Platform
         pushd $CefDir
-        rm CMakeCache.txt
-        rm -r CMakeFiles
+        rm CMakeCache.txt -ErrorAction:Ignore
+        rm -r CMakeFiles -ErrorAction:Ignore
         cmake -G "$CmakeGenerator$CmakeArch"
         popd
         $env:CEFSHARP_BUILD_IS_BOOTSTRAPPED = "$Toolchain$Platform"
     }
+
+    #Manually change project file to compile using /MDd and /MD
+    (Get-Content $CefProject) | Foreach-Object {$_ -replace "<RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>", '<RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>'} | Set-Content $CefProject
+    (Get-Content $CefProject) | Foreach-Object {$_ -replace "<RuntimeLibrary>MultiThreaded</RuntimeLibrary>", '<RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>'} | Set-Content $CefProject
 
     $Arguments = @(
         "$CefProject",
