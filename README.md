@@ -38,3 +38,5 @@ Foundation z: NuGets
 # License
 
 The code is licensed under the same license as the Chromium Embeddded Framework, i.e. the "new BSD" license. The full CEF license text can be found here: [LICENSE.txt](LICENSE.txt).
+
+Additionally, don't forget to view `chrome://credits/` for additional licences used by Chromium.
