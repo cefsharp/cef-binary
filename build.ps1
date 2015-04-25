@@ -29,11 +29,14 @@ function Invoke-BatchFile
    )
 
    $tempFile = [IO.Path]::GetTempFileName()
+
+   # NOTE: A better solution would be to use PSCX's Push-EnvironmentBlock before calling
+   # this and popping it before calling this function again as repeated use of this function
+   # can (unsurprisingly) cause the PATH variable to max out at Windows upper limit.
    $batFile = [IO.Path]::GetTempFileName() + '.cmd'
+   Set-Content -Path $batFile -Value "`"$Path`" $Parameters && set > `"$tempFile`"`r`n"
 
-   Set-Content -Path $batFile -Value "`"$Path`" $Parameters && set > `"$tempFile`""
-
-   $batFile
+   & $batFile
 
    Get-Content $tempFile | Foreach-Object {   
        if ($_ -match "^(.*?)=(.*)$")  
@@ -42,6 +45,7 @@ function Invoke-BatchFile
        } 
    }
    Remove-Item $tempFile
+   Remove-Item $batFile
 }
 
 function Write-Diagnostic 
@@ -207,6 +211,7 @@ function Msvs
     if ($env:CEFSHARP_BUILD_IS_BOOTSTRAPPED -ne "$Toolchain$Platform") {
         Invoke-BatchFile $VCVarsAll $Platform
         pushd $CefDir
+        # Remove previously generated CMake data for the different platform/toolchain
         rm CMakeCache.txt -ErrorAction:Ignore
         rm -r CMakeFiles -ErrorAction:Ignore
         cmake -G "$CmakeGenerator$CmakeArch"
