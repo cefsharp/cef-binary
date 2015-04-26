@@ -16,8 +16,8 @@
   </metadata>
   <files>
     <file src="..\cef_binary_3.y.z_$CPlatform$\$Configuration$\*.dll" target="CEF\$Platform$" />
-	
-	<file src="..\cef_binary_3.y.z_$CPlatform$\Resources\cef_100_percent.pak" target="CEF\"/>
+  
+    <file src="..\cef_binary_3.y.z_$CPlatform$\Resources\cef_100_percent.pak" target="CEF\"/>
     <file src="..\cef_binary_3.y.z_$CPlatform$\Resources\cef_200_percent.pak" target="CEF\"/>
     <file src="..\cef_binary_3.y.z_$CPlatform$\Resources\icudtl.dat" target="CEF\"/>
     <file src="..\cef_binary_3.y.z_$CPlatform$\Resources\cef.pak" target="CEF\"/>
