@@ -212,8 +212,8 @@ function Msvs
         Invoke-BatchFile $VCVarsAll $Platform
         pushd $CefDir
         # Remove previously generated CMake data for the different platform/toolchain
-        rm CMakeCache.txt -ErrorAction:Ignore
-        rm -r CMakeFiles -ErrorAction:Ignore
+        rm CMakeCache.txt -ErrorAction:SilentlyContinue
+        rm -r CMakeFiles -ErrorAction:SilentlyContinue
         cmake -G "$CmakeGenerator$CmakeArch"
         popd
         $env:CEFSHARP_BUILD_IS_BOOTSTRAPPED = "$Toolchain$Platform"
