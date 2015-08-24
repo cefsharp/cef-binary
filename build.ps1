@@ -177,13 +177,13 @@ function Msvs
             $PlatformTarget = '4.0'
             $VisualStudioVersion = '11.0'
             $VXXCommonTools = Join-Path $env:VS110COMNTOOLS '..\..\vc'
-            $CmakeGenerator = 'Visual Studio 11 2012'
+            $CmakeGenerator = 'Visual Studio 11'
         }
         'v120' {
             $PlatformTarget = '12.0'
             $VisualStudioVersion = '12.0'
             $VXXCommonTools = Join-Path $env:VS120COMNTOOLS '..\..\vc'
-            $CmakeGenerator = 'Visual Studio 12 2013'
+            $CmakeGenerator = 'Visual Studio 12'
         }
     }
 
