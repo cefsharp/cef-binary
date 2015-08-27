@@ -385,9 +385,9 @@ Bootstrap
 
 switch -Exact ($Target) {
     "nupkg" {
-        VSX v120
-        VSX v110
-        #VSX v140
+        #VSX v110
+		VSX v120
+        VSX v140
         Nupkg
     }
     "nupkg-only" {
