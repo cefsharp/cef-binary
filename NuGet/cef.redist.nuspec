@@ -21,12 +21,8 @@
          http://www.magpcss.org/ceforum/viewtopic.php?f=6&t=12580
      -->
     <file src="..\cef_binary_3.y.z_$CPlatform$\$Configuration$\*.bin" target="CEF\$Platform$" />
-  
-    <file src="..\cef_binary_3.y.z_$CPlatform$\Resources\cef_100_percent.pak" target="CEF\"/>
-    <file src="..\cef_binary_3.y.z_$CPlatform$\Resources\cef_200_percent.pak" target="CEF\"/>
-    <file src="..\cef_binary_3.y.z_$CPlatform$\Resources\icudtl.dat" target="CEF\"/>
-    <file src="..\cef_binary_3.y.z_$CPlatform$\Resources\cef.pak" target="CEF\"/>
-    <file src="..\cef_binary_3.y.z_$CPlatform$\Resources\devtools_resources.pak" target="CEF\"/>
+    <file src="..\cef_binary_3.y.z_$CPlatform$\Resources\*.pak" target="CEF\"/>
+	<file src="..\cef_binary_3.y.z_$CPlatform$\Resources\icudtl.dat" target="CEF\"/>
     <file src="..\cef_binary_3.y.z_$CPlatform$\Resources\locales\*.pak" target="CEF\locales"/>
 
     <file src="cef.redist.targets" target="build\cef.redist.$Platform$$DotConfiguration$.targets" />
