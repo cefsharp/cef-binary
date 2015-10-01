@@ -1,5 +1,5 @@
 param(
-    [ValidateSet("vs2013", "vs2012", "vs2010", "nupkg", "nupkg-only")]
+    [ValidateSet("vs2012", "vs2013", "vs2015", "nupkg", "nupkg-only")]
     [Parameter(Position = 0)] 
     [string] $Target = "nupkg"
 )
@@ -15,8 +15,8 @@ $Cef32vcx = Join-Path (Join-Path $Cef32 'libcef_dll') 'libcef_dll_wrapper.vcxpro
 $Cef64 = Join-Path $WorkingDir  'cef_binary_3.y.z_windows64'
 $Cef64vcx = Join-Path (Join-Path $Cef64 'libcef_dll') 'libcef_dll_wrapper.vcxproj'
 
-$CefVersion = "3.2357.1287"
-$CefPackageVersion = "3.2357.1287"
+$CefVersion = "3.2454.1317"
+$CefPackageVersion = "3.2454.1317"
 
 # https://github.com/jbake/Powershell_scripts/blob/master/Invoke-BatchFile.ps1
 function Invoke-BatchFile 
@@ -125,29 +125,29 @@ function Bootstrap
   # Create default directory structure
   md 'cef\win32' | Out-Null
   md 'cef\win32\debug' | Out-Null
-  md 'cef\win32\debug\VS2010' | Out-Null
   md 'cef\win32\debug\VS2012' | Out-Null
   md 'cef\win32\debug\VS2013' | Out-Null
+  md 'cef\win32\debug\VS2015' | Out-Null
   md 'cef\win32\release' | Out-Null
-  md 'cef\win32\release\VS2010' | Out-Null
   md 'cef\win32\release\VS2012' | Out-Null
   md 'cef\win32\release\VS2013' | Out-Null
+  md 'cef\win32\release\VS2015' | Out-Null
   md 'cef\x64' | Out-Null
   md 'cef\x64\debug' | Out-Null
-  md 'cef\x64\debug\VS2010' | Out-Null
   md 'cef\x64\debug\VS2012' | Out-Null
   md 'cef\x64\debug\VS2013' | Out-Null
+  md 'cef\x64\debug\VS2015' | Out-Null
   md 'cef\x64\release' | Out-Null 
-  md 'cef\x64\release\VS2010' | Out-Null
-  md 'cef\x64\release\VS2012' | Out-Null 
-  md 'cef\x64\release\VS2013' | Out-Null
+  md 'cef\x64\release\VS2012' | Out-Null
+  md 'cef\x64\release\VS2013' | Out-Null 
+  md 'cef\x64\release\VS2015' | Out-Null
 
 }
 
 function Msvs 
 {
     param(
-        [ValidateSet('v100', 'v110', 'v120')]
+        [ValidateSet('v110', 'v120', 'v140')]
         [Parameter(Position = 0, ValueFromPipeline = $true)]
         [string] $Toolchain, 
 
@@ -168,22 +168,23 @@ function Msvs
     $CmakeGenerator = $null
 
     switch -Exact ($Toolchain) {
-        'v100' {
-            $PlatformTarget = '4.0'
-            $VisualStudioVersion = '10.0'
-            $VXXCommonTools = Join-Path $env:VS100COMNTOOLS '..\..\vc'
-        }
         'v110' {
             $PlatformTarget = '4.0'
             $VisualStudioVersion = '11.0'
             $VXXCommonTools = Join-Path $env:VS110COMNTOOLS '..\..\vc'
-            $CmakeGenerator = 'Visual Studio 11 2012'
+            $CmakeGenerator = 'Visual Studio 11'
         }
         'v120' {
             $PlatformTarget = '12.0'
             $VisualStudioVersion = '12.0'
             $VXXCommonTools = Join-Path $env:VS120COMNTOOLS '..\..\vc'
-            $CmakeGenerator = 'Visual Studio 12 2013'
+            $CmakeGenerator = 'Visual Studio 12'
+        }
+        'v140' {
+            $PlatformTarget = '4.0'
+            $VisualStudioVersion = '14.0'
+            $VXXCommonTools = Join-Path $env:VS140COMNTOOLS '..\..\vc'
+            $CmakeGenerator = 'Visual Studio 14'
         }
     }
 
@@ -263,22 +264,22 @@ function Msvs
 function VSX 
 {
     param(
-        [ValidateSet('v100', 'v110', 'v120')]
+        [ValidateSet('v110', 'v120', 'v140')]
         [Parameter(Position = 0, ValueFromPipeline = $true)]
         [string] $Toolchain
     )
-
-    if($Toolchain -eq 'v120' -and $env:VS120COMNTOOLS -eq $null) {
-        Warn "Toolchain $Toolchain is not installed on your development machine, skipping build."
-        Return
-    }
 
     if($Toolchain -eq 'v110' -and $env:VS110COMNTOOLS -eq $null) {
         Warn "Toolchain $Toolchain is not installed on your development machine, skipping build."
         Return
     }
+    
+    if($Toolchain -eq 'v120' -and $env:VS120COMNTOOLS -eq $null) {
+        Warn "Toolchain $Toolchain is not installed on your development machine, skipping build."
+        Return
+    }
 
-    if($Toolchain -eq 'v100' -and $env:VS100COMNTOOLS -eq $null) {
+    if($Toolchain -eq 'v140' -and $env:VS140COMNTOOLS -eq $null) {
         Warn "Toolchain $Toolchain is not installed on your development machine, skipping build."
         Return
     }
@@ -296,7 +297,7 @@ function VSX
 function CreateCefSdk 
 {
     param(
-        [ValidateSet('v100', 'v110', 'v120')]
+        [ValidateSet('v110', 'v120', 'v140')]
         [Parameter(Position = 0, ValueFromPipeline = $true)]
         [string] $Toolchain, 
 
@@ -312,12 +313,12 @@ function CreateCefSdk
     Write-Diagnostic "Creating sdk for $Toolchain"
 
     $VisualStudioVersion = $null
-    if($Toolchain -eq "v120") {
-        $VisualStudioVersion = "VS2013"
+    if($Toolchain -eq "v140") {
+        $VisualStudioVersion = "VS2015"
     } elseif($Toolchain -eq "v110") {
         $VisualStudioVersion = "VS2012"
     } else {
-        $VisualStudioVersion = "VS2010"
+        $VisualStudioVersion = "VS2013"
     }
 
     $Arch = TernaryReturn ($Platform -eq 'x64') 'x64' 'win32'
@@ -384,9 +385,9 @@ Bootstrap
 
 switch -Exact ($Target) {
     "nupkg" {
-        VSX v120
-        VSX v110
-        #VSX v100
+        #VSX v110
+		VSX v120
+        VSX v140
         Nupkg
     }
     "nupkg-only" {
@@ -398,7 +399,7 @@ switch -Exact ($Target) {
     "vs2012" {
         VSX v110
     }
-    "vs2010" {
-        VSX v100
+    "vs2015" {
+        VSX v140
     }
 }
