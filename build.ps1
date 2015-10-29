@@ -15,8 +15,8 @@ $Cef32vcx = Join-Path (Join-Path $Cef32 'libcef_dll') 'libcef_dll_wrapper.vcxpro
 $Cef64 = Join-Path $WorkingDir  'cef_binary_3.y.z_windows64'
 $Cef64vcx = Join-Path (Join-Path $Cef64 'libcef_dll') 'libcef_dll_wrapper.vcxproj'
 
-$CefVersion = "3.2454.1344"
-$CefPackageVersion = "3.2454.1344"
+$CefVersion = "3.2526.1347"
+$CefPackageVersion = "3.2526.1347"
 
 # https://github.com/jbake/Powershell_scripts/blob/master/Invoke-BatchFile.ps1
 function Invoke-BatchFile 
