@@ -11,12 +11,12 @@ $WorkingDir = split-path -parent $MyInvocation.MyCommand.Definition
 $Cef = Join-Path $WorkingDir 'cef'
 $CefInclude = Join-Path $Cef 'include'
 $Cef32 = Join-Path $WorkingDir 'cef_binary_3.y.z_windows32'
-$Cef32vcx = Join-Path (Join-Path $Cef32 'libcef_dll') 'libcef_dll_wrapper.vcxproj'
+$Cef32vcx = Join-Path (Join-Path $Cef32 'libcef_dll_wrapper') 'libcef_dll_wrapper.vcxproj'
 $Cef64 = Join-Path $WorkingDir  'cef_binary_3.y.z_windows64'
-$Cef64vcx = Join-Path (Join-Path $Cef64 'libcef_dll') 'libcef_dll_wrapper.vcxproj'
+$Cef64vcx = Join-Path (Join-Path $Cef64 'libcef_dll_wrapper') 'libcef_dll_wrapper.vcxproj'
 
-$CefVersion = "3.2623.1401"
-$CefPackageVersion = "3.2623.1401"
+$CefVersion = "3.2704.1415"
+$CefPackageVersion = "3.2704.1415"
 
 # https://github.com/jbake/Powershell_scripts/blob/master/Invoke-BatchFile.ps1
 function Invoke-BatchFile 
@@ -325,7 +325,7 @@ function CreateCefSdk
     $CefArchDir = TernaryReturn ($Platform -eq 'x64') $Cef64 $Cef32
 
     # cef_binary_3.y.z_windows32\out\debug\lib -> cef\win32\debug\vs2013
-    Copy-Item $CefArchDir\libcef_dll\$Configuration\libcef_dll_wrapper.lib $Cef\$Arch\$Configuration\$VisualStudioVersion | Out-Null
+    Copy-Item $CefArchDir\libcef_dll_wrapper\$Configuration\libcef_dll_wrapper.lib $Cef\$Arch\$Configuration\$VisualStudioVersion | Out-Null
 
     # cef_binary_3.y.z_windows32\debug -> cef\win32\debug
     Copy-Item $CefArchDir\$Configuration\libcef.lib $Cef\$Arch\$Configuration | Out-Null
