@@ -9,10 +9,10 @@
     </ItemGroup>
     <Message Importance="high" Text="-- cef.redist.targets at $(MSBuildThisFileDirectory)" />
     <Message Importance="high" Text="Copying CEF .dll files from $(MSBuildThisFileDirectory)..\CEF\$(Platform) to $(TargetDir)" />
-    <Copy SourceFiles="@(CefBinaries)" DestinationFolder="$(TargetDir)" />
+    <Copy SourceFiles="@(CefBinaries)" DestinationFolder="$(TargetDir)" SkipUnchangedFiles="true" />
     <Message Importance="high" Text="Copying CEF .pak files from $(MSBuildThisFileDirectory)..\CEF to $(TargetDir)" />
-    <Copy SourceFiles="@(CefPakFiles)" DestinationFolder="$(TargetDir)" />
+    <Copy SourceFiles="@(CefPakFiles)" DestinationFolder="$(TargetDir)" SkipUnchangedFiles="true" />
     <Message Importance="high" Text="Copying CEF locales    from $(MSBuildThisFileDirectory)..\CEF\locales to $(TargetDir)\locales" />
-    <Copy SourceFiles="@(CefLocales)" DestinationFolder="$(TargetDir)\locales" />
+    <Copy SourceFiles="@(CefLocales)" DestinationFolder="$(TargetDir)\locales" SkipUnchangedFiles="true" />
   </Target>
 </Project>
