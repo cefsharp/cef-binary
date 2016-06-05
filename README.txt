@@ -1,15 +1,15 @@
 Chromium Embedded Framework (CEF) Standard Binary Distribution for Windows
 -------------------------------------------------------------------------------
 
-Date:             December 16, 2015
+Date:             June 04, 2016
 
-CEF Version:      3.2526.1362.g26b3a7a
+CEF Version:      3.2704.1418.g08819a5
 CEF URL:          https://bitbucket.org/chromiumembedded/cef.git
-                  @26b3a7a5d0cf7e6567661746740bc48b3565b006
+                  @08819a571f51ededc4a067b6622d81032648d796
 
-Chromium Verison: 47.0.2526.80
+Chromium Verison: 51.0.2704.79
 Chromium URL:     https://chromium.googlesource.com/chromium/src.git
-                  @037a6fde9231f53aa6c5762eb6c5e649ea5068e5
+                  @0a967bea2f0b592106657f0af87985ec6b6fe44d
 
 This distribution contains all components necessary to build and distribute an
 application using CEF on the Windows platform. Please see the LICENSING
@@ -27,6 +27,8 @@ cefsimple   Contains the cefsimple sample application configured to build
             using the files in this distribution. This application demonstrates
             the minimal functionality required to create a browser window.
 
+cmake       Contains CMake configuration files shared by all targets.
+
 Debug       Contains libcef.dll, libcef.lib and other components required to
             build and run the debug version of CEF-based applications. By
             default these files should be placed in the same directory as the
@@ -43,9 +45,8 @@ Release     Contains libcef.dll, libcef.lib and other components required to
             executable and will be copied there as part of the build process.
 
 Resources   Contains resources required by libcef.dll. By default these files
-            should be placed in the same directory as libcef.dll. By default
-            these files should be placed in the same directory as libcef.dll
-            and will be copied there as part of the build process.
+            should be placed in the same directory as libcef.dll and will be
+            copied there as part of the build process.
 
 
 USAGE
