@@ -1,10 +1,11 @@
 param(
     [ValidateSet("vs2012", "vs2013", "vs2015", "nupkg", "nupkg-only")]
     [Parameter(Position = 0)] 
-    [string] $Target = "nupkg"
-)
+    [string] $Target = "nupkg",
 
-Import-Module BitsTransfer
+    [Parameter(Position = 1)]
+    [bool]$DownloadBinary = $true
+)
 
 $WorkingDir = split-path -parent $MyInvocation.MyCommand.Definition
 
@@ -15,7 +16,9 @@ $Cef32vcx = Join-Path (Join-Path $Cef32 'libcef_dll_wrapper') 'libcef_dll_wrappe
 $Cef64 = Join-Path $WorkingDir  'cef_binary_3.y.z_windows64'
 $Cef64vcx = Join-Path (Join-Path $Cef64 'libcef_dll_wrapper') 'libcef_dll_wrapper.vcxproj'
 
-$CefPackageVersion = "3.2704.1418"
+$CefVersion = "3.2704.1424.gc3f0a5b"
+# Take the cef version and strip the commit hash
+$CefPackageVersion = $CefVersion.SubString(0, $CefVersion.LastIndexOf('.'))
 
 # https://github.com/jbake/Powershell_scripts/blob/master/Invoke-BatchFile.ps1
 function Invoke-BatchFile 
@@ -376,6 +379,98 @@ function DownloadNuget()
         $Client = New-Object System.Net.WebClient;
         $Client.DownloadFile('http://nuget.org/nuget.exe', $Nuget);
     }
+}
+
+function DownloadCefBinaryAndUnzip()
+{
+  $Client = New-Object System.Net.WebClient;
+
+  $CefBuildServerUrl = "http://opensource.spotify.com/cefbuilds/"
+  $CefBuildServerJsonPackageList = $CefBuildServerUrl + "index.json"
+
+  $CefBuildsJson = Invoke-WebRequest -Uri $CefBuildServerJsonPackageList | ConvertFrom-Json
+  $CefWin32CefVersion = $CefBuildsJson.windows32.versions | Where-Object {$_.cef_version -eq $CefVersion}
+  $CefWin64CefVersion = $CefBuildsJson.windows64.versions | Where-Object {$_.cef_version -eq $CefVersion}
+
+  $Cef32FileName = ($CefWin32CefVersion.files | Where-Object {$_.type -eq "standard"}).name
+  $Cef64FileName = ($CefWin64CefVersion.files | Where-Object {$_.type -eq "standard"}).name
+
+  # Make sure there is a 32bit and 64bit version for the specified build
+  if($CefWin32CefVersion.cef_version -ne $CefWin64CefVersion.cef_version)
+  {
+    Die 'Win32 version is $CefWin32CefVersion.cef_version and Win64 version is $CefWin64CefVersion.cef_version - both must be the same'
+  }
+  
+  set-alias sz "$env:ProgramFiles\7-Zip\7z.exe"
+
+  $LocalFile = Join-Path $WorkingDir $Cef32FileName
+    
+  if(-not (Test-Path $Cef32FileName))
+  {
+	Write-Diagnostic "Download $Cef32FileName this will take a while as files are approx 200mb each"
+    $Client.DownloadFile($CefBuildServerUrl + $Cef32FileName, $LocalFile);
+	Write-Diagnostic "Download $Cef32FileName complete"
+  }
+
+  if(-not (Test-Path (Join-Path $Cef32 '\include\cef_version.h')))
+  {
+	# Extract bzip file
+	sz e $LocalFile
+	# Extract tar file
+	$TarFile = ($LocalFile).Substring(0, $LocalFile.length - 4)
+	sz x $TarFile
+	#Remove tar file
+	Remove-Item $TarFile
+    $Folder = Join-Path $WorkingDir ($Cef32FileName.Substring(0, $Cef32FileName.length - 8))
+    Move-Item ($Folder + '\*') $Cef32 -force
+    Remove-Item $Folder
+  }
+  
+  $LocalFile = Join-Path $WorkingDir $Cef64FileName
+  
+  if(-not (Test-Path $Cef64FileName))
+  {
+	
+	Write-Diagnostic "Download $Cef64FileName this will take a while as files are approx 200mb each"
+    $Client.DownloadFile($CefBuildServerUrl + $Cef64FileName, $LocalFile);
+	Write-Diagnostic "Download $Cef64FileName complete"
+  }
+
+  if(-not (Test-Path (Join-Path $Cef64 '\include\cef_version.h')))
+  {
+	# Extract bzip file
+	sz e $LocalFile
+	# Extract tar file
+	$TarFile = ($LocalFile).Substring(0, $LocalFile.length - 4)
+	sz x $TarFile
+	#Remove tar file
+	Remove-Item $TarFile
+    $Folder = Join-Path $WorkingDir ($Cef64FileName.Substring(0, $Cef64FileName.length - 8))
+    Move-Item ($Folder + '\*') $Cef64 -force
+    Remove-Item $Folder
+  }  
+}
+
+function CheckDependencies()
+{
+	#Check for cmake
+	if ((Get-Command "cmake.exe" -ErrorAction SilentlyContinue) -eq $null) 
+	{ 
+		Die "Unable to find cmake.exe in your PATH"
+	}
+
+	#Check for 7zip
+	if (-not (test-path "$env:ProgramFiles\7-Zip\7z.exe"))
+	{
+		Die "$env:ProgramFiles\7-Zip\7z.exe is required"
+	}
+}
+
+CheckDependencies
+
+if($DownloadBinary)
+{
+  DownloadCefBinaryAndUnzip
 }
 
 DownloadNuget
