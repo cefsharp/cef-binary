@@ -16,7 +16,7 @@ $Cef32vcx = Join-Path (Join-Path $Cef32 'libcef_dll_wrapper') 'libcef_dll_wrappe
 $Cef64 = Join-Path $WorkingDir  'cef_binary_3.y.z_windows64'
 $Cef64vcx = Join-Path (Join-Path $Cef64 'libcef_dll_wrapper') 'libcef_dll_wrapper.vcxproj'
 
-$CefVersion = "3.2704.1424.gc3f0a5b"
+$CefVersion = "3.2704.1429.g11ec9b6"
 # Take the cef version and strip the commit hash
 $CefPackageVersion = $CefVersion.SubString(0, $CefVersion.LastIndexOf('.'))
 
@@ -342,22 +342,9 @@ function Nupkg
         Die "Please install nuget. More information available at: http://docs.nuget.org/docs/start-here/installing-nuget"
     }
 
-    # Redist target
-    $RedistTargetsFilename = Resolve-Path ".\nuget\cef.redist.targets"
-
-    # Write 32bit redist target
-    [xml]$Xml = Get-Content $RedistTargetsFilename
-    $Xml.Project.Target | Foreach-Object { $_.Name = 'CefRedistCopyDllPak32'}
-    $Xml.Save($RedistTargetsFilename)
-
     # Build 32bit packages
     #. $Nuget pack nuget\cef.redist.nuspec -NoPackageAnalysis -Version $CefPackageVersion -Properties 'Configuration=Debug;DotConfiguration=.Debug;Platform=x86;CPlatform=windows32;' -OutputDirectory nuget
     . $Nuget pack nuget\cef.redist.nuspec -NoPackageAnalysis -Version $CefPackageVersion -Properties 'Configuration=Release;DotConfiguration=;Platform=x86;CPlatform=windows32;' -OutputDirectory nuget
-
-    # Write 64bit redist target
-    [xml]$Xml = Get-Content $RedistTargetsFilename
-    $Xml.Project.Target | Foreach-Object { $_.Name = 'CefRedistCopyDllPak64'}
-    $Xml.Save($RedistTargetsFilename)
 
     # Build 64bit packages
     #. $Nuget pack nuget\cef.redist.nuspec -NoPackageAnalysis -Version $CefPackageVersion -Properties 'Configuration=Debug;DotConfiguration=.Debug;Platform=x64;CPlatform=windows64;' -OutputDirectory nuget
