@@ -16,7 +16,7 @@ $Cef32vcx = Join-Path (Join-Path $Cef32 'libcef_dll_wrapper') 'libcef_dll_wrappe
 $Cef64 = Join-Path $WorkingDir  'cef_binary_3.y.z_windows64'
 $Cef64vcx = Join-Path (Join-Path $Cef64 'libcef_dll_wrapper') 'libcef_dll_wrapper.vcxproj'
 
-$CefVersion = "3.2704.1429.g11ec9b6"
+$CefVersion = "3.2704.1432.g60b3718"
 # Take the cef version and strip the commit hash
 $CefPackageVersion = $CefVersion.SubString(0, $CefVersion.LastIndexOf('.'))
 
