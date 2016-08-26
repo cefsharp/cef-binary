@@ -16,7 +16,7 @@ $Cef32vcx = Join-Path (Join-Path $Cef32 'libcef_dll_wrapper') 'libcef_dll_wrappe
 $Cef64 = Join-Path $WorkingDir  'cef_binary_3.y.z_windows64'
 $Cef64vcx = Join-Path (Join-Path $Cef64 'libcef_dll_wrapper') 'libcef_dll_wrapper.vcxproj'
 
-$CefVersion = "3.2743.1447.g37d988b"
+$CefVersion = "3.2785.1466.g80e473e"
 # Take the cef version and strip the commit hash
 $CefPackageVersion = $CefVersion.SubString(0, $CefVersion.LastIndexOf('.'))
 
@@ -407,7 +407,7 @@ function DownloadCefBinaryAndUnzip()
 	$TarFile = ($LocalFile).Substring(0, $LocalFile.length - 4)
 	sz x $TarFile
 	#Sleep for a short period to allow 7z to release it's file handles
-	sleep -m 500
+	sleep -m 2000
 	#Remove tar file
 	Remove-Item $TarFile
     $Folder = Join-Path $WorkingDir ($Cef32FileName.Substring(0, $Cef32FileName.length - 8))
@@ -433,7 +433,7 @@ function DownloadCefBinaryAndUnzip()
 	$TarFile = ($LocalFile).Substring(0, $LocalFile.length - 4)
 	sz x $TarFile
 	#Sleep for a short period to allow 7z to release it's file handles
-	sleep -m 500
+	sleep -m 2000
 	#Remove tar file
 	Remove-Item $TarFile
     $Folder = Join-Path $WorkingDir ($Cef64FileName.Substring(0, $Cef64FileName.length - 8))
