@@ -16,7 +16,7 @@ $Cef32vcx = Join-Path (Join-Path $Cef32 'libcef_dll_wrapper') 'libcef_dll_wrappe
 $Cef64 = Join-Path $WorkingDir  'cef_binary_3.y.z_windows64'
 $Cef64vcx = Join-Path (Join-Path $Cef64 'libcef_dll_wrapper') 'libcef_dll_wrapper.vcxproj'
 
-$CefVersion = "3.2785.1466.g80e473e"
+$CefVersion = "3.2785.1478.gaab5543"
 # Take the cef version and strip the commit hash
 $CefPackageVersion = $CefVersion.SubString(0, $CefVersion.LastIndexOf('.'))
 
@@ -392,7 +392,7 @@ function DownloadCefBinaryAndUnzip()
 
   $LocalFile = Join-Path $WorkingDir $Cef32FileName
     
-  if(-not (Test-Path $Cef32FileName))
+  if(-not (Test-Path $LocalFile))
   {
 	Write-Diagnostic "Download $Cef32FileName this will take a while as files are approx 200mb each"
     $Client.DownloadFile($CefBuildServerUrl + $Cef32FileName, $LocalFile);
@@ -417,7 +417,7 @@ function DownloadCefBinaryAndUnzip()
   
   $LocalFile = Join-Path $WorkingDir $Cef64FileName
   
-  if(-not (Test-Path $Cef64FileName))
+  if(-not (Test-Path $LocalFile))
   {
 	
 	Write-Diagnostic "Download $Cef64FileName this will take a while as files are approx 200mb each"
