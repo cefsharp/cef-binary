@@ -217,7 +217,7 @@ function Msvs
         # Remove previously generated CMake data for the different platform/toolchain
         rm CMakeCache.txt -ErrorAction:SilentlyContinue
         rm -r CMakeFiles -ErrorAction:SilentlyContinue
-        cmake -G "$CmakeGenerator$CmakeArch"
+        cmake -G "$CmakeGenerator$CmakeArch" -DUSE_SANDBOX=Off
         popd
         $env:CEFSHARP_BUILD_IS_BOOTSTRAPPED = "$Toolchain$Platform"
     }
