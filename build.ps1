@@ -1,3 +1,5 @@
+#requires -Version 3
+
 param(
     [ValidateSet("vs2012", "vs2013", "vs2015", "nupkg", "nupkg-only")]
     [Parameter(Position = 0)] 
