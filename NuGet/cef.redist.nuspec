@@ -15,7 +15,7 @@
     <copyright>Copyright © 2008-2015</copyright>
   </metadata>
   <files>
-    <file src="..\cef_binary_3.y.z_$CPlatform$\$Configuration$\*.dll" target="CEF\$Platform$" />
+    <file src="..\cef_binary_3.y.z_$CPlatform$\$Configuration$\*.dll" target="CEF\$Platform$" exclude="..\cef_binary_3.y.z_$CPlatform$\$Configuration$\d3dcompiler_43.dll" />
     <!-- Since CEF 3.2357 the files natives_blob.bin and snapshot_blob.bin need to be distributed.
          https://groups.google.com/a/chromium.org/forum/#!topic/chromium-packagers/75J9Y1vIc_E
          http://www.magpcss.org/ceforum/viewtopic.php?f=6&t=12580
