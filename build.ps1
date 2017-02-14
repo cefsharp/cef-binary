@@ -5,8 +5,16 @@ param(
     [Parameter(Position = 0)] 
     [string] $Target = "nupkg",
 
+    [ValidateSet("none", "download", "local")]
     [Parameter(Position = 1)]
-    [bool]$DownloadBinary = $true
+    [string] $DownloadBinary = "download",
+    
+    [Parameter(Position = 2)]
+    # absolute or relative path to directory containing cef binaries archives (used if DownloadBinary = local)
+    [string] $CefBinaryDir = "../cefsource/chromium/src/cef/binary_distrib/",
+
+    [Parameter(Position = 3)]
+    $CefVersion = "3.2883.1552.g88ff29a"
 )
 
 $WorkingDir = split-path -parent $MyInvocation.MyCommand.Definition
@@ -18,7 +26,6 @@ $Cef32vcx = Join-Path (Join-Path $Cef32 'libcef_dll_wrapper') 'libcef_dll_wrappe
 $Cef64 = Join-Path $WorkingDir  'cef_binary_3.y.z_windows64'
 $Cef64vcx = Join-Path (Join-Path $Cef64 'libcef_dll_wrapper') 'libcef_dll_wrapper.vcxproj'
 
-$CefVersion = "3.2883.1552.g88ff29a"
 # Take the cef version and strip the commit hash
 $CefPackageVersion = $CefVersion.SubString(0, $CefVersion.LastIndexOf('.'))
 
@@ -444,6 +451,80 @@ function DownloadCefBinaryAndUnzip()
   }  
 }
 
+function CopyFromLocalCefBuild()
+{
+  # Example file names from cefsource build:
+  # 32-bit: cef_binary_3.2924.1538.gbfdeccd_windows32.tar.bz2
+  # 64-bit: cef_binary_3.2924.1538.gbfdeccd_windows64.tar.bz2
+
+  Write-Host $CefVersion
+
+  $Cef32FileName = "cef_binary_$($CefVersion)_windows32.tar.bz2"
+  $Cef64FileName = "cef_binary_$($CefVersion)_windows64.tar.bz2"
+  
+  set-alias sz "$env:ProgramFiles\7-Zip\7z.exe"
+  
+  if ([System.IO.Path]::IsPathRooted($CefBinaryDir))
+  {
+    $CefBuildDir = $CefBinaryDir
+  }
+  else
+  {
+    $CefBuildDir = Join-Path $WorkingDir "$CefBinaryDir/"
+  }
+
+  $LocalFile = Join-Path $WorkingDir $Cef32FileName
+  
+  if(-not (Test-Path $LocalFile))
+  {
+	Write-Diagnostic "Copy $Cef32FileName (approx 200mb)"
+    Copy-Item ($CefBuildDir+$Cef32FileName) $LocalFile
+	Write-Diagnostic "Copy of $Cef32FileName complete"
+  }
+
+  if(-not (Test-Path (Join-Path $Cef32 '\include\cef_version.h')))
+  {
+	# Extract bzip file
+   	sz e $LocalFile
+	# Extract tar file
+	$TarFile = ($LocalFile).Substring(0, $LocalFile.length - 4)
+	sz x $TarFile
+	#Sleep for a short period to allow 7z to release it's file handles
+	sleep -m 2000
+	#Remove tar file
+	Remove-Item $TarFile
+    $Folder = Join-Path $WorkingDir ($Cef32FileName.Substring(0, $Cef32FileName.length - 8))
+    Move-Item ($Folder + '\*') $Cef32 -force
+    Remove-Item $Folder
+  }
+  
+  $LocalFile = Join-Path $WorkingDir $Cef64FileName
+  
+  if(-not (Test-Path $LocalFile))
+  {
+	
+	Write-Diagnostic "Copy $Cef64FileName (approx 200mb)"
+    Copy-Item ($CefBuildDir+$Cef64FileName) $LocalFile;
+	Write-Diagnostic "Copy of $Cef64FileName complete"
+  }
+
+  if(-not (Test-Path (Join-Path $Cef64 '\include\cef_version.h')))
+  {
+	# Extract bzip file
+	sz e $LocalFile
+	# Extract tar file
+	$TarFile = ($LocalFile).Substring(0, $LocalFile.length - 4)
+	sz x $TarFile
+	#Sleep for a short period to allow 7z to release it's file handles
+	sleep -m 2000
+	#Remove tar file
+	Remove-Item $TarFile
+    $Folder = Join-Path $WorkingDir ($Cef64FileName.Substring(0, $Cef64FileName.length - 8))
+    Move-Item ($Folder + '\*') $Cef64 -force
+    Remove-Item $Folder
+  }
+}
+
 function CheckDependencies()
 {
 	#Check for cmake
@@ -461,9 +542,18 @@ function CheckDependencies()
 
 CheckDependencies
 
-if($DownloadBinary)
+switch -Exact ($DownloadBinary)
 {
-  DownloadCefBinaryAndUnzip
+    "none" {
+    }
+    "download"
+    {
+        DownloadCefBinaryAndUnzip
+    }
+    "local"
+    {
+        CopyFromLocalCefBuild
+    }
 }
 
 DownloadNuget
