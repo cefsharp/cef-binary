@@ -1,7 +1,7 @@
 #requires -Version 3
 
 param(
-    [ValidateSet("vs2012", "vs2013", "vs2015", "nupkg", "nupkg-only")]
+    [ValidateSet("vs2012", "vs2013", "vs2015", "vs2017", "nupkg", "nupkg-only")]
     [Parameter(Position = 0)] 
     [string] $Target = "nupkg",
 
@@ -139,26 +139,30 @@ function Bootstrap
   md 'cef\win32\debug\VS2012' | Out-Null
   md 'cef\win32\debug\VS2013' | Out-Null
   md 'cef\win32\debug\VS2015' | Out-Null
+  md 'cef\win32\debug\VS2017' | Out-Null
   md 'cef\win32\release' | Out-Null
   md 'cef\win32\release\VS2012' | Out-Null
   md 'cef\win32\release\VS2013' | Out-Null
   md 'cef\win32\release\VS2015' | Out-Null
+  md 'cef\win32\release\VS2017' | Out-Null
   md 'cef\x64' | Out-Null
   md 'cef\x64\debug' | Out-Null
   md 'cef\x64\debug\VS2012' | Out-Null
   md 'cef\x64\debug\VS2013' | Out-Null
   md 'cef\x64\debug\VS2015' | Out-Null
+  md 'cef\x64\debug\VS2017' | Out-Null
   md 'cef\x64\release' | Out-Null 
   md 'cef\x64\release\VS2012' | Out-Null
   md 'cef\x64\release\VS2013' | Out-Null 
   md 'cef\x64\release\VS2015' | Out-Null
+  md 'cef\x64\release\VS2017' | Out-Null
 
 }
 
 function Msvs 
 {
     param(
-        [ValidateSet('v110', 'v120', 'v140')]
+        [ValidateSet('v110', 'v120', 'v140', 'v141')]
         [Parameter(Position = 0, ValueFromPipeline = $true)]
         [string] $Toolchain, 
 
@@ -177,6 +181,10 @@ function Msvs
     $VisualStudioVersion = $null
     $VXXCommonTools = $null
     $CmakeGenerator = $null
+
+	# https://github.com/Microsoft/vswhere/commit/a8c90e3218d6c4774f196d0400a8805038aa13b1 (Release mode / VS 2015 Update 3)
+	# SHA512: 06FAE35E3A5B74A5B0971FB19EE0987E15E413558C620AB66FB3188F6BF1C790919E8B163596744D126B3716D0E91C65F7C1325F5752614078E6B63E7C81D681
+	$wswhere = Join-Path $WorkingDir Tools\vswhere
 
     switch -Exact ($Toolchain) {
         'v110' {
@@ -197,6 +205,22 @@ function Msvs
             $VXXCommonTools = Join-Path $env:VS140COMNTOOLS '..\..\vc'
             $CmakeGenerator = 'Visual Studio 14'
         }
+		'v141' {
+			$Ids = 'Community', 'Professional', 'Enterprise', 'BuildTools' | foreach { 'Microsoft.VisualStudio.Product.' + $_ }
+			$Instance = & $wswhere -version 15 -products $ids -requires 'Microsoft.Component.MSBuild' -format json `
+				| convertfrom-json `
+				| select-object -first 1
+				
+			if($Instance -eq $null) {
+				Die "Visual Studio 2017 was not found"
+			}
+				
+			$PlatformTarget = '12.0'
+            $VisualStudioVersion = '15.0'
+            $VXXCommonTools = Join-Path $Instance.installationPath VC\Auxiliary\Build
+            $CmakeGenerator = 'Visual Studio 15'			
+			
+       }
     }
 
     if ($VXXCommonTools -eq $null -or (-not (Test-Path($VXXCommonTools)))) {
@@ -208,7 +232,7 @@ function Msvs
 
     $Arch = TernaryReturn ($Platform -eq 'x64') 'x64' 'win32'
     $CmakeArch = TernaryReturn ($Platform -eq 'x64') ' Win64' ''
-
+	
     $VCVarsAll = Join-Path $VXXCommonTools vcvarsall.bat
     if (-not (Test-Path $VCVarsAll)) {
         Die "Unable to find $VCVarsAll"
@@ -275,7 +299,7 @@ function Msvs
 function VSX 
 {
     param(
-        [ValidateSet('v110', 'v120', 'v140')]
+        [ValidateSet('v110', 'v120', 'v140', 'v141')]
         [Parameter(Position = 0, ValueFromPipeline = $true)]
         [string] $Toolchain
     )
@@ -294,6 +318,11 @@ function VSX
         Warn "Toolchain $Toolchain is not installed on your development machine, skipping build."
         Return
     }
+	
+	if($Toolchain -eq 'v141' -and $env:VS150COMNTOOLS -eq $null) {
+        Warn "Toolchain $Toolchain is not installed on your development machine, skipping build."
+        Return
+    }
 
     Write-Diagnostic "Starting to build targeting toolchain $Toolchain"
 
@@ -308,7 +337,7 @@ function VSX
 function CreateCefSdk 
 {
     param(
-        [ValidateSet('v110', 'v120', 'v140')]
+        [ValidateSet('v110', 'v120', 'v140', 'v141')]
         [Parameter(Position = 0, ValueFromPipeline = $true)]
         [string] $Toolchain, 
 
@@ -324,7 +353,9 @@ function CreateCefSdk
     Write-Diagnostic "Creating sdk for $Toolchain"
 
     $VisualStudioVersion = $null
-    if($Toolchain -eq "v140") {
+    if($Toolchain -eq "v141") {
+        $VisualStudioVersion = "VS2017"
+    } elseif($Toolchain -eq "v140") {
         $VisualStudioVersion = "VS2015"
     } elseif($Toolchain -eq "v110") {
         $VisualStudioVersion = "VS2012"
@@ -532,7 +563,7 @@ function CheckDependencies()
 	{ 
 		Die "Unable to find cmake.exe in your PATH"
 	}
-
+	
 	#Check for 7zip
 	if (-not (test-path "$env:ProgramFiles\7-Zip\7z.exe"))
 	{
@@ -565,6 +596,7 @@ switch -Exact ($Target) {
         #VSX v110
 		VSX v120
         VSX v140
+		VSX v141
         Nupkg
     }
     "nupkg-only" {
@@ -578,5 +610,8 @@ switch -Exact ($Target) {
     }
     "vs2015" {
         VSX v140
+    }
+	"vs2017" {
+        VSX v141
     }
 }
