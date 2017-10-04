@@ -26,6 +26,13 @@ $Cef32vcx = Join-Path (Join-Path $Cef32 'libcef_dll_wrapper') 'libcef_dll_wrappe
 $Cef64 = Join-Path $WorkingDir  'cef_binary_3.y.z_windows64'
 $Cef64vcx = Join-Path (Join-Path $Cef64 'libcef_dll_wrapper') 'libcef_dll_wrapper.vcxproj'
 
+# Set CefVersion based on tag name - must start with leading "v" e.g. v3.3163.1663.g416ffeb
+if ($env:APPVEYOR_REPO_TAG -eq "True")
+{
+    $CefVersion = "$env:APPVEYOR_REPO_TAG_NAME".Substring(1)  # trim leading "v"
+    Write-Diagnostic "Setting version based on tag to $CefVersion"
+}
+
 # Take the cef version and strip the commit hash
 $CefPackageVersion = $CefVersion.SubString(0, $CefVersion.LastIndexOf('.'))
 
