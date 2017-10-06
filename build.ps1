@@ -26,6 +26,18 @@ $Cef32vcx = Join-Path (Join-Path $Cef32 'libcef_dll_wrapper') 'libcef_dll_wrappe
 $Cef64 = Join-Path $WorkingDir  'cef_binary_3.y.z_windows64'
 $Cef64vcx = Join-Path (Join-Path $Cef64 'libcef_dll_wrapper') 'libcef_dll_wrapper.vcxproj'
 
+function Write-Diagnostic 
+{
+    param(
+        [Parameter(Position = 0, Mandatory = $true, ValueFromPipeline = $true)]
+        [string] $Message
+    )
+
+    Write-Host
+    Write-Host $Message -ForegroundColor Green
+    Write-Host
+}
+
 # Set CefVersion based on tag name - must start with leading "v" e.g. v3.3163.1663.g416ffeb
 if ($env:APPVEYOR_REPO_TAG -eq "True")
 {
@@ -64,18 +76,6 @@ function Invoke-BatchFile
    }
    Remove-Item $tempFile
    Remove-Item $batFile
-}
-
-function Write-Diagnostic 
-{
-    param(
-        [Parameter(Position = 0, Mandatory = $true, ValueFromPipeline = $true)]
-        [string] $Message
-    )
-
-    Write-Host
-    Write-Host $Message -ForegroundColor Green
-    Write-Host
 }
 
 function Die 
