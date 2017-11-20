@@ -1,7 +1,7 @@
 #requires -Version 3
 
 param(
-    [ValidateSet("vs2012", "vs2013", "vs2015", "nupkg", "nupkg-only")]
+    [ValidateSet("vs2012", "vs2013", "vs2015", "vs2017", "nupkg", "nupkg-only")]
     [Parameter(Position = 0)] 
     [string] $Target = "nupkg",
 
@@ -14,7 +14,7 @@ param(
     [string] $CefBinaryDir = "../cefsource/chromium/src/cef/binary_distrib/",
 
     [Parameter(Position = 3)]
-    $CefVersion = "3.3112.1657.g2c22842"
+    $CefVersion = "3.3202.1686.gd665578"
 )
 
 $WorkingDir = split-path -parent $MyInvocation.MyCommand.Definition
@@ -165,7 +165,7 @@ function Bootstrap
 function Msvs 
 {
     param(
-        [ValidateSet('v110', 'v120', 'v140')]
+        [ValidateSet('v110', 'v120', 'v140', 'v141')]
         [Parameter(Position = 0, ValueFromPipeline = $true)]
         [string] $Toolchain, 
 
@@ -203,6 +203,12 @@ function Msvs
             $VisualStudioVersion = '14.0'
             $VXXCommonTools = Join-Path $env:VS140COMNTOOLS '..\..\vc'
             $CmakeGenerator = 'Visual Studio 14'
+        }
+        'v141' {
+            $PlatformTarget = '4.0'
+            $VisualStudioVersion = '15.0'
+            $VXXCommonTools = Join-Path $env:VS141COMNTOOLS '..\..\vc'
+            $CmakeGenerator = 'Visual Studio 15'
         }
     }
 
@@ -282,7 +288,7 @@ function Msvs
 function VSX 
 {
     param(
-        [ValidateSet('v110', 'v120', 'v140')]
+        [ValidateSet('v110', 'v120', 'v140', 'v141')]
         [Parameter(Position = 0, ValueFromPipeline = $true)]
         [string] $Toolchain
     )
@@ -302,6 +308,11 @@ function VSX
         Return
     }
 
+    if($Toolchain -eq 'v141' -and $env:VS141COMNTOOLS -eq $null) {
+        Warn "Toolchain $Toolchain is not installed on your development machine, skipping build."
+        Return
+    }
+
     Write-Diagnostic "Starting to build targeting toolchain $Toolchain"
 
     Msvs "$Toolchain" 'Debug' 'x86'
@@ -315,7 +326,7 @@ function VSX
 function CreateCefSdk 
 {
     param(
-        [ValidateSet('v110', 'v120', 'v140')]
+        [ValidateSet('v110', 'v120', 'v140', 'v141')]
         [Parameter(Position = 0, ValueFromPipeline = $true)]
         [string] $Toolchain, 
 
@@ -331,7 +342,9 @@ function CreateCefSdk
     Write-Diagnostic "Creating sdk for $Toolchain"
 
     $VisualStudioVersion = $null
-    if($Toolchain -eq "v140") {
+    if($Toolchain -eq "v141") {
+        $VisualStudioVersion = "VS2017"
+    } elseif($Toolchain -eq "v140") {
         $VisualStudioVersion = "VS2015"
     } elseif($Toolchain -eq "v110") {
         $VisualStudioVersion = "VS2012"
@@ -585,5 +598,8 @@ switch -Exact ($Target) {
     }
     "vs2015" {
         VSX v140
+    }
+    "vs2017" {
+        VSX v141
     }
 }
