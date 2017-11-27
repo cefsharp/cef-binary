@@ -2,13 +2,13 @@
 
 param(
     [ValidateSet("vs2012", "vs2013", "vs2015", "nupkg", "nupkg-only")]
-    [Parameter(Position = 0)] 
+    [Parameter(Position = 0)]
     [string] $Target = "nupkg",
 
     [ValidateSet("none", "download", "local")]
     [Parameter(Position = 1)]
     [string] $DownloadBinary = "download",
-    
+
     [Parameter(Position = 2)]
     # absolute or relative path to directory containing cef binaries archives (used if DownloadBinary = local)
     [string] $CefBinaryDir = "../cefsource/chromium/src/cef/binary_distrib/",
@@ -26,7 +26,7 @@ $Cef32vcx = Join-Path (Join-Path $Cef32 'libcef_dll_wrapper') 'libcef_dll_wrappe
 $Cef64 = Join-Path $WorkingDir  'cef_binary_3.y.z_windows64'
 $Cef64vcx = Join-Path (Join-Path $Cef64 'libcef_dll_wrapper') 'libcef_dll_wrapper.vcxproj'
 
-function Write-Diagnostic 
+function Write-Diagnostic
 {
     param(
         [Parameter(Position = 0, Mandatory = $true, ValueFromPipeline = $true)]
@@ -49,11 +49,11 @@ if ($env:APPVEYOR_REPO_TAG -eq "True")
 $CefPackageVersion = $CefVersion.SubString(0, $CefVersion.LastIndexOf('.'))
 
 # https://github.com/jbake/Powershell_scripts/blob/master/Invoke-BatchFile.ps1
-function Invoke-BatchFile 
+function Invoke-BatchFile
 {
    param(
         [Parameter(Position = 0, Mandatory = $true, ValueFromPipeline = $true)]
-        [string]$Path, 
+        [string]$Path,
         [Parameter(Position = 1, Mandatory = $true, ValueFromPipeline = $true)]
         [string]$Parameters
    )
@@ -68,17 +68,17 @@ function Invoke-BatchFile
 
    & $batFile
 
-   Get-Content $tempFile | Foreach-Object {   
-       if ($_ -match "^(.*?)=(.*)$")  
-       { 
-           Set-Content "env:\$($matches[1])" $matches[2]  
-       } 
+   Get-Content $tempFile | Foreach-Object {
+       if ($_ -match "^(.*?)=(.*)$")
+       {
+           Set-Content "env:\$($matches[1])" $matches[2]
+       }
    }
    Remove-Item $tempFile
    Remove-Item $batFile
 }
 
-function Die 
+function Die
 {
     param(
         [Parameter(Position = 0, ValueFromPipeline = $true)]
@@ -86,12 +86,12 @@ function Die
     )
 
     Write-Host
-    Write-Error $Message 
+    Write-Error $Message
     exit 1
 
 }
 
-function Warn 
+function Warn
 {
     param(
         [Parameter(Position = 0, ValueFromPipeline = $true)]
@@ -104,7 +104,7 @@ function Warn
 
 }
 
-function TernaryReturn 
+function TernaryReturn
 {
     param(
         [Parameter(Position = 0, ValueFromPipeline = $true)]
@@ -118,7 +118,7 @@ function TernaryReturn
     if($Yes) {
         return $Value
     }
-    
+
     $Value2
 
 }
@@ -126,7 +126,7 @@ function TernaryReturn
 function Bootstrap
 {
   param()
-     
+
   if($Target -eq "nupkg-only") {
     return
   }
@@ -155,23 +155,23 @@ function Bootstrap
   md 'cef\x64\debug\VS2012' | Out-Null
   md 'cef\x64\debug\VS2013' | Out-Null
   md 'cef\x64\debug\VS2015' | Out-Null
-  md 'cef\x64\release' | Out-Null 
+  md 'cef\x64\release' | Out-Null
   md 'cef\x64\release\VS2012' | Out-Null
-  md 'cef\x64\release\VS2013' | Out-Null 
+  md 'cef\x64\release\VS2013' | Out-Null
   md 'cef\x64\release\VS2015' | Out-Null
 
 }
 
-function Msvs 
+function Msvs
 {
     param(
         [ValidateSet('v110', 'v120', 'v140')]
         [Parameter(Position = 0, ValueFromPipeline = $true)]
-        [string] $Toolchain, 
+        [string] $Toolchain,
 
         [Parameter(Position = 1, ValueFromPipeline = $true)]
         [ValidateSet('Debug', 'Release')]
-        [string] $Configuration, 
+        [string] $Configuration,
 
         [Parameter(Position = 2, ValueFromPipeline = $true)]
         [ValidateSet('x86', 'x64')]
@@ -269,7 +269,7 @@ function Msvs
 
     $Process = New-Object System.Diagnostics.Process
     $Process.StartInfo = $startInfo
-    $Process.Start() 
+    $Process.Start()
     $Process.WaitForExit()
 
     if($Process.ExitCode -ne 0) {
@@ -279,7 +279,7 @@ function Msvs
     CreateCefSdk $Toolchain $Configuration $Platform
 }
 
-function VSX 
+function VSX
 {
     param(
         [ValidateSet('v110', 'v120', 'v140')]
@@ -291,7 +291,7 @@ function VSX
         Warn "Toolchain $Toolchain is not installed on your development machine, skipping build."
         Return
     }
-    
+
     if($Toolchain -eq 'v120' -and $env:VS120COMNTOOLS -eq $null) {
         Warn "Toolchain $Toolchain is not installed on your development machine, skipping build."
         Return
@@ -312,16 +312,16 @@ function VSX
     Write-Diagnostic "Finished build targeting toolchain $Toolchain"
 }
 
-function CreateCefSdk 
+function CreateCefSdk
 {
     param(
         [ValidateSet('v110', 'v120', 'v140')]
         [Parameter(Position = 0, ValueFromPipeline = $true)]
-        [string] $Toolchain, 
+        [string] $Toolchain,
 
         [Parameter(Position = 1, ValueFromPipeline = $true)]
         [ValidateSet('Debug', 'Release')]
-        [string] $Configuration, 
+        [string] $Configuration,
 
         [Parameter(Position = 2, ValueFromPipeline = $true)]
         [ValidateSet('x86', 'x64')]
@@ -403,11 +403,11 @@ function DownloadCefBinaryAndUnzip()
   {
     Die 'Win32 version is $CefWin32CefVersion.cef_version and Win64 version is $CefWin64CefVersion.cef_version - both must be the same'
   }
-  
+
   set-alias sz "$env:ProgramFiles\7-Zip\7z.exe"
 
   $LocalFile = Join-Path $WorkingDir $Cef32FileName
-    
+
   if(-not (Test-Path $LocalFile))
   {
 	Write-Diagnostic "Download $Cef32FileName this will take a while as files are approx 200mb each"
@@ -430,12 +430,12 @@ function DownloadCefBinaryAndUnzip()
     Move-Item ($Folder + '\*') $Cef32 -force
     Remove-Item $Folder
   }
-  
+
   $LocalFile = Join-Path $WorkingDir $Cef64FileName
-  
+
   if(-not (Test-Path $LocalFile))
   {
-	
+
 	Write-Diagnostic "Download $Cef64FileName this will take a while as files are approx 200mb each"
     $Client.DownloadFile($CefBuildServerUrl + $Cef64FileName, $LocalFile);
 	Write-Diagnostic "Download $Cef64FileName complete"
@@ -455,7 +455,7 @@ function DownloadCefBinaryAndUnzip()
     $Folder = Join-Path $WorkingDir ($Cef64FileName.Substring(0, $Cef64FileName.length - 8))
     Move-Item ($Folder + '\*') $Cef64 -force
     Remove-Item $Folder
-  }  
+  }
 }
 
 function CopyFromLocalCefBuild()
@@ -468,9 +468,9 @@ function CopyFromLocalCefBuild()
 
   $Cef32FileName = "cef_binary_$($CefVersion)_windows32.tar.bz2"
   $Cef64FileName = "cef_binary_$($CefVersion)_windows64.tar.bz2"
-  
+
   set-alias sz "$env:ProgramFiles\7-Zip\7z.exe"
-  
+
   if ([System.IO.Path]::IsPathRooted($CefBinaryDir))
   {
     $CefBuildDir = $CefBinaryDir
@@ -481,7 +481,7 @@ function CopyFromLocalCefBuild()
   }
 
   $LocalFile = Join-Path $WorkingDir $Cef32FileName
-  
+
   if(-not (Test-Path $LocalFile))
   {
 	Write-Diagnostic "Copy $Cef32FileName (approx 200mb)"
@@ -504,12 +504,12 @@ function CopyFromLocalCefBuild()
     Move-Item ($Folder + '\*') $Cef32 -force
     Remove-Item $Folder
   }
-  
+
   $LocalFile = Join-Path $WorkingDir $Cef64FileName
-  
+
   if(-not (Test-Path $LocalFile))
   {
-	
+
 	Write-Diagnostic "Copy $Cef64FileName (approx 200mb)"
     Copy-Item ($CefBuildDir+$Cef64FileName) $LocalFile;
 	Write-Diagnostic "Copy of $Cef64FileName complete"
@@ -535,8 +535,8 @@ function CopyFromLocalCefBuild()
 function CheckDependencies()
 {
 	#Check for cmake
-	if ((Get-Command "cmake.exe" -ErrorAction SilentlyContinue) -eq $null) 
-	{ 
+	if ((Get-Command "cmake.exe" -ErrorAction SilentlyContinue) -eq $null)
+	{
 		Die "Unable to find cmake.exe in your PATH"
 	}
 
