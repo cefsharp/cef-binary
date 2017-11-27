@@ -14,7 +14,7 @@ param(
     [string] $CefBinaryDir = "../cefsource/chromium/src/cef/binary_distrib/",
 
     [Parameter(Position = 3)]
-    $CefVersion = "3.3112.1657.g2c22842"
+    $CefVersion = "3.3202.1686.gd665578"
 )
 
 $WorkingDir = split-path -parent $MyInvocation.MyCommand.Definition
