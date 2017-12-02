@@ -410,8 +410,8 @@ function DownloadCefBinaryAndUnzip()
 
   if(-not (Test-Path $LocalFile))
   {
-	Write-Diagnostic "Download $Cef32FileName this will take a while as files are approx 200mb each"
-    $Client.DownloadFile($CefBuildServerUrl + $Cef32FileName, $LocalFile);
+	Write-Diagnostic "Downloading $Cef32FileName; this will take a while as the file is approximately 200 MiB large."
+    	$Client.DownloadFile($CefBuildServerUrl + $Cef32FileName, $LocalFile);
 	Write-Diagnostic "Download $Cef32FileName complete"
   }
 
@@ -436,8 +436,8 @@ function DownloadCefBinaryAndUnzip()
   if(-not (Test-Path $LocalFile))
   {
 
-	Write-Diagnostic "Download $Cef64FileName this will take a while as files are approx 200mb each"
-    $Client.DownloadFile($CefBuildServerUrl + $Cef64FileName, $LocalFile);
+	Write-Diagnostic "Downloading $Cef64FileName; this will take a while as the file is approximately 200 MiB large."
+    	$Client.DownloadFile($CefBuildServerUrl + $Cef64FileName, $LocalFile);
 	Write-Diagnostic "Download $Cef64FileName complete"
   }
 
