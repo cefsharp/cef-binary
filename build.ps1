@@ -395,8 +395,8 @@ function DownloadCefBinaryAndUnzip()
   $CefWin32CefVersion = $CefBuildsJson.windows32.versions | Where-Object {$_.cef_version -eq $CefVersion}
   $CefWin64CefVersion = $CefBuildsJson.windows64.versions | Where-Object {$_.cef_version -eq $CefVersion}
 
-  $Cef32FileName = ($CefWin32CefVersion.files | Where-Object {$_.type -eq "standard"}).name
-  $Cef64FileName = ($CefWin64CefVersion.files | Where-Object {$_.type -eq "standard"}).name
+  $Cef32FileName = ($CefWin32CefVersion.files | Where-Object {$_.type -eq "minimal"}).name
+  $Cef64FileName = ($CefWin64CefVersion.files | Where-Object {$_.type -eq "minimal"}).name
 
   # Make sure there is a 32bit and 64bit version for the specified build
   if($CefWin32CefVersion.cef_version -ne $CefWin64CefVersion.cef_version)
@@ -410,7 +410,7 @@ function DownloadCefBinaryAndUnzip()
 
   if(-not (Test-Path $LocalFile))
   {
-	Write-Diagnostic "Downloading $Cef32FileName; this will take a while as the file is approximately 200 MiB large."
+	Write-Diagnostic "Downloading $Cef32FileName; this will take a while as the file is approximately 80 MiB large."
     	$Client.DownloadFile($CefBuildServerUrl + $Cef32FileName, $LocalFile);
 	Write-Diagnostic "Download $Cef32FileName complete"
   }
@@ -436,7 +436,7 @@ function DownloadCefBinaryAndUnzip()
   if(-not (Test-Path $LocalFile))
   {
 
-	Write-Diagnostic "Downloading $Cef64FileName; this will take a while as the file is approximately 200 MiB large."
+	Write-Diagnostic "Downloading $Cef64FileName; this will take a while as the file is approximately 100 MiB large."
     	$Client.DownloadFile($CefBuildServerUrl + $Cef64FileName, $LocalFile);
 	Write-Diagnostic "Download $Cef64FileName complete"
   }
@@ -461,13 +461,13 @@ function DownloadCefBinaryAndUnzip()
 function CopyFromLocalCefBuild()
 {
   # Example file names from cefsource build:
-  # 32-bit: cef_binary_3.2924.1538.gbfdeccd_windows32.tar.bz2
-  # 64-bit: cef_binary_3.2924.1538.gbfdeccd_windows64.tar.bz2
+  # 32-bit: cef_binary_3.2924.1538.gbfdeccd_windows32_minimal.tar.bz2
+  # 64-bit: cef_binary_3.2924.1538.gbfdeccd_windows64_minimal.tar.bz2
 
   Write-Host $CefVersion
 
-  $Cef32FileName = "cef_binary_$($CefVersion)_windows32.tar.bz2"
-  $Cef64FileName = "cef_binary_$($CefVersion)_windows64.tar.bz2"
+  $Cef32FileName = "cef_binary_$($CefVersion)_windows32_minimal.tar.bz2"
+  $Cef64FileName = "cef_binary_$($CefVersion)_windows64_minimal.tar.bz2"
 
   set-alias sz "$env:ProgramFiles\7-Zip\7z.exe"
 
@@ -484,7 +484,7 @@ function CopyFromLocalCefBuild()
 
   if(-not (Test-Path $LocalFile))
   {
-	Write-Diagnostic "Copy $Cef32FileName (approx 200mb)"
+	Write-Diagnostic "Copy $Cef32FileName (approx 80mb)"
     Copy-Item ($CefBuildDir+$Cef32FileName) $LocalFile
 	Write-Diagnostic "Copy of $Cef32FileName complete"
   }
@@ -510,7 +510,7 @@ function CopyFromLocalCefBuild()
   if(-not (Test-Path $LocalFile))
   {
 
-	Write-Diagnostic "Copy $Cef64FileName (approx 200mb)"
+	Write-Diagnostic "Copy $Cef64FileName (approx 100mb)"
     Copy-Item ($CefBuildDir+$Cef64FileName) $LocalFile;
 	Write-Diagnostic "Copy of $Cef64FileName complete"
   }
