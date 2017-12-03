@@ -1,12 +1,10 @@
 environment:
+  # I.e. Visual Studio 2013. This affects which VC++ redistributable version is required for using the generated DLLs.
   VisualStudioVersion: 12.0
 
 version: 62.0.0-CI{build}
 
 shallow_clone: true
-
-# Start builds on tags only (GitHub and BitBucket)
-skip_non_tags: true
 
 # to run your custom scripts instead of automatic MSBuild
 build_script:
