@@ -1,7 +1,7 @@
 #requires -Version 3
 
 param(
-    [ValidateSet("vs2012", "vs2013", "vs2015", "nupkg", "nupkg-only")]
+    [ValidateSet("vs2012", "vs2013", "vs2015", "vs2017", "nupkg", "nupkg-only")]
     [Parameter(Position = 0)]
     [string] $Target = "nupkg",
 
@@ -165,7 +165,7 @@ function Bootstrap
 function Msvs
 {
     param(
-        [ValidateSet('v110', 'v120', 'v140')]
+        [ValidateSet('v110', 'v120', 'v140', 'v150')]
         [Parameter(Position = 0, ValueFromPipeline = $true)]
         [string] $Toolchain,
 
@@ -203,6 +203,14 @@ function Msvs
             $VisualStudioVersion = '14.0'
             $VXXCommonTools = Join-Path $env:VS140COMNTOOLS '..\..\vc'
             $CmakeGenerator = 'Visual Studio 14'
+        }
+        'v150' {
+            $PlatformTarget = '4.0'
+            $VisualStudioVersion = '14.0'
+            $VXXCommonTools = Join-Path $env:VS150COMNTOOLS '..\..\VC\Auxiliary\Build'
+            $CmakeGenerator = 'Visual Studio 14'
+            # use VS2015 toolchain with VS2017
+            $Toolchain = 'v140'
         }
     }
 
@@ -282,7 +290,7 @@ function Msvs
 function VSX
 {
     param(
-        [ValidateSet('v110', 'v120', 'v140')]
+        [ValidateSet('v110', 'v120', 'v140', 'v150')]
         [Parameter(Position = 0, ValueFromPipeline = $true)]
         [string] $Toolchain
     )
@@ -302,6 +310,12 @@ function VSX
         Return
     }
 
+    if($Toolchain -eq 'v150' -and $env:VS150COMNTOOLS -eq $null) {
+        Warn "Toolchain $Toolchain is not installed on your development machine, skipping build."
+        Return
+    }
+
+
     Write-Diagnostic "Starting to build targeting toolchain $Toolchain"
 
     Msvs "$Toolchain" 'Debug' 'x86'
@@ -315,7 +329,7 @@ function VSX
 function CreateCefSdk
 {
     param(
-        [ValidateSet('v110', 'v120', 'v140')]
+        [ValidateSet('v110', 'v120', 'v140', 'v150')]
         [Parameter(Position = 0, ValueFromPipeline = $true)]
         [string] $Toolchain,
 
@@ -331,7 +345,9 @@ function CreateCefSdk
     Write-Diagnostic "Creating sdk for $Toolchain"
 
     $VisualStudioVersion = $null
-    if($Toolchain -eq "v140") {
+    if($Toolchain -eq "v150") {
+        $VisualStudioVersion = "VS2015"
+    }if($Toolchain -eq "v140") {
         $VisualStudioVersion = "VS2015"
     } elseif($Toolchain -eq "v110") {
         $VisualStudioVersion = "VS2012"
@@ -585,5 +601,8 @@ switch -Exact ($Target) {
     }
     "vs2015" {
         VSX v140
+    }
+    "vs2017" {
+        VSX v150
     }
 }
