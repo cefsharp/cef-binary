@@ -1,7 +1,7 @@
 #requires -Version 3
 
 param(
-    [ValidateSet("vs2012", "vs2013", "vs2015", "nupkg", "nupkg-only")]
+    [ValidateSet("vs2012", "vs2013", "vs2015", "vs2017", "nupkg", "nupkg-only")]
     [Parameter(Position = 0)]
     [string] $Target = "nupkg",
 
@@ -146,25 +146,29 @@ function Bootstrap
     md 'cef\win32\debug\VS2012' | Out-Null
     md 'cef\win32\debug\VS2013' | Out-Null
     md 'cef\win32\debug\VS2015' | Out-Null
+    md 'cef\win32\debug\VS2017' | Out-Null
     md 'cef\win32\release' | Out-Null
     md 'cef\win32\release\VS2012' | Out-Null
     md 'cef\win32\release\VS2013' | Out-Null
     md 'cef\win32\release\VS2015' | Out-Null
+    md 'cef\win32\release\VS2017' | Out-Null
     md 'cef\x64' | Out-Null
     md 'cef\x64\debug' | Out-Null
     md 'cef\x64\debug\VS2012' | Out-Null
     md 'cef\x64\debug\VS2013' | Out-Null
     md 'cef\x64\debug\VS2015' | Out-Null
+    md 'cef\x64\debug\VS2017' | Out-Null
     md 'cef\x64\release' | Out-Null
     md 'cef\x64\release\VS2012' | Out-Null
     md 'cef\x64\release\VS2013' | Out-Null
     md 'cef\x64\release\VS2015' | Out-Null
+    md 'cef\x64\release\VS2017' | Out-Null
 }
 
 function Msvs
 {
     param(
-        [ValidateSet('v110', 'v120', 'v140')]
+        [ValidateSet('v110', 'v120', 'v140', 'v141')]
         [Parameter(Position = 0, ValueFromPipeline = $true)]
         [string] $Toolchain,
 
@@ -203,6 +207,33 @@ function Msvs
             $VXXCommonTools = Join-Path $env:VS140COMNTOOLS '..\..\vc'
             $CmakeGenerator = 'Visual Studio 14'
         }
+        'v141' {
+            $programFilesDir = (${env:ProgramFiles(x86)}, ${env:ProgramFiles} -ne $null)[0]
+
+            $vswherePath = Join-Path $programFilesDir 'Microsoft Visual Studio\Installer\vswhere.exe'
+            #Check if we already have vswhere which is included in newer versions of VS2017
+            if(-not (Test-Path $vswherePath))
+            {
+                # Check if we already have a local copy and download if required
+                $vswherePath = Join-Path $WorkingDir \vswhere.exe
+                
+                # TODO: Check hash and download if hash differs
+                if(-not (Test-Path $vswherePath))
+                {
+                    $client = New-Object System.Net.WebClient;
+                    $client.DownloadFile('https://github.com/Microsoft/vswhere/releases/download/2.2.11/vswhere.exe', $vswherePath);
+                }
+            }
+            $VS2017InstallPath = & $vswherePath -version 15 -property installationPath
+                
+            if(-not (Test-Path $VS2017InstallPath)) {
+                Die "Visual Studio 2017 was not found"
+            }
+                
+            $VisualStudioVersion = '15.0'
+            $VXXCommonTools = Join-Path $VS2017InstallPath VC\Auxiliary\Build
+            $CmakeGenerator = 'Visual Studio 15'
+       }
     }
 
     if ($VXXCommonTools -eq $null -or (-not (Test-Path($VXXCommonTools)))) {
@@ -217,7 +248,8 @@ function Msvs
 
     $VCVarsAll = Join-Path $VXXCommonTools vcvarsall.bat
     if (-not (Test-Path $VCVarsAll)) {
-        Die "Unable to find $VCVarsAll"
+        Warn "Toolchain $Toolchain is not installed on your development machine, skipping $Configuration $Platform build."
+        Return
     }
 
     $VCXProj = $Cef32vcx
@@ -281,25 +313,10 @@ function Msvs
 function VSX
 {
     param(
-        [ValidateSet('v110', 'v120', 'v140')]
+        [ValidateSet('v110', 'v120', 'v140', 'v141')]
         [Parameter(Position = 0, ValueFromPipeline = $true)]
         [string] $Toolchain
     )
-
-    if ($Toolchain -eq 'v110' -and $env:VS110COMNTOOLS -eq $null) {
-        Warn "Toolchain $Toolchain is not installed on your development machine, skipping build."
-        Return
-    }
-
-    if ($Toolchain -eq 'v120' -and $env:VS120COMNTOOLS -eq $null) {
-        Warn "Toolchain $Toolchain is not installed on your development machine, skipping build."
-        Return
-    }
-
-    if ($Toolchain -eq 'v140' -and $env:VS140COMNTOOLS -eq $null) {
-        Warn "Toolchain $Toolchain is not installed on your development machine, skipping build."
-        Return
-    }
 
     Write-Diagnostic "Starting to build targeting toolchain $Toolchain"
 
@@ -314,7 +331,7 @@ function VSX
 function CreateCefSdk
 {
     param(
-        [ValidateSet('v110', 'v120', 'v140')]
+        [ValidateSet('v110', 'v120', 'v140', 'v141')]
         [Parameter(Position = 0, ValueFromPipeline = $true)]
         [string] $Toolchain,
 
@@ -330,7 +347,9 @@ function CreateCefSdk
     Write-Diagnostic "Creating sdk for $Toolchain"
 
     $VisualStudioVersion = $null
-    if ($Toolchain -eq "v140") {
+    if($Toolchain -eq "v141") {
+        $VisualStudioVersion = "VS2017"
+    } elseif($Toolchain -eq "v140") {
         $VisualStudioVersion = "VS2015"
     } elseif ($Toolchain -eq "v110") {
         $VisualStudioVersion = "VS2012"
@@ -596,5 +615,8 @@ switch -Exact ($Target) {
     }
     "vs2015" {
         VSX v140
+    }
+    "vs2017" {
+        VSX v141
     }
 }
