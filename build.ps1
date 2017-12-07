@@ -303,7 +303,9 @@ function VSX
 
     Write-Diagnostic "Starting to build targeting toolchain $Toolchain"
 
+    Msvs "$Toolchain" 'Debug' 'x86'
     Msvs "$Toolchain" 'Release' 'x86'
+    Msvs "$Toolchain" 'Debug' 'x64'
     Msvs "$Toolchain" 'Release' 'x64'
 
     Write-Diagnostic "Finished build targeting toolchain $Toolchain"
