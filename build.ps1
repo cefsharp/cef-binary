@@ -115,7 +115,7 @@ function TernaryReturn
         $Value2
     )
 
-    if($Yes) {
+    if ($Yes) {
         return $Value
     }
 
@@ -125,41 +125,40 @@ function TernaryReturn
 
 function Bootstrap
 {
-  param()
+    param()
 
-  if($Target -eq "nupkg-only") {
-    return
-  }
+    if ($Target -eq "nupkg-only") {
+        return
+    }
 
-  Write-Diagnostic "Bootstrapping"
+    Write-Diagnostic "Bootstrapping"
 
-  if (Test-Path($Cef)) {
-    Remove-Item $Cef -Recurse | Out-Null
-  }
+    if (Test-Path($Cef)) {
+        Remove-Item $Cef -Recurse | Out-Null
+    }
 
-  # Copy include files
-  Copy-Item $Cef64\include $CefInclude -Recurse | Out-Null
+    # Copy include files
+    Copy-Item $Cef64\include $CefInclude -Recurse | Out-Null
 
-  # Create default directory structure
-  md 'cef\win32' | Out-Null
-  md 'cef\win32\debug' | Out-Null
-  md 'cef\win32\debug\VS2012' | Out-Null
-  md 'cef\win32\debug\VS2013' | Out-Null
-  md 'cef\win32\debug\VS2015' | Out-Null
-  md 'cef\win32\release' | Out-Null
-  md 'cef\win32\release\VS2012' | Out-Null
-  md 'cef\win32\release\VS2013' | Out-Null
-  md 'cef\win32\release\VS2015' | Out-Null
-  md 'cef\x64' | Out-Null
-  md 'cef\x64\debug' | Out-Null
-  md 'cef\x64\debug\VS2012' | Out-Null
-  md 'cef\x64\debug\VS2013' | Out-Null
-  md 'cef\x64\debug\VS2015' | Out-Null
-  md 'cef\x64\release' | Out-Null
-  md 'cef\x64\release\VS2012' | Out-Null
-  md 'cef\x64\release\VS2013' | Out-Null
-  md 'cef\x64\release\VS2015' | Out-Null
-
+    # Create default directory structure
+    md 'cef\win32' | Out-Null
+    md 'cef\win32\debug' | Out-Null
+    md 'cef\win32\debug\VS2012' | Out-Null
+    md 'cef\win32\debug\VS2013' | Out-Null
+    md 'cef\win32\debug\VS2015' | Out-Null
+    md 'cef\win32\release' | Out-Null
+    md 'cef\win32\release\VS2012' | Out-Null
+    md 'cef\win32\release\VS2013' | Out-Null
+    md 'cef\win32\release\VS2015' | Out-Null
+    md 'cef\x64' | Out-Null
+    md 'cef\x64\debug' | Out-Null
+    md 'cef\x64\debug\VS2012' | Out-Null
+    md 'cef\x64\debug\VS2013' | Out-Null
+    md 'cef\x64\debug\VS2015' | Out-Null
+    md 'cef\x64\release' | Out-Null
+    md 'cef\x64\release\VS2012' | Out-Null
+    md 'cef\x64\release\VS2013' | Out-Null
+    md 'cef\x64\release\VS2015' | Out-Null
 }
 
 function Msvs
@@ -222,7 +221,7 @@ function Msvs
     }
 
     $VCXProj = $Cef32vcx
-    if($Platform -eq 'x64') {
+    if ($Platform -eq 'x64') {
         $VCXProj = $Cef64vcx
     }
 
@@ -238,7 +237,7 @@ function Msvs
         $env:CEFSHARP_BUILD_IS_BOOTSTRAPPED = "$Toolchain$Platform"
     }
 
-    #Manually change project file to compile using /MDd and /MD
+    # Manually change project file to compile using /MDd and /MD
     (Get-Content $CefProject) | Foreach-Object {$_ -replace "<RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>", '<RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>'} | Set-Content $CefProject
     (Get-Content $CefProject) | Foreach-Object {$_ -replace "<RuntimeLibrary>MultiThreaded</RuntimeLibrary>", '<RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>'} | Set-Content $CefProject
 
@@ -272,7 +271,7 @@ function Msvs
     $Process.Start()
     $Process.WaitForExit()
 
-    if($Process.ExitCode -ne 0) {
+    if ($Process.ExitCode -ne 0) {
         Die "Build failed"
     }
 
@@ -287,17 +286,17 @@ function VSX
         [string] $Toolchain
     )
 
-    if($Toolchain -eq 'v110' -and $env:VS110COMNTOOLS -eq $null) {
+    if ($Toolchain -eq 'v110' -and $env:VS110COMNTOOLS -eq $null) {
         Warn "Toolchain $Toolchain is not installed on your development machine, skipping build."
         Return
     }
 
-    if($Toolchain -eq 'v120' -and $env:VS120COMNTOOLS -eq $null) {
+    if ($Toolchain -eq 'v120' -and $env:VS120COMNTOOLS -eq $null) {
         Warn "Toolchain $Toolchain is not installed on your development machine, skipping build."
         Return
     }
 
-    if($Toolchain -eq 'v140' -and $env:VS140COMNTOOLS -eq $null) {
+    if ($Toolchain -eq 'v140' -and $env:VS140COMNTOOLS -eq $null) {
         Warn "Toolchain $Toolchain is not installed on your development machine, skipping build."
         Return
     }
@@ -331,9 +330,9 @@ function CreateCefSdk
     Write-Diagnostic "Creating sdk for $Toolchain"
 
     $VisualStudioVersion = $null
-    if($Toolchain -eq "v140") {
+    if ($Toolchain -eq "v140") {
         $VisualStudioVersion = "VS2015"
-    } elseif($Toolchain -eq "v110") {
+    } elseif ($Toolchain -eq "v110") {
         $VisualStudioVersion = "VS2012"
     } else {
         $VisualStudioVersion = "VS2013"
@@ -354,16 +353,14 @@ function Nupkg
     Write-Diagnostic "Building nuget package"
 
     $Nuget = Join-Path $env:LOCALAPPDATA .\nuget\NuGet.exe
-    if(-not (Test-Path $Nuget)) {
+    if (-not (Test-Path $Nuget)) {
         Die "Please install nuget. More information available at: http://docs.nuget.org/docs/start-here/installing-nuget"
     }
 
     # Build 32bit packages
-    #. $Nuget pack nuget\cef.redist.nuspec -NoPackageAnalysis -Version $CefPackageVersion -Properties 'Configuration=Debug;DotConfiguration=.Debug;Platform=x86;CPlatform=windows32;' -OutputDirectory nuget
     . $Nuget pack nuget\cef.redist.nuspec -NoPackageAnalysis -Version $CefPackageVersion -Properties 'Configuration=Release;DotConfiguration=;Platform=x86;CPlatform=windows32;' -OutputDirectory nuget
 
     # Build 64bit packages
-    #. $Nuget pack nuget\cef.redist.nuspec -NoPackageAnalysis -Version $CefPackageVersion -Properties 'Configuration=Debug;DotConfiguration=.Debug;Platform=x64;CPlatform=windows64;' -OutputDirectory nuget
     . $Nuget pack nuget\cef.redist.nuspec -NoPackageAnalysis -Version $CefPackageVersion -Properties 'Configuration=Release;DotConfiguration=;Platform=x64;CPlatform=windows64;' -OutputDirectory nuget
 
     # Build sdk
@@ -377,7 +374,7 @@ function Nupkg
 function DownloadNuget()
 {
     $Nuget = Join-Path $env:LOCALAPPDATA .\nuget\NuGet.exe
-    if(-not (Test-Path $Nuget))
+    if (-not (Test-Path $Nuget))
     {
         $Client = New-Object System.Net.WebClient;
         $Client.DownloadFile('http://nuget.org/nuget.exe', $Nuget);
@@ -386,165 +383,179 @@ function DownloadNuget()
 
 function DownloadCefBinaryAndUnzip()
 {
-  $Client = New-Object System.Net.WebClient;
+    $Client = New-Object System.Net.WebClient;
 
-  $CefBuildServerUrl = "http://opensource.spotify.com/cefbuilds/"
-  $CefBuildServerJsonPackageList = $CefBuildServerUrl + "index.json"
+    $CefBuildServerUrl = "http://opensource.spotify.com/cefbuilds/"
+    $CefBuildServerJsonPackageList = $CefBuildServerUrl + "index.json"
 
-  $CefBuildsJson = Invoke-WebRequest -Uri $CefBuildServerJsonPackageList | ConvertFrom-Json
-  $CefWin32CefVersion = $CefBuildsJson.windows32.versions | Where-Object {$_.cef_version -eq $CefVersion}
-  $CefWin64CefVersion = $CefBuildsJson.windows64.versions | Where-Object {$_.cef_version -eq $CefVersion}
+    $CefBuildsJson = Invoke-WebRequest -Uri $CefBuildServerJsonPackageList | ConvertFrom-Json
+    $CefWin32CefVersion = $CefBuildsJson.windows32.versions | Where-Object {$_.cef_version -eq $CefVersion}
+    $CefWin64CefVersion = $CefBuildsJson.windows64.versions | Where-Object {$_.cef_version -eq $CefVersion}
 
-  $Cef32FileName = ($CefWin32CefVersion.files | Where-Object {$_.type -eq "standard"}).name
-  $Cef64FileName = ($CefWin64CefVersion.files | Where-Object {$_.type -eq "standard"}).name
+    $Cef32FileName = ($CefWin32CefVersion.files | Where-Object {$_.type -eq "standard"}).name
+    $Cef64FileName = ($CefWin64CefVersion.files | Where-Object {$_.type -eq "standard"}).name
 
-  # Make sure there is a 32bit and 64bit version for the specified build
-  if($CefWin32CefVersion.cef_version -ne $CefWin64CefVersion.cef_version)
-  {
-    Die 'Win32 version is $CefWin32CefVersion.cef_version and Win64 version is $CefWin64CefVersion.cef_version - both must be the same'
+    # Make sure there is a 32bit and 64bit version for the specified build
+    if ($CefWin32CefVersion.cef_version -ne $CefWin64CefVersion.cef_version)
+    {
+        Die 'Win32 version is $CefWin32CefVersion.cef_version and Win64 version is $CefWin64CefVersion.cef_version - both must be the same'
+    }
+
+    set-alias sz "$env:ProgramFiles\7-Zip\7z.exe"
+
+    $LocalFile = Join-Path $WorkingDir $Cef32FileName
+
+    if (-not (Test-Path $LocalFile))
+    {
+        Write-Diagnostic "Downloading $Cef32FileName; this will take a while as the file is approximately 200 MiB large."
+        $Client.DownloadFile($CefBuildServerUrl + $Cef32FileName, $LocalFile);
+        Write-Diagnostic "Download $Cef32FileName complete"
   }
 
-  set-alias sz "$env:ProgramFiles\7-Zip\7z.exe"
+    if (-not (Test-Path (Join-Path $Cef32 '\include\cef_version.h')))
+    {
+        # Extract bzip file
+        sz e $LocalFile
 
-  $LocalFile = Join-Path $WorkingDir $Cef32FileName
+        # Extract tar file
+        $TarFile = ($LocalFile).Substring(0, $LocalFile.length - 4)
+        sz x $TarFile
 
-  if(-not (Test-Path $LocalFile))
-  {
-	Write-Diagnostic "Downloading $Cef32FileName; this will take a while as the file is approximately 200 MiB large."
-    	$Client.DownloadFile($CefBuildServerUrl + $Cef32FileName, $LocalFile);
-	Write-Diagnostic "Download $Cef32FileName complete"
-  }
+        # Sleep for a short period to allow 7z to release it's file handles
+        sleep -m 2000
 
-  if(-not (Test-Path (Join-Path $Cef32 '\include\cef_version.h')))
-  {
-	# Extract bzip file
-	sz e $LocalFile
-	# Extract tar file
-	$TarFile = ($LocalFile).Substring(0, $LocalFile.length - 4)
-	sz x $TarFile
-	#Sleep for a short period to allow 7z to release it's file handles
-	sleep -m 2000
-	#Remove tar file
-	Remove-Item $TarFile
-    $Folder = Join-Path $WorkingDir ($Cef32FileName.Substring(0, $Cef32FileName.length - 8))
-    Move-Item ($Folder + '\*') $Cef32 -force
-    Remove-Item $Folder
-  }
+        # Remove tar file
+        Remove-Item $TarFile
 
-  $LocalFile = Join-Path $WorkingDir $Cef64FileName
+        $Folder = Join-Path $WorkingDir ($Cef32FileName.Substring(0, $Cef32FileName.length - 8))
+        Move-Item ($Folder + '\*') $Cef32 -force
+        Remove-Item $Folder
+    }
 
-  if(-not (Test-Path $LocalFile))
-  {
+    $LocalFile = Join-Path $WorkingDir $Cef64FileName
 
-	Write-Diagnostic "Downloading $Cef64FileName; this will take a while as the file is approximately 200 MiB large."
-    	$Client.DownloadFile($CefBuildServerUrl + $Cef64FileName, $LocalFile);
-	Write-Diagnostic "Download $Cef64FileName complete"
-  }
+    if (-not (Test-Path $LocalFile))
+    {
+        Write-Diagnostic "Downloading $Cef64FileName; this will take a while as the file is approximately 200 MiB large."
+        $Client.DownloadFile($CefBuildServerUrl + $Cef64FileName, $LocalFile);
+        Write-Diagnostic "Download $Cef64FileName complete"
+    }
 
-  if(-not (Test-Path (Join-Path $Cef64 '\include\cef_version.h')))
-  {
-	# Extract bzip file
-	sz e $LocalFile
-	# Extract tar file
-	$TarFile = ($LocalFile).Substring(0, $LocalFile.length - 4)
-	sz x $TarFile
-	#Sleep for a short period to allow 7z to release it's file handles
-	sleep -m 2000
-	#Remove tar file
-	Remove-Item $TarFile
-    $Folder = Join-Path $WorkingDir ($Cef64FileName.Substring(0, $Cef64FileName.length - 8))
-    Move-Item ($Folder + '\*') $Cef64 -force
-    Remove-Item $Folder
-  }
+    if (-not (Test-Path (Join-Path $Cef64 '\include\cef_version.h')))
+    {
+        # Extract bzip file
+        sz e $LocalFile
+
+        # Extract tar file
+        $TarFile = ($LocalFile).Substring(0, $LocalFile.length - 4)
+        sz x $TarFile
+
+        # Sleep for a short period to allow 7z to release it's file handles
+        sleep -m 2000
+
+        # Remove tar file
+        Remove-Item $TarFile
+
+        $Folder = Join-Path $WorkingDir ($Cef64FileName.Substring(0, $Cef64FileName.length - 8))
+        Move-Item ($Folder + '\*') $Cef64 -force
+        Remove-Item $Folder
+    }
 }
 
 function CopyFromLocalCefBuild()
 {
-  # Example file names from cefsource build:
-  # 32-bit: cef_binary_3.2924.1538.gbfdeccd_windows32.tar.bz2
-  # 64-bit: cef_binary_3.2924.1538.gbfdeccd_windows64.tar.bz2
+    # Example file names from cefsource build:
+    # 32-bit: cef_binary_3.2924.1538.gbfdeccd_windows32.tar.bz2
+    # 64-bit: cef_binary_3.2924.1538.gbfdeccd_windows64.tar.bz2
 
-  Write-Host $CefVersion
+    Write-Host $CefVersion
 
-  $Cef32FileName = "cef_binary_$($CefVersion)_windows32.tar.bz2"
-  $Cef64FileName = "cef_binary_$($CefVersion)_windows64.tar.bz2"
+    $Cef32FileName = "cef_binary_$($CefVersion)_windows32.tar.bz2"
+    $Cef64FileName = "cef_binary_$($CefVersion)_windows64.tar.bz2"
 
-  set-alias sz "$env:ProgramFiles\7-Zip\7z.exe"
+    set-alias sz "$env:ProgramFiles\7-Zip\7z.exe"
 
-  if ([System.IO.Path]::IsPathRooted($CefBinaryDir))
-  {
-    $CefBuildDir = $CefBinaryDir
-  }
-  else
-  {
-    $CefBuildDir = Join-Path $WorkingDir "$CefBinaryDir/"
-  }
+    if ([System.IO.Path]::IsPathRooted($CefBinaryDir))
+    {
+        $CefBuildDir = $CefBinaryDir
+    }
+    else
+    {
+        $CefBuildDir = Join-Path $WorkingDir "$CefBinaryDir/"
+    }
 
-  $LocalFile = Join-Path $WorkingDir $Cef32FileName
+    $LocalFile = Join-Path $WorkingDir $Cef32FileName
 
-  if(-not (Test-Path $LocalFile))
-  {
-	Write-Diagnostic "Copy $Cef32FileName (approx 200mb)"
-    Copy-Item ($CefBuildDir+$Cef32FileName) $LocalFile
-	Write-Diagnostic "Copy of $Cef32FileName complete"
-  }
+    if (-not (Test-Path $LocalFile))
+    {
+        Write-Diagnostic "Copy $Cef32FileName (approx 200mb)"
+        Copy-Item ($CefBuildDir+$Cef32FileName) $LocalFile
+        Write-Diagnostic "Copy of $Cef32FileName complete"
+    }
 
-  if(-not (Test-Path (Join-Path $Cef32 '\include\cef_version.h')))
-  {
-	# Extract bzip file
-   	sz e $LocalFile
-	# Extract tar file
-	$TarFile = ($LocalFile).Substring(0, $LocalFile.length - 4)
-	sz x $TarFile
-	#Sleep for a short period to allow 7z to release it's file handles
-	sleep -m 2000
-	#Remove tar file
-	Remove-Item $TarFile
-    $Folder = Join-Path $WorkingDir ($Cef32FileName.Substring(0, $Cef32FileName.length - 8))
-    Move-Item ($Folder + '\*') $Cef32 -force
-    Remove-Item $Folder
-  }
+    if (-not (Test-Path (Join-Path $Cef32 '\include\cef_version.h')))
+    {
+        # Extract bzip file
+        sz e $LocalFile
 
-  $LocalFile = Join-Path $WorkingDir $Cef64FileName
+        # Extract tar file
+        $TarFile = ($LocalFile).Substring(0, $LocalFile.length - 4)
+        sz x $TarFile
 
-  if(-not (Test-Path $LocalFile))
-  {
+        # Sleep for a short period to allow 7z to release it's file handles
+        sleep -m 2000
 
-	Write-Diagnostic "Copy $Cef64FileName (approx 200mb)"
-    Copy-Item ($CefBuildDir+$Cef64FileName) $LocalFile;
-	Write-Diagnostic "Copy of $Cef64FileName complete"
-  }
+        # Remove tar file
+        Remove-Item $TarFile
 
-  if(-not (Test-Path (Join-Path $Cef64 '\include\cef_version.h')))
-  {
-	# Extract bzip file
-	sz e $LocalFile
-	# Extract tar file
-	$TarFile = ($LocalFile).Substring(0, $LocalFile.length - 4)
-	sz x $TarFile
-	#Sleep for a short period to allow 7z to release it's file handles
-	sleep -m 2000
-	#Remove tar file
-	Remove-Item $TarFile
-    $Folder = Join-Path $WorkingDir ($Cef64FileName.Substring(0, $Cef64FileName.length - 8))
-    Move-Item ($Folder + '\*') $Cef64 -force
-    Remove-Item $Folder
-  }
+        $Folder = Join-Path $WorkingDir ($Cef32FileName.Substring(0, $Cef32FileName.length - 8))
+        Move-Item ($Folder + '\*') $Cef32 -force
+        Remove-Item $Folder
+    }
+
+    $LocalFile = Join-Path $WorkingDir $Cef64FileName
+
+    if (-not (Test-Path $LocalFile))
+    {
+        Write-Diagnostic "Copy $Cef64FileName (approx 200mb)"
+        Copy-Item ($CefBuildDir+$Cef64FileName) $LocalFile;
+        Write-Diagnostic "Copy of $Cef64FileName complete"
+    }
+
+    if (-not (Test-Path (Join-Path $Cef64 '\include\cef_version.h')))
+    {
+        # Extract bzip file
+        sz e $LocalFile
+
+        # Extract tar file
+        $TarFile = ($LocalFile).Substring(0, $LocalFile.length - 4)
+        sz x $TarFile
+
+        # Sleep for a short period to allow 7z to release it's file handles
+        sleep -m 2000
+
+        # Remove tar file
+        Remove-Item $TarFile
+
+        $Folder = Join-Path $WorkingDir ($Cef64FileName.Substring(0, $Cef64FileName.length - 8))
+        Move-Item ($Folder + '\*') $Cef64 -force
+        Remove-Item $Folder
+    }
 }
 
 function CheckDependencies()
 {
-	#Check for cmake
-	if ((Get-Command "cmake.exe" -ErrorAction SilentlyContinue) -eq $null)
-	{
-		Die "Unable to find cmake.exe in your PATH"
-	}
+    # Check for cmake
+    if ((Get-Command "cmake.exe" -ErrorAction SilentlyContinue) -eq $null)
+    {
+        Die "Unable to find cmake.exe in your PATH"
+    }
 
-	#Check for 7zip
-	if (-not (test-path "$env:ProgramFiles\7-Zip\7z.exe"))
-	{
-		Die "$env:ProgramFiles\7-Zip\7z.exe is required"
-	}
+    # Check for 7zip
+    if (-not (test-path "$env:ProgramFiles\7-Zip\7z.exe"))
+    {
+        Die "$env:ProgramFiles\7-Zip\7z.exe is required"
+    }
 }
 
 CheckDependencies
@@ -570,7 +581,7 @@ Bootstrap
 switch -Exact ($Target) {
     "nupkg" {
         #VSX v110
-		VSX v120
+        VSX v120
         VSX v140
         Nupkg
     }
