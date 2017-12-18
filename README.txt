@@ -1,38 +1,25 @@
-Chromium Embedded Framework (CEF) Standard Binary Distribution for Windows
+Chromium Embedded Framework (CEF) Minimal Binary Distribution for Windows
 -------------------------------------------------------------------------------
 
-Date:             August 18, 2016
+Date:             December 15, 2017
 
-CEF Version:      3.3202.1686.gd665578
+CEF Version:      3.3239.1700.g385b2d4
 CEF URL:          https://bitbucket.org/chromiumembedded/cef.git
-                  @37d988bda8bdff39f538ace426040faab1599b58
+                  @385b2d4fb747dd6b5c221b5db16f8d2b1af24360
 
-Chromium Verison: 62.0.3202.94
+Chromium Version: 63.0.3239.70
 Chromium URL:     https://chromium.googlesource.com/chromium/src.git
-                  @feb0ea45a0164eef52aa2631dd95d7c85fa65faa
+                  @3d78ebd1cd0d307a66113ec7793e59a2ca9afbf2
 
-This distribution contains all components necessary to build and distribute an
-application using CEF on the Windows platform. Please see the LICENSING
-section of this document for licensing terms and conditions.
+This distribution contains the minimial components necessary to build and
+distribute an application using CEF on the Windows platform. Please see
+the LICENSING section of this document for licensing terms and conditions.
 
 
 CONTENTS
 --------
 
-cefclient   Contains the cefclient sample application configured to build
-            using the files in this distribution. This application demonstrates
-            a wide range of CEF functionalities.
-
-cefsimple   Contains the cefsimple sample application configured to build
-            using the files in this distribution. This application demonstrates
-            the minimal functionality required to create a browser window.
-
 cmake       Contains CMake configuration files shared by all targets.
-
-Debug       Contains libcef.dll, libcef.lib and other components required to
-            build and run the debug version of CEF-based applications. By
-            default these files should be placed in the same directory as the
-            executable and will be copied there as part of the build process.
 
 include     Contains all required CEF header files.
 
@@ -42,11 +29,10 @@ libcef_dll  Contains the source code for the libcef_dll_wrapper static library
 Release     Contains libcef.dll, libcef.lib and other components required to
             build and run the release version of CEF-based applications. By
             default these files should be placed in the same directory as the
-            executable and will be copied there as part of the build process.
+            executable.
 
 Resources   Contains resources required by libcef.dll. By default these files
-            should be placed in the same directory as libcef.dll and will be
-            copied there as part of the build process.
+            should be placed in the same directory as libcef.dll.
 
 
 USAGE
@@ -73,12 +59,16 @@ The following components are required. CEF will not function without them.
 * CEF core library.
   * libcef.dll
 
+* Crash reporting library.
+  * chrome_elf.dll
+
 * Unicode support data.
   * icudtl.dat
 
 * V8 snapshot data.
   * natives_blob.bin
   * snapshot_blob.bin
+  * v8_context_snapshot.bin
 
 Optional components:
 
@@ -88,8 +78,8 @@ run but any related functionality may become broken or disabled.
 * Localized resources.
   Locale file loading can be disabled completely using
   CefSettings.pack_loading_disabled. The locales directory path can be
-  customized using CefSettings.locales_dir_path. 
- 
+  customized using CefSettings.locales_dir_path.
+
   * locales/
     Directory containing localized resources used by CEF, Chromium and Blink. A
     .pak file is loaded from this directory based on the CefSettings.locale
@@ -125,6 +115,17 @@ run but any related functionality may become broken or disabled.
   * libGLESv2.dll
   Without these files HTML5 accelerated content like 2D canvas, 3D CSS and WebGL
   will not function.
+
+* SwiftShader support.
+  * swiftshader/libEGL.dll
+  * swiftshader/libGLESv2.dll
+  Without these files WebGL will not function in software-only mode when the GPU
+  is not available or disabled.
+
+* Widevine CDM support.
+  * widevinecdmadapter.dll
+    Without this file playback of Widevine projected content will not function.
+    See the CefRegisterWidevineCdm() function in cef_web_plugin.h for usage.
 
 
 LICENSING
