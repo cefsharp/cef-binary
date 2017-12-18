@@ -12,16 +12,14 @@
 	Example if this is a x64 package, their will be a x64 folder in the CEF
     directory, if that's the case this package contains the x64 files, so we'll
 	define those properties.
+	
+	Using wildcard matching as per https://stackoverflow.com/a/17252671
     -->
-  <ItemGroup Condition="Exists('$(MSBuildThisFileDirectory)..\CEF\x86')">
-    <CefBinaries32 Include="$(MSBuildThisFileDirectory)..\CEF\x86\*.*" />
-    <CefPakFiles32 Include="$(MSBuildThisFileDirectory)..\CEF\*.*" />
-    <CefLocales32 Include="$(MSBuildThisFileDirectory)..\CEF\locales\*.*" />
+  <ItemGroup Condition="Exists('$(MSBuildThisFileDirectory)..\CEF\cef-binary-x86.txt')">
+    <CefRedist32 Include="$(MSBuildThisFileDirectory)..\CEF\**\*.*" />
   </ItemGroup>
   
-  <ItemGroup Condition="Exists('$(MSBuildThisFileDirectory)..\CEF\x64')">
-    <CefBinaries64 Include="$(MSBuildThisFileDirectory)..\CEF\x64\*.*" />
-    <CefPakFiles64 Include="$(MSBuildThisFileDirectory)..\CEF\*.*" />
-    <CefLocales64 Include="$(MSBuildThisFileDirectory)..\CEF\locales\*.*" />
+  <ItemGroup Condition="Exists('$(MSBuildThisFileDirectory)..\CEF\cef-binary-x64.txt')">
+    <CefRedist64 Include="$(MSBuildThisFileDirectory)..\CEF\**\*.*" />
   </ItemGroup>
 </Project>
