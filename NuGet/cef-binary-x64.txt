@@ -1,1 +1,0 @@
-This packages contains the x64 libs and resources

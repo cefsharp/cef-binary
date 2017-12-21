@@ -1,1 +1,0 @@
-This packages contains the x86 libs and resources
