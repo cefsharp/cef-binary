@@ -388,6 +388,13 @@ function Nupkg
     [System.IO.File]::WriteAllLines($Filename, $Text)
 
     . $Nuget pack nuget\cef.sdk.nuspec -NoPackageAnalysis -Version $CefPackageVersion -OutputDirectory nuget
+	
+	if ($env:APPVEYOR_REPO_TAG -eq "True")
+    {
+        appveyor PushArtifact "nuget\cef.redist.x86.$CefPackageVersion.nupkg"
+		appveyor PushArtifact "nuget\cef.redist.x64.$CefPackageVersion.nupkg"
+		appveyor PushArtifact "nuget\cef.sdk.$CefPackageVersion.nupkg"
+    }
 }
 
 function DownloadNuget()
