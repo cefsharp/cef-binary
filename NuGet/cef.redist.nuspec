@@ -26,6 +26,6 @@
     <file src="..\cef_binary_3.y.z_$CPlatform$\Resources\*.dat" target="CEF\"/>
     <file src="..\cef_binary_3.y.z_$CPlatform$\Resources\locales\*.pak" target="CEF\locales"/>
 
-    <file src="cef.redist.$Platform$.targets" target="build\" />
+    <file src="cef.redist.$Platform$.props" target="build\" />
   </files>
 </package>
