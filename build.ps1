@@ -183,26 +183,22 @@ function Msvs
 
     Write-Diagnostic "Targeting $Toolchain using configuration $Configuration on platform $Platform"
 
-    $PlatformTarget = $null
     $VisualStudioVersion = $null
     $VXXCommonTools = $null
     $CmakeGenerator = $null
 
     switch -Exact ($Toolchain) {
         'v110' {
-            $PlatformTarget = '4.0'
             $VisualStudioVersion = '11.0'
             $VXXCommonTools = Join-Path $env:VS110COMNTOOLS '..\..\vc'
             $CmakeGenerator = 'Visual Studio 11'
         }
         'v120' {
-            $PlatformTarget = '12.0'
             $VisualStudioVersion = '12.0'
             $VXXCommonTools = Join-Path $env:VS120COMNTOOLS '..\..\vc'
             $CmakeGenerator = 'Visual Studio 12'
         }
         'v140' {
-            $PlatformTarget = '4.0'
             $VisualStudioVersion = '14.0'
             $VXXCommonTools = Join-Path $env:VS140COMNTOOLS '..\..\vc'
             $CmakeGenerator = 'Visual Studio 14'
@@ -286,7 +282,6 @@ function Msvs
         "/t:rebuild",
         "/p:VisualStudioVersion=$VisualStudioVersion",
         "/p:Configuration=$Configuration",
-        "/p:PlatformTarget=$PlatformTarget",
         "/p:PlatformToolset=$Toolchain",
         "/p:Platform=$Arch",
         "/p:PreferredToolArchitecture=$Arch",
@@ -305,13 +300,22 @@ function Msvs
 
     $StartInfo.UseShellExecute = $false
     $StartInfo.CreateNoWindow = $false
+	$StartInfo.RedirectStandardError = $true
+	$StartInfo.RedirectStandardOutput = $true
 
     $Process = New-Object System.Diagnostics.Process
     $Process.StartInfo = $startInfo
     $Process.Start()
+	
+	$stdout = $Process.StandardOutput.ReadToEnd()
+	$stderr = $Process.StandardError.ReadToEnd()
+	
     $Process.WaitForExit()
 
-    if ($Process.ExitCode -ne 0) {
+    if ($Process.ExitCode -ne 0)
+	{
+		Write-Host "stdout: $stdout"
+		Write-Host "stderr: $stderr"
         Die "Build failed"
     }
 
