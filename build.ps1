@@ -336,8 +336,8 @@ try
 
 		$StartInfo.EnvironmentVariables.Clear()
 
-		Get-ChildItem -Path env:* | ForEach-Object
-		{
+		#Brace must be on same line for foreach-object to work
+		Get-ChildItem -Path env:* | ForEach-Object {
 			$StartInfo.EnvironmentVariables.Add($_.Name, $_.Value)
 		}
 
