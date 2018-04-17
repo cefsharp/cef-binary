@@ -472,7 +472,11 @@ try
 		$Nuget = Join-Path $folder .\NuGet.exe
 		if (-not (Test-Path $Nuget))
 		{
-			mkdir $folder
+			if (-not (Test-Path $folder))
+			{
+				mkdir $folder
+			}
+			
 			$Client = New-Object System.Net.WebClient;
 			$Client.DownloadFile('http://nuget.org/nuget.exe', $Nuget);
 		}
