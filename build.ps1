@@ -97,8 +97,8 @@ try
 
 	   & $batFile
 
-	   Get-Content $tempFile | Foreach-Object
-	   {
+	   #Brace must be on same line for foreach-object to work
+	   Get-Content $tempFile | Foreach-Object {
 		   if ($_ -match "^(.*?)=(.*)$")
 		   {
 			   Set-Content "env:\$($matches[1])" $matches[2]
