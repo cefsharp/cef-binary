@@ -494,7 +494,11 @@ try
 		$CefWin64CefVersion = $CefBuildsJson.windows64.versions | Where-Object {$_.cef_version -eq $CefVersion}
 
 		$Cef32FileName = ($CefWin32CefVersion.files | Where-Object {$_.type -eq "standard"}).name
+		$Cef32FileHash = ($CefWin32CefVersion.files | Where-Object {$_.type -eq "standard"}).sha1
+		$Cef32FileSize = (($CefWin32CefVersion.files | Where-Object {$_.type -eq "standard"}).size /1MB)
 		$Cef64FileName = ($CefWin64CefVersion.files | Where-Object {$_.type -eq "standard"}).name
+		$Cef64FileHash = ($CefWin64CefVersion.files | Where-Object {$_.type -eq "standard"}).sha1
+		$Cef64FileSize = (($CefWin64CefVersion.files | Where-Object {$_.type -eq "standard"}).size /1MB)
 
 		# Make sure there is a 32bit and 64bit version for the specified build
 		if ($CefWin32CefVersion.cef_version -ne $CefWin64CefVersion.cef_version)
@@ -508,9 +512,19 @@ try
 
 		if (-not (Test-Path $LocalFile))
 		{
-			Write-Diagnostic "Downloading $Cef32FileName; this will take a while as the file is approximately 200 MiB large."
+			Write-Diagnostic "Downloading $Cef32FileName; this will take a while as the file is $Cef32FileSize MB."
 			$Client.DownloadFile($CefBuildServerUrl + $Cef32FileName, $LocalFile);
+			
+			$Cef32LocalFileHash = Get-FileHash -Path $LocalFile -Algorithm SHA1
+			
 			Write-Diagnostic "Download $Cef32FileName complete"
+			Write-Diagnostic "Expected SHA1 for $Cef32FileName $Cef32FileHash"
+			Write-Diagnostic "Actual SHA1 for $Cef32FileName $Cef32LocalFileHash"
+						
+			if($Cef32LocalFileHash -ne $Cef32FileHash)
+			{
+				Die "SHA1 hash did not match"
+			}
 		}
 
 		if (-not (Test-Path (Join-Path $Cef32 '\include\cef_version.h')))
@@ -537,9 +551,19 @@ try
 
 		if (-not (Test-Path $LocalFile))
 		{
-			Write-Diagnostic "Downloading $Cef64FileName; this will take a while as the file is approximately 200 MiB large."
+			Write-Diagnostic "Downloading $Cef64FileName; this will take a while as the file is $Cef64FileSize MB."
 			$Client.DownloadFile($CefBuildServerUrl + $Cef64FileName, $LocalFile);
+			
+			$Cef32LocalFileHash = Get-FileHash -Path $LocalFile -Algorithm SHA1
+			
 			Write-Diagnostic "Download $Cef64FileName complete"
+			Write-Diagnostic "Expected SHA1 for $Cef64FileName $Cef64FileHash"
+			Write-Diagnostic "Actual SHA1 for $Cef64FileName $Cef64LocalFileHash"
+						
+			if($Cef64LocalFileHash -ne $Cef64FileHash)
+			{
+				Die "SHA1 hash did not match"
+			}
 		}
 
 		if (-not (Test-Path (Join-Path $Cef64 '\include\cef_version.h')))
