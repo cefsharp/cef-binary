@@ -515,7 +515,7 @@ try
 			Write-Diagnostic "Downloading $Cef32FileName; this will take a while as the file is $Cef32FileSize MB."
 			$Client.DownloadFile($CefBuildServerUrl + $Cef32FileName, $LocalFile);
 			
-			$Cef32LocalFileHash = Get-FileHash -Path $LocalFile -Algorithm SHA1
+			$Cef32LocalFileHash = (Get-FileHash -Path $LocalFile -Algorithm SHA1).Hash
 			
 			Write-Diagnostic "Download $Cef32FileName complete"
 			Write-Diagnostic "Expected SHA1 for $Cef32FileName $Cef32FileHash"
@@ -554,7 +554,7 @@ try
 			Write-Diagnostic "Downloading $Cef64FileName; this will take a while as the file is $Cef64FileSize MB."
 			$Client.DownloadFile($CefBuildServerUrl + $Cef64FileName, $LocalFile);
 			
-			$Cef32LocalFileHash = Get-FileHash -Path $LocalFile -Algorithm SHA1
+			$Cef32LocalFileHash = (Get-FileHash -Path $LocalFile -Algorithm SHA1).Hash
 			
 			Write-Diagnostic "Download $Cef64FileName complete"
 			Write-Diagnostic "Expected SHA1 for $Cef64FileName $Cef64FileHash"
