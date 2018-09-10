@@ -310,14 +310,11 @@ try
 			# Remove previously generated CMake data for the different platform/toolchain
 			rm CMakeCache.txt -ErrorAction:SilentlyContinue
 			rm -r CMakeFiles -ErrorAction:SilentlyContinue
-			cmake -G "$CmakeGenerator$CmakeArch" -DUSE_SANDBOX=Off
+			#Change cmake to generate with /MDd and /MD
+			cmake -G "$CmakeGenerator$CmakeArch" -DUSE_SANDBOX=Off -DCEF_RUNTIME_LIBRARY_FLAG="MD"
 			popd
 			$env:CEFSHARP_BUILD_IS_BOOTSTRAPPED = "$Toolchain$Platform"
 		}
-
-		# Manually change project file to compile using /MDd and /MD
-		(Get-Content $CefProject) | Foreach-Object {$_ -replace "<RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>", '<RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>'} | Set-Content $CefProject
-		(Get-Content $CefProject) | Foreach-Object {$_ -replace "<RuntimeLibrary>MultiThreaded</RuntimeLibrary>", '<RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>'} | Set-Content $CefProject
 
 		$Arguments = @(
 			"$CefProject",
