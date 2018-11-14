@@ -306,11 +306,13 @@ try
 		if ($env:CEFSHARP_BUILD_IS_BOOTSTRAPPED -ne "$Toolchain$Platform")
 		{
 			Invoke-BatchFile $VCVarsAll $Platform
+			Write-Diagnostic "pushd $CefDir"
 			pushd $CefDir
 			# Remove previously generated CMake data for the different platform/toolchain
 			rm CMakeCache.txt -ErrorAction:SilentlyContinue
 			rm -r CMakeFiles -ErrorAction:SilentlyContinue
-			cmake -G "$CmakeGenerator$CmakeArch" -DUSE_SANDBOX=Off -DCEF_RUNTIME_LIBRARY_FLAG=/MD
+			Write-Diagnostic "Running cmake"
+			cmake --debug-output -G "$CmakeGenerator$CmakeArch" -DUSE_SANDBOX=Off -DCEF_RUNTIME_LIBRARY_FLAG=/MD
 			popd
 			$env:CEFSHARP_BUILD_IS_BOOTSTRAPPED = "$Toolchain$Platform"
 		}
