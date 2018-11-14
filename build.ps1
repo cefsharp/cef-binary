@@ -14,7 +14,7 @@ param(
 	[string] $CefBinaryDir = "../cefsource/chromium/src/cef/binary_distrib/",
 
 	[Parameter(Position = 3)]
-	$CefVersion = "3.3239.1700.g385b2d4",
+	$CefVersion = "3.3538.1852.gcb937fc",
 
 	[ValidateSet("tar.bz2","zip","7z")]
 	[Parameter()]
@@ -312,7 +312,7 @@ try
 			rm CMakeCache.txt -ErrorAction:SilentlyContinue
 			rm -r CMakeFiles -ErrorAction:SilentlyContinue
 			Write-Diagnostic "Running cmake"
-			cmake --debug-output -G "$CmakeGenerator$CmakeArch" -DUSE_SANDBOX=Off -DCEF_RUNTIME_LIBRARY_FLAG=/MD
+			cmake -LAH -G "$CmakeGenerator$CmakeArch" -DUSE_SANDBOX=Off -DCEF_RUNTIME_LIBRARY_FLAG=/MD
 			popd
 			$env:CEFSHARP_BUILD_IS_BOOTSTRAPPED = "$Toolchain$Platform"
 		}
