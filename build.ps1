@@ -1,4 +1,4 @@
-#requires -Version 3
+#requires -Version 5
 
 param(
 	[ValidateSet("vs2012", "vs2013", "vs2015", "vs2017", "nupkg", "nupkg-only")]
@@ -224,18 +224,30 @@ try
 		{
 			'v110'
 			{
+				if($env:VS110COMNTOOLS -eq $null)
+				{
+					Die "Visual Studio 2012 was not found"
+				}
 				$VisualStudioVersion = '11.0'
 				$VXXCommonTools = Join-Path $env:VS110COMNTOOLS '..\..\vc'
 				$CmakeGenerator = 'Visual Studio 11'
 			}
 			'v120'
 			{
+				if($env:VS120COMNTOOLS -eq $null)
+				{
+					Die "Visual Studio 2013 was not found"
+				}
 				$VisualStudioVersion = '12.0'
 				$VXXCommonTools = Join-Path $env:VS120COMNTOOLS '..\..\vc'
 				$CmakeGenerator = 'Visual Studio 12'
 			}
 			'v140'
 			{
+				if($env:VS140COMNTOOLS -eq $null)
+				{
+					Die "Visual Studio 2015 was not found"
+				}
 				$VisualStudioVersion = '14.0'
 				$VXXCommonTools = Join-Path $env:VS140COMNTOOLS '..\..\vc'
 				$CmakeGenerator = 'Visual Studio 14'
