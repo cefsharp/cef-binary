@@ -267,7 +267,7 @@ try
 			
 				Write-Diagnostic "VS2017InstallPath: $VS2017InstallPath"
 				
-				if(!(Test-Path $VS2017InstallPath))
+				if($VS2017InstallPath -eq $null -or !(Test-Path $VS2017InstallPath))
 				{
 					Die "Visual Studio 2017 was not found"
 				}
