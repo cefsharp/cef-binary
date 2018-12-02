@@ -257,7 +257,7 @@ try
 					if(-not (Test-Path $vswherePath))
 					{
 						$client = New-Object System.Net.WebClient;
-						$client.DownloadFile('https://github.com/Microsoft/vswhere/releases/download/2.2.11/vswhere.exe', $vswherePath);
+						$client.DownloadFile('https://github.com/Microsoft/vswhere/releases/download/2.5.2/vswhere.exe', $vswherePath);
 					}
 				}
 			
@@ -267,7 +267,7 @@ try
 			
 				Write-Diagnostic "VS2017InstallPath: $VS2017InstallPath"
 				
-				if(-not (Test-Path $VS2017InstallPath))
+				if(!(Test-Path $VS2017InstallPath))
 				{
 					Die "Visual Studio 2017 was not found"
 				}
