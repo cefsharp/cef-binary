@@ -1,11 +1,15 @@
 image: Visual Studio 2017
 
-version: 69.0.0-CI{build}
+version: 71.0.0-CI{build}
 
 shallow_clone: true
 
 # Start builds on tags only (GitHub and BitBucket)
 skip_non_tags: true
+
+#Cholatey install specific cmake
+install:
+  - cinst cmake.portable --version 3.12.1
 
 # to run your custom scripts instead of automatic MSBuild
 build_script:
