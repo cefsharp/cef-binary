@@ -9,7 +9,7 @@ skip_non_tags: true
 
 #Cholatey install specific cmake
 install:
-  - cinst cmake.portable --version 3.12.1
+  - cinst cmake.portable --version 3.11.4
 
 # to run your custom scripts instead of automatic MSBuild
 build_script:
