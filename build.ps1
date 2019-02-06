@@ -324,8 +324,12 @@ try
 			rm CMakeCache.txt -ErrorAction:SilentlyContinue
 			rm -r CMakeFiles -ErrorAction:SilentlyContinue
 			Write-Diagnostic "Running cmake"
-			&"$($env:ChocolateyInstall)\bin\cmake.exe" --version
-			&"$($env:ChocolateyInstall)\bin\cmake.exe" -LAH -G "$CmakeGenerator$CmakeArch" -DUSE_SANDBOX=Off -DCEF_RUNTIME_LIBRARY_FLAG=/MD .
+			$cmake_path = "cmake.exe";
+			if ($env:ChocolateyInstall -And (Test-Path ($env:ChocolateyInstall + "\" + $cmake_path) )){
+				$cmake_path = $env:ChocolateyInstall + "\" + $cmake_path;
+			}
+			&"$cmake_path" -LAH -G "$CmakeGenerator$CmakeArch" -DUSE_SANDBOX=Off -DCEF_RUNTIME_LIBRARY_FLAG=/MD .
+			
 			popd
 			$env:CEFSHARP_BUILD_IS_BOOTSTRAPPED = "$Toolchain$Platform"
 		}
