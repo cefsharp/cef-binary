@@ -325,8 +325,11 @@ try
 			rm -r CMakeFiles -ErrorAction:SilentlyContinue
 			Write-Diagnostic "Running cmake"
 			$cmake_path = "cmake.exe";
-			if ($env:ChocolateyInstall -And (Test-Path ($env:ChocolateyInstall + "\" + $cmake_path) )){
-				$cmake_path = $env:ChocolateyInstall + "\" + $cmake_path;
+			if ($env:ChocolateyInstall -And (Test-Path ($env:ChocolateyInstall + "\bin\" + $cmake_path)))
+			{
+				$cmake_path = $env:ChocolateyInstall + "\bin\" + $cmake_path;
+				
+				&"$cmake_path" --version
 			}
 			&"$cmake_path" -LAH -G "$CmakeGenerator$CmakeArch" -DUSE_SANDBOX=Off -DCEF_RUNTIME_LIBRARY_FLAG=/MD .
 			
