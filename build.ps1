@@ -14,7 +14,7 @@ param(
 	[string] $CefBinaryDir = "../cefsource/chromium/src/cef/binary_distrib/",
 
 	[Parameter(Position = 3)]
-	$CefVersion = "3.3578.1860.g36610bd",
+	$CefVersion = "73.1.12+gee4b49f+chromium-73.0.3683.75",
 
 	[ValidateSet("tar.bz2","zip","7z")]
 	[Parameter()]
@@ -47,7 +47,6 @@ try
 		$CefVersion = ($name -replace "cef_binary_", "") -replace "_windows64.$Extension";
 	}
 
-
 	$Cef = Join-Path $WorkingDir 'cef'
 	$CefInclude = Join-Path $Cef 'include'
 	$Cef32 = Join-Path $WorkingDir 'cef_binary_3.y.z_windows32'
@@ -73,9 +72,18 @@ try
 		$CefVersion = "$env:APPVEYOR_REPO_TAG_NAME".Substring(1)  # trim leading "v"
 		Write-Diagnostic "Setting version based on tag to $CefVersion"
 	}
-
-	# Take the cef version and strip the commit hash
-	$CefPackageVersion = $CefVersion.SubString(0, $CefVersion.LastIndexOf('.'))
+	
+	if($CefVersion.StartsWith('3.'))
+	{
+		# Take the cef version and strip the commit hash
+		$CefPackageVersion = $CefVersion.SubString(0, $CefVersion.LastIndexOf('.'))
+	}
+	else
+	{
+		# Take the cef version and strip the commit hash, chromium version 
+		# we should end up with something like 73.1.12
+		$CefPackageVersion = $CefVersion.SubString(0, $CefVersion.IndexOf('+'))
+	}
 
 	# https://github.com/jbake/Powershell_scripts/blob/master/Invoke-BatchFile.ps1
 	function Invoke-BatchFile
@@ -531,7 +539,7 @@ try
 		if (-not (Test-Path $LocalFile))
 		{
 			Write-Diagnostic "Downloading $Cef32FileName; this will take a while as the file is $Cef32FileSize MB."
-			$Client.DownloadFile($CefBuildServerUrl + $Cef32FileName, $LocalFile);
+			$Client.DownloadFile($CefBuildServerUrl + [System.Web.HttpUtility]::UrlEncode($Cef32FileName), $LocalFile);
 			
 			$Cef32LocalFileHash = (Get-FileHash -Path $LocalFile -Algorithm SHA1).Hash
 			
@@ -570,7 +578,7 @@ try
 		if (-not (Test-Path $LocalFile))
 		{
 			Write-Diagnostic "Downloading $Cef64FileName; this will take a while as the file is $Cef64FileSize MB."
-			$Client.DownloadFile($CefBuildServerUrl + $Cef64FileName, $LocalFile);
+			$Client.DownloadFile($CefBuildServerUrl + [System.Web.HttpUtility]::UrlEncode($Cef64FileName), $LocalFile);
 			
 			$Cef64LocalFileHash = (Get-FileHash -Path $LocalFile -Algorithm SHA1).Hash
 			
