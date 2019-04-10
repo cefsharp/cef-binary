@@ -20,6 +20,8 @@ param(
 	[Parameter()]
 	[string] $Extension = "tar.bz2",
 	[Switch] $NoDebugBuild
+	[string] $Suffix
+	
 )
 
 Set-StrictMode -version latest
@@ -83,6 +85,11 @@ try
 		# Take the cef version and strip the commit hash, chromium version 
 		# we should end up with something like 73.1.12
 		$CefPackageVersion = $CefVersion.SubString(0, $CefVersion.IndexOf('+'))
+	}
+	
+	if($Suffix)
+	{
+		$CefPackageVersion = $CefPackageVersion + '-' + $Suffix
 	}
 
 	# https://github.com/jbake/Powershell_scripts/blob/master/Invoke-BatchFile.ps1
