@@ -17,11 +17,14 @@ param(
 	$CefVersion = "73.1.12+gee4b49f+chromium-73.0.3683.75",
 
 	[ValidateSet("tar.bz2","zip","7z")]
-	[Parameter()]
+	[Parameter(Position = 4)]
 	[string] $Extension = "tar.bz2",
-	[Switch] $NoDebugBuild
-	[string] $Suffix
 	
+	[Parameter(Position = 5)]
+	[Switch] $NoDebugBuild
+	
+	[Parameter(Position = 6)]
+	[string] $Suffix
 )
 
 Set-StrictMode -version latest
