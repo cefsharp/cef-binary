@@ -21,7 +21,7 @@ param(
 	[string] $Extension = "tar.bz2",
 	
 	[Parameter(Position = 5)]
-	[Switch] $NoDebugBuild
+	[Switch] $NoDebugBuild,
 	
 	[Parameter(Position = 6)]
 	[string] $Suffix
