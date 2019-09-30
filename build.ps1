@@ -293,7 +293,7 @@ try
 			
 				Write-Diagnostic "VSWhere path $vswherePath"
 			
-				$VS2017InstallPath = & $vswherePath -version 15 -property installationPath
+				$VS2017InstallPath = & $vswherePath -version '[15.0,16.0)' -property installationPath
 			
 				Write-Diagnostic "VS2017InstallPath: $VS2017InstallPath"
 				
