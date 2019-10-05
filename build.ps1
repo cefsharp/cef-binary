@@ -1,7 +1,7 @@
 #requires -Version 5
 
 param(
-	[ValidateSet("vs2012", "vs2013", "vs2015", "vs2017", "nupkg", "nupkg-only")]
+	[ValidateSet("vs2012", "vs2013", "vs2015", "vs2017", "vs2019", "nupkg", "nupkg-only")]
 	[Parameter(Position = 0)]
 	[string] $Target = "nupkg",
 
@@ -198,28 +198,32 @@ try
 		md 'cef\win32\debug\VS2013' | Out-Null
 		md 'cef\win32\debug\VS2015' | Out-Null
 		md 'cef\win32\debug\VS2017' | Out-Null
+		md 'cef\win32\debug\VS2019' | Out-Null
 		md 'cef\win32\release' | Out-Null
 		md 'cef\win32\release\VS2012' | Out-Null
 		md 'cef\win32\release\VS2013' | Out-Null
 		md 'cef\win32\release\VS2015' | Out-Null
 		md 'cef\win32\release\VS2017' | Out-Null
+		md 'cef\win32\release\VS2019' | Out-Null
 		md 'cef\x64' | Out-Null
 		md 'cef\x64\debug' | Out-Null
 		md 'cef\x64\debug\VS2012' | Out-Null
 		md 'cef\x64\debug\VS2013' | Out-Null
 		md 'cef\x64\debug\VS2015' | Out-Null
 		md 'cef\x64\debug\VS2017' | Out-Null
+		md 'cef\x64\debug\VS2019' | Out-Null
 		md 'cef\x64\release' | Out-Null
 		md 'cef\x64\release\VS2012' | Out-Null
 		md 'cef\x64\release\VS2013' | Out-Null
 		md 'cef\x64\release\VS2015' | Out-Null
 		md 'cef\x64\release\VS2017' | Out-Null
+		md 'cef\x64\release\VS2019' | Out-Null
 	}
 
 	function Msvs
 	{
 		param(
-			[ValidateSet('v110', 'v120', 'v140', 'v141')]
+			[ValidateSet('v110', 'v120', 'v140', 'v141', 'v142')]
 			[Parameter(Position = 0, ValueFromPipeline = $true)]
 			[string] $Toolchain,
 
@@ -270,12 +274,15 @@ try
 				$VXXCommonTools = Join-Path $env:VS140COMNTOOLS '..\..\vc'
 				$CmakeGenerator = 'Visual Studio 14'
 			}
-			'v141'
+			{($_ -eq 'v141') -or ($_ -eq 'v142')}
 			{
+				$VS_VER = 15;
+				$VS_OFFICIAL_VER = 2017;
+				if ($_ -eq 'v142'){$VS_VER=16;$VS_OFFICIAL_VER=2019;}
 				$programFilesDir = (${env:ProgramFiles(x86)}, ${env:ProgramFiles} -ne $null)[0]
 
 				$vswherePath = Join-Path $programFilesDir 'Microsoft Visual Studio\Installer\vswhere.exe'
-				#Check if we already have vswhere which is included in newer versions of VS2017
+				#Check if we already have vswhere which is included in newer versions of VS2017/VS2019
 				if(-not (Test-Path $vswherePath))
 				{
 					Write-Diagnostic "Downloading VSWhere as no install found at $vswherePath"
@@ -292,19 +299,20 @@ try
 				}
 			
 				Write-Diagnostic "VSWhere path $vswherePath"
+
+				$versionSearchStr = "[$VS_VER.0," + ($VS_VER+1) + ".0)"
+				$VS2017InstallPath = & $vswherePath -version $versionSearchStr -property installationPath
 			
-				$VS2017InstallPath = & $vswherePath -version '[15.0,16.0)' -property installationPath
-			
-				Write-Diagnostic "VS2017InstallPath: $VS2017InstallPath"
+				Write-Diagnostic "$($VS_OFFICIAL_VER)InstallPath: $VS2017InstallPath"
 				
 				if($VS2017InstallPath -eq $null -or !(Test-Path $VS2017InstallPath))
 				{
-					Die "Visual Studio 2017 was not found"
+					Die "Visual Studio $VS_OFFICIAL_VER was not found"
 				}
 				
-				$VisualStudioVersion = '15.0'
+				$VisualStudioVersion = "$VS_VER.0"
 				$VXXCommonTools = Join-Path $VS2017InstallPath VC\Auxiliary\Build
-				$CmakeGenerator = 'Visual Studio 15'
+				$CmakeGenerator = "Visual Studio $VS_VER"
 			}
 		}
 
@@ -317,7 +325,6 @@ try
 		$CefDir = TernaryReturn ($Platform -eq 'x86') $Cef32 $Cef64
 
 		$Arch = TernaryReturn ($Platform -eq 'x64') 'x64' 'win32'
-		$CmakeArch = TernaryReturn ($Platform -eq 'x64') ' Win64' ''
 
 		$VCVarsAll = Join-Path $VXXCommonTools vcvarsall.bat
 		if (-not (Test-Path $VCVarsAll))
@@ -341,16 +348,14 @@ try
 			# Remove previously generated CMake data for the different platform/toolchain
 			rm CMakeCache.txt -ErrorAction:SilentlyContinue
 			rm -r CMakeFiles -ErrorAction:SilentlyContinue
-			Write-Diagnostic "Running cmake"
 			$cmake_path = "cmake.exe";
 			if ($env:ChocolateyInstall -And (Test-Path ($env:ChocolateyInstall + "\bin\" + $cmake_path)))
 			{
-				$cmake_path = $env:ChocolateyInstall + "\bin\" + $cmake_path;
-				
-				&"$cmake_path" --version
+				$cmake_path = $env:ChocolateyInstall + "\bin\" + $cmake_path;			
 			}
-			&"$cmake_path" -LAH -G "$CmakeGenerator$CmakeArch" -DUSE_SANDBOX=Off -DCEF_RUNTIME_LIBRARY_FLAG=/MD .
-			
+			&"$cmake_path" --version
+			Write-Diagnostic "Running cmake: $cmake_path -LAH -G '$CmakeGenerator' -A $Arch -DUSE_SANDBOX=Off -DCEF_RUNTIME_LIBRARY_FLAG=/MD ."
+			&"$cmake_path" -LAH -G "$CmakeGenerator" -A $Arch -DUSE_SANDBOX=Off -DCEF_RUNTIME_LIBRARY_FLAG=/MD .
 			popd
 			$env:CEFSHARP_BUILD_IS_BOOTSTRAPPED = "$Toolchain$Platform"
 		}
@@ -404,7 +409,7 @@ try
 	function VSX
 	{
 		param(
-			[ValidateSet('v110', 'v120', 'v140', 'v141')]
+			[ValidateSet('v110', 'v120', 'v140', 'v141', 'v142')]
 			[Parameter(Position = 0, ValueFromPipeline = $true)]
 			[string] $Toolchain
 		)
@@ -428,7 +433,7 @@ try
 	function CreateCefSdk
 	{
 		param(
-			[ValidateSet('v110', 'v120', 'v140', 'v141')]
+			[ValidateSet('v110', 'v120', 'v140', 'v141', 'v142')]
 			[Parameter(Position = 0, ValueFromPipeline = $true)]
 			[string] $Toolchain,
 
@@ -444,7 +449,11 @@ try
 		Write-Diagnostic "Creating sdk for $Toolchain"
 
 		$VisualStudioVersion = $null
-		if($Toolchain -eq "v141")
+		if($Toolchain -eq "v142")
+		{
+			$VisualStudioVersion = "VS2019"
+		}
+		elseif($Toolchain -eq "v141")
 		{
 			$VisualStudioVersion = "VS2017"
 		}
@@ -774,6 +783,10 @@ try
 		"vs2017"
 		{
 			VSX v141
+		}
+		"vs2019"
+		{
+			VSX v142
 		}
 	}
 }
