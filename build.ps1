@@ -14,7 +14,7 @@ param(
 	[string] $CefBinaryDir = "../cefsource/chromium/src/cef/binary_distrib/",
 
 	[Parameter(Position = 3)]
-	$CefVersion = "73.1.12+gee4b49f+chromium-73.0.3683.75",
+	$CefVersion = "77.1.11+g1687a63+chromium-77.0.3865.90",
 
 	[ValidateSet("tar.bz2","zip","7z")]
 	[Parameter(Position = 4)]
@@ -278,7 +278,13 @@ try
 			{
 				$VS_VER = 15;
 				$VS_OFFICIAL_VER = 2017;
-				if ($_ -eq 'v142'){$VS_VER=16;$VS_OFFICIAL_VER=2019;}
+				
+				if ($_ -eq 'v142')
+				{
+					$VS_VER=16;
+					$VS_OFFICIAL_VER=2019;
+				}
+				
 				$programFilesDir = (${env:ProgramFiles(x86)}, ${env:ProgramFiles} -ne $null)[0]
 
 				$vswherePath = Join-Path $programFilesDir 'Microsoft Visual Studio\Installer\vswhere.exe'
