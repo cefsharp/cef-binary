@@ -498,9 +498,11 @@ try
 
 		# Build 32bit packages
 		. $Nuget pack nuget\cef.redist.nuspec -NoPackageAnalysis -Version $CefPackageVersion -Properties 'Configuration=Release;Platform=x86;CPlatform=windows32;' -OutputDirectory nuget
+		. $Nuget pack nuget\cef.redist.win.nuspec -NoPackageAnalysis -Version $CefPackageVersion -Properties 'Configuration=Release;Platform=x86;CPlatform=windows32;' -OutputDirectory nuget
 
 		# Build 64bit packages
 		. $Nuget pack nuget\cef.redist.nuspec -NoPackageAnalysis -Version $CefPackageVersion -Properties 'Configuration=Release;Platform=x64;CPlatform=windows64;' -OutputDirectory nuget
+		. $Nuget pack nuget\cef.redist.win.nuspec -NoPackageAnalysis -Version $CefPackageVersion -Properties 'Configuration=Release;Platform=x64;CPlatform=windows64;' -OutputDirectory nuget
 
 		# Build sdk
 		$Filename = Resolve-Path ".\nuget\cef.sdk.props"
@@ -513,6 +515,8 @@ try
 		{
 			appveyor PushArtifact "nuget\cef.redist.x86.$CefPackageVersion.nupkg"
 			appveyor PushArtifact "nuget\cef.redist.x64.$CefPackageVersion.nupkg"
+			appveyor PushArtifact "nuget\cef.redist.win.x86.$CefPackageVersion.nupkg"
+			appveyor PushArtifact "nuget\cef.redist.win.x64.$CefPackageVersion.nupkg"
 			appveyor PushArtifact "nuget\cef.sdk.$CefPackageVersion.nupkg"
 		}
 	}
