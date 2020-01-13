@@ -14,7 +14,7 @@ param(
 	[string] $CefBinaryDir = "../cefsource/chromium/src/cef/binary_distrib/",
 
 	[Parameter(Position = 3)]
-	$CefVersion = "77.1.11+g1687a63+chromium-77.0.3865.90",
+	$CefVersion = "79.1.10+g7ec49fa+chromium-79.0.3945.117",
 
 	[ValidateSet("tar.bz2","zip","7z")]
 	[Parameter(Position = 4)]
@@ -533,7 +533,7 @@ try
 			}
 			
 			$Client = New-Object System.Net.WebClient;
-			$Client.DownloadFile('http://nuget.org/nuget.exe', $Nuget);
+			$Client.DownloadFile('https://dist.nuget.org/win-x86-commandline/v5.4.0/nuget.exe', $Nuget);
 		}
 	}
 

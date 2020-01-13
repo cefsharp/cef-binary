@@ -6,23 +6,51 @@
     <authors>The Chromium Embedded Framework Authors</authors>
     <owners>The CefSharp Authors</owners>
     <projectUrl>https://github.com/cefsharp/cef-binary</projectUrl>
-    <iconUrl>https://raw.github.com/cefsharp/cef-binary/master/NuGet/cef128x128.gif</iconUrl>
-    <licenseUrl>https://raw.github.com/cefsharp/cef-binary/master/LICENSE.txt</licenseUrl>
+    <icon>images\cef128x128.png</icon>
+    <license type="file">LICENSE.txt</license>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
-    <description>CEF - the Chromium Embedded Framework.
+	<!--
+	TODO: Add repository link for CEF release branch and commit
+	https://docs.microsoft.com/en-us/nuget/reference/nuspec#repository
+	-->
+	<!--
+	<repository type="git" url="https://bitbucket.org/chromiumembedded/cef.git" branch="3945" commit="7ec49fabd56beae20e6b4c825c085231140c3b36" />
+	-->
+    <description>Chromium Embedded Framework (CEF) Release Distribution
     NOTE: This package is maintained on behalf of the CEF authors by the CefSharp project at http://github.com/cefsharp/cef-binary</description>
     <tags>chrome chromium native embedded browser CEF nativepackage</tags>
-    <copyright>Copyright © 2008-2019</copyright>
+    <copyright>Copyright © 2008-2020</copyright>
+	<contentFiles>
+		<!--
+		Architecture-specific files folder hierarchy lost (native subfolders) 
+		https://github.com/NuGet/Home/issues/7698#issuecomment-455368655
+		We have to copy swiftshader and locales via contentFiles
+		-->
+		<files include="any\any\runtimes\**" buildAction="Content" copyToOutput="true" />
+	</contentFiles>
   </metadata>
   <files>
-    <file src="..\cef_binary_3.y.z_$CPlatform$\$Configuration$\swiftshader\*.dll" target="runtimes\win-$Platform$\native\swiftshader" />
-	<file src="..\cef_binary_3.y.z_$CPlatform$\Resources\locales\*.pak" target="runtimes\win-$Platform$\native\locales"/>
 	<file src="..\cef_binary_3.y.z_$CPlatform$\$Configuration$\*.dll" target="runtimes\win-$Platform$\native" />
     <file src="..\cef_binary_3.y.z_$CPlatform$\$Configuration$\*.bin" target="runtimes\win-$Platform$\native\" />
     <file src="..\cef_binary_3.y.z_$CPlatform$\Resources\*.pak" target="runtimes\win-$Platform$\native\"/>
     <file src="..\cef_binary_3.y.z_$CPlatform$\Resources\*.dat" target="runtimes\win-$Platform$\native\"/>
 	<file src="..\cef_binary_3.y.z_$CPlatform$\Readme.txt" target="\"/>
+	
+	<!--
+	PackageReference projects only support ContentFiles while packages.config only support content
+	So we have to copy the files twice (thankfully zip will negate any size concerns for the nupkg, extra space on disk though)
+	https://docs.microsoft.com/en-us/nuget/reference/nuspec#including-content-files
+	-->
+	<file src="..\cef_binary_3.y.z_$CPlatform$\$Configuration$\swiftshader\*.dll" target="contentFiles\any\any\runtimes\win-x64\native\swiftshader" />
+	<file src="..\cef_binary_3.y.z_$CPlatform$\Resources\locales\*.pak" target="contentFiles\any\any\runtimes\win-x64\native\locales"/>
+	
+	<!-- Commented out for now, will need testing, focus on PackageReference format -->
+	<!-- <file src="..\cef_binary_3.y.z_$CPlatform$\$Configuration$\swiftshader\*.dll" target="content\swiftshader" /> -->
+	<!-- <file src="..\cef_binary_3.y.z_$CPlatform$\Resources\locales\*.pak" target="content\locales"/> -->
 
-    <file src="cef.redist.win-$Platform$.props" target="build\" />
+	<file src="cef.redist.win-$Platform$.props" target="build\" />
+	
+	<file src="..\LICENSE.txt" target="" />
+	<file src="cef128x128.png" target="images\" />
   </files>
 </package>
