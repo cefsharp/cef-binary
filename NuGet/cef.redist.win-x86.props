@@ -5,5 +5,7 @@
     -->
   <ItemGroup>
     <CefRedist32 Include="$(MSBuildThisFileDirectory)..\runtimes\win-x86\native\**\*.*" />
+	<CefRedistLocales32 Include="$(MSBuildThisFileDirectory)..\contentFiles\any\any\runtimes\win-x86\native\locales\*.*" />
+	<CefRedistSwiftShader32 Include="$(MSBuildThisFileDirectory)..\contentFiles\any\any\runtimes\win-x86\native\swiftshader\*.*" />
   </ItemGroup>
 </Project>
