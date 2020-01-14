@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
   <metadata minClientVersion="4.0.0">
-    <id>cef.redist.win-$Platform$</id>
+    <id>chromiumembeddedframework.redist.win-$Platform$</id>
     <version>$version$</version>
     <authors>The Chromium Embedded Framework Authors</authors>
     <owners>The CefSharp Authors</owners>
@@ -48,7 +48,7 @@
     <!-- <file src="..\cef_binary_3.y.z_$CPlatform$\$Configuration$\swiftshader\*.dll" target="content\swiftshader" /> -->
     <!-- <file src="..\cef_binary_3.y.z_$CPlatform$\Resources\locales\*.pak" target="content\locales"/> -->
 
-    <file src="cef.redist.win-$Platform$.props" target="build\" />
+    <file src="chromiumembeddedframework.redist.win-$Platform$.props" target="build\" />
     
     <file src="..\LICENSE.txt" target="" />
     <file src="cef128x128.png" target="images\" />
