@@ -1,0 +1,11 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <!--
+    Using wildcard matching as per https://stackoverflow.com/a/17252671
+    -->  
+  <ItemGroup>
+    <CefRedist64 Include="$(MSBuildThisFileDirectory)..\runtimes\win-x64\native\**\*.*" />
+    <CefRedistLocales64 Include="$(MSBuildThisFileDirectory)..\contentFiles\any\any\runtimes\win-x64\native\locales\*.*" />
+    <CefRedistSwiftShader64 Include="$(MSBuildThisFileDirectory)..\contentFiles\any\any\runtimes\win-x64\native\swiftshader\*.*" />
+  </ItemGroup>
+</Project>
