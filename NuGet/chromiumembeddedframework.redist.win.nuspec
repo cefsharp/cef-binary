@@ -41,8 +41,8 @@
     So we have to copy the files twice (thankfully zip will negate any size concerns for the nupkg, extra space on disk though)
     https://docs.microsoft.com/en-us/nuget/reference/nuspec#including-content-files
     -->
-    <file src="..\cef_binary_3.y.z_$CPlatform$\$Configuration$\swiftshader\*.dll" target="contentFiles\any\any\runtimes\win-x64\native\swiftshader" />
-    <file src="..\cef_binary_3.y.z_$CPlatform$\Resources\locales\*.pak" target="contentFiles\any\any\runtimes\win-x64\native\locales"/>
+    <file src="..\cef_binary_3.y.z_$CPlatform$\$Configuration$\swiftshader\*.dll" target="contentFiles\any\any\runtimes\win-$Platform$\native\swiftshader" />
+    <file src="..\cef_binary_3.y.z_$CPlatform$\Resources\locales\*.pak" target="contentFiles\any\any\runtimes\win-$Platform$\native\locales"/>
     
     <!-- Commented out for now, will need testing, focus on PackageReference format -->
     <!-- <file src="..\cef_binary_3.y.z_$CPlatform$\$Configuration$\swiftshader\*.dll" target="content\swiftshader" /> -->
