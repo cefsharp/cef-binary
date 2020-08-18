@@ -50,7 +50,7 @@
 
     <file src="chromiumembeddedframework.runtime.win-$Platform$.props" target="build\" />
     
-    <file src="..\LICENSE.txt" target="" />
+    <file src="..\cef_binary_3.y.z_windows32\LICENSE.txt" target="LICENSE.txt" />
     <file src="cef128x128.png" target="images\" />
   </files>
 </package>
