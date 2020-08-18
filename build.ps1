@@ -357,7 +357,7 @@ try
 			$cmake_path = "cmake.exe";
 			if ($env:ChocolateyInstall -And (Test-Path ($env:ChocolateyInstall + "\bin\" + $cmake_path)))
 			{
-				$cmake_path = $env:ChocolateyInstall + "\bin\" + $cmake_path;			
+				$cmake_path = $env:ChocolateyInstall + "\bin\" + $cmake_path;           
 			}
 			&"$cmake_path" --version
 			Write-Diagnostic "Running cmake: $cmake_path -LAH -G '$CmakeGenerator' -A $Arch -DUSE_SANDBOX=Off -DCEF_RUNTIME_LIBRARY_FLAG=/MD ."
@@ -731,6 +731,21 @@ try
 			Remove-Item $Folder
 		}
 	}
+	
+	function WriteVersionToRuntimeJson
+	{
+		$Filename = Join-Path $WorkingDir NuGet\chromiumembeddedframework.runtime.json
+		
+		Write-Diagnostic  "Write Version ($CefPackageVersion) to $Filename"
+		$Regex1  = '": ".*"';
+		$Replace = '": "' + $CefPackageVersion + '"';
+		
+		$RunTimeJsonData = Get-Content -Encoding UTF8 $Filename
+		$NewString = $RunTimeJsonData -replace $Regex1, $Replace
+		
+		$Utf8NoBomEncoding = New-Object System.Text.UTF8Encoding $False
+		[System.IO.File]::WriteAllLines($Filename, $NewString, $Utf8NoBomEncoding)
+	}
 
 	function CheckDependencies()
 	{
@@ -748,6 +763,7 @@ try
 	}
 
 	CheckDependencies
+	WriteVersionToRuntimeJson
 
 	switch -Exact ($DownloadBinary)
 	{
