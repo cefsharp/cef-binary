@@ -14,7 +14,7 @@ param(
 	[string] $CefBinaryDir = "../cefsource/chromium/src/cef/binary_distrib/",
 
 	[Parameter(Position = 3)]
-	$CefVersion = "84.4.1+gfdc7504+chromium-84.0.4147.105",
+	$CefVersion = "85.3.12+g3e94ebf+chromium-85.0.4183.121",
 
 	[ValidateSet("tar.bz2","zip","7z")]
 	[Parameter(Position = 4)]
