@@ -14,7 +14,7 @@ param(
 	[string] $CefBinaryDir = "../cefsource/chromium/src/cef/binary_distrib/",
 
 	[Parameter(Position = 3)]
-	$CefVersion = "84.4.1+gfdc7504+chromium-84.0.4147.105",
+	$CefVersion = "85.3.12+g3e94ebf+chromium-85.0.4183.121",
 
 	[ValidateSet("tar.bz2","zip","7z")]
 	[Parameter(Position = 4)]
@@ -498,14 +498,14 @@ try
 
 		# Build 32bit packages
 		. $Nuget pack nuget\cef.redist.nuspec -NoPackageAnalysis -Version $CefPackageVersion -Properties 'Configuration=Release;Platform=x86;CPlatform=windows32;' -OutputDirectory nuget
-		. $Nuget pack nuget\chromiumembeddedframework.runtime.win.nuspec -NoPackageAnalysis -Version $CefPackageVersion -Properties 'Configuration=Release;Platform=x86;CPlatform=windows32;' -OutputDirectory nuget
+		. $Nuget pack nuget\runtime.chromiumembeddedframework.win.nuspec -NoPackageAnalysis -Version $CefPackageVersion -Properties 'Configuration=Release;Platform=x86;CPlatform=windows32;' -OutputDirectory nuget
 
 		# Build 64bit packages
 		. $Nuget pack nuget\cef.redist.nuspec -NoPackageAnalysis -Version $CefPackageVersion -Properties 'Configuration=Release;Platform=x64;CPlatform=windows64;' -OutputDirectory nuget
-		. $Nuget pack nuget\chromiumembeddedframework.runtime.win.nuspec -NoPackageAnalysis -Version $CefPackageVersion -Properties 'Configuration=Release;Platform=x64;CPlatform=windows64;' -OutputDirectory nuget
+		. $Nuget pack nuget\runtime.chromiumembeddedframework.win.nuspec -NoPackageAnalysis -Version $CefPackageVersion -Properties 'Configuration=Release;Platform=x64;CPlatform=windows64;' -OutputDirectory nuget
 		
 		# Meta Package
-		. $Nuget pack nuget\chromiumembeddedframework.runtime.nuspec -NoPackageAnalysis -Version $CefPackageVersion -OutputDirectory nuget
+		. $Nuget pack nuget\chromiumembeddedframework.nuspec -NoPackageAnalysis -Version $CefPackageVersion -OutputDirectory nuget
 
 		# Build sdk
 		$Filename = Resolve-Path ".\nuget\cef.sdk.props"
@@ -518,9 +518,9 @@ try
 		{
 			appveyor PushArtifact "nuget\cef.redist.x86.$CefPackageVersion.nupkg"
 			appveyor PushArtifact "nuget\cef.redist.x64.$CefPackageVersion.nupkg"
-			appveyor PushArtifact "nuget\chromiumembeddedframework.runtime.win-x86.$CefPackageVersion.nupkg"
-			appveyor PushArtifact "nuget\chromiumembeddedframework.runtime.win-x64.$CefPackageVersion.nupkg"
-			appveyor PushArtifact "nuget\chromiumembeddedframework.runtime.$CefPackageVersion.nupkg"
+			appveyor PushArtifact "nuget\runtime.chromiumembeddedframework.win-x86.$CefPackageVersion.nupkg"
+			appveyor PushArtifact "nuget\runtime.chromiumembeddedframework.win-x64.$CefPackageVersion.nupkg"
+			appveyor PushArtifact "nuget\chromiumembeddedframework.$CefPackageVersion.nupkg"
 			appveyor PushArtifact "nuget\cef.sdk.$CefPackageVersion.nupkg"
 		}
 	}

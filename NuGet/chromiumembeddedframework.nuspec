@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
   <metadata minClientVersion="4.0.0">
-    <id>chromiumembeddedframework.runtime</id>
+    <id>chromiumembeddedframework</id>
     <version>$version$</version>
     <authors>The Chromium Embedded Framework Authors</authors>
     <owners>The CefSharp Authors</owners>
