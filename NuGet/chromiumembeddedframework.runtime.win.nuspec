@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
-  <metadata minClientVersion="4.0.0">
+  <metadata minClientVersion="5.0.0">
     <id>chromiumembeddedframework.runtime.win-$Platform$</id>
     <version>$version$</version>
     <authors>The Chromium Embedded Framework Authors</authors>
@@ -26,7 +26,7 @@
         https://github.com/NuGet/Home/issues/7698#issuecomment-455368655
         We have to copy swiftshader and locales via contentFiles
         -->
-        <files include="any\any\runtimes\**" buildAction="Content" copyToOutput="true" />
+        <files include="any\any\**" buildAction="Content" copyToOutput="true" />
     </contentFiles>
   </metadata>
   <files>
@@ -48,7 +48,8 @@
     <!-- <file src="..\cef_binary_3.y.z_$CPlatform$\$Configuration$\swiftshader\*.dll" target="content\swiftshader" /> -->
     <!-- <file src="..\cef_binary_3.y.z_$CPlatform$\Resources\locales\*.pak" target="content\locales"/> -->
 
-    <file src="chromiumembeddedframework.runtime.win-$Platform$.props" target="build\" />
+    <!-- https://github.com/NuGet/Home/wiki/Allow-package--authors-to-define-build-assets-transitive-behavior -->
+	<file src="chromiumembeddedframework.runtime.win-$Platform$.props" target="buildTransitive\" />
     
     <file src="..\cef_binary_3.y.z_windows32\LICENSE.txt" target="LICENSE.txt" />
     <file src="cef128x128.png" target="images\" />
