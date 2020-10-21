@@ -48,7 +48,6 @@
     <!-- <file src="..\cef_binary_3.y.z_$CPlatform$\$Configuration$\swiftshader\*.dll" target="content\swiftshader" /> -->
     <!-- <file src="..\cef_binary_3.y.z_$CPlatform$\Resources\locales\*.pak" target="content\locales"/> -->
 
-    <!-- https://github.com/NuGet/Home/wiki/Allow-package--authors-to-define-build-assets-transitive-behavior -->
 	<file src="chromiumembeddedframework.runtime.win-$Platform$.props" target="buildTransitive\" />
     
     <file src="..\cef_binary_3.y.z_windows32\LICENSE.txt" target="LICENSE.txt" />
