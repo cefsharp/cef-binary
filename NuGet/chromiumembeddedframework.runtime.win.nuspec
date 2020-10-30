@@ -20,33 +20,18 @@
     NOTE: This package is maintained on behalf of the CEF authors by the CefSharp project at http://github.com/cefsharp/cef-binary</description>
     <tags>chrome chromium native embedded browser CEF nativepackage</tags>
     <copyright>Copyright © 2008-2020</copyright>
-    <contentFiles>
-        <!--
-        Architecture-specific files folder hierarchy lost (native subfolders) 
-        https://github.com/NuGet/Home/issues/7698#issuecomment-455368655
-        We have to copy swiftshader and locales via contentFiles
-        -->
-        <files include="any\any\**" buildAction="Content" copyToOutput="true" />
-    </contentFiles>
   </metadata>
   <files>
-    <file src="..\cef_binary_3.y.z_$CPlatform$\$Configuration$\*.dll" target="runtimes\win-$Platform$\native" />
+    <!-- Architecture-specific files folder hierarchy lost (native subfolders)  -->
+	<!-- https://github.com/NuGet/Home/issues/7698#issuecomment-455368655 -->
+	<!-- We have to copy swiftshader and locales via manually -->
+	<file src="..\cef_binary_3.y.z_$CPlatform$\Resources\locales\*.pak" target="CEF\locales"/>
+	<file src="..\cef_binary_3.y.z_$CPlatform$\$Configuration$\swiftshader\*.dll" target="CEF\swiftshader" />
+	<file src="..\cef_binary_3.y.z_$CPlatform$\$Configuration$\*.dll" target="runtimes\win-$Platform$\native" />
     <file src="..\cef_binary_3.y.z_$CPlatform$\$Configuration$\*.bin" target="runtimes\win-$Platform$\native\" />
     <file src="..\cef_binary_3.y.z_$CPlatform$\Resources\*.pak" target="runtimes\win-$Platform$\native\"/>
     <file src="..\cef_binary_3.y.z_$CPlatform$\Resources\*.dat" target="runtimes\win-$Platform$\native\"/>
     <file src="..\cef_binary_3.y.z_$CPlatform$\Readme.txt" target="\"/>
-    
-    <!--
-    PackageReference projects only support ContentFiles while packages.config only support content
-    So we have to copy the files twice (thankfully zip will negate any size concerns for the nupkg, extra space on disk though)
-    https://docs.microsoft.com/en-us/nuget/reference/nuspec#including-content-files
-    -->
-    <file src="..\cef_binary_3.y.z_$CPlatform$\$Configuration$\swiftshader\*.dll" target="contentFiles\any\any\swiftshader" />
-    <file src="..\cef_binary_3.y.z_$CPlatform$\Resources\locales\*.pak" target="contentFiles\any\any\locales"/>
-    
-    <!-- Commented out for now, will need testing, focus on PackageReference format -->
-    <!-- <file src="..\cef_binary_3.y.z_$CPlatform$\$Configuration$\swiftshader\*.dll" target="content\swiftshader" /> -->
-    <!-- <file src="..\cef_binary_3.y.z_$CPlatform$\Resources\locales\*.pak" target="content\locales"/> -->
 
 	<file src="chromiumembeddedframework.runtime.win-$Platform$.props" target="buildTransitive\" />
     

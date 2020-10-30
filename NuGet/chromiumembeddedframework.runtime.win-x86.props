@@ -5,7 +5,7 @@
     -->
   <ItemGroup>
     <CefRuntimeWin32 Include="$(MSBuildThisFileDirectory)..\runtimes\win-x86\native\**\*.*" />
-    <CefRuntimeWin32Locales Include="$(MSBuildThisFileDirectory)..\contentFiles\any\any\locales\*.*" />
-    <CefRuntimeWin32SwiftShader Include="$(MSBuildThisFileDirectory)..\contentFiles\any\any\swiftshader\*.*" />
+    <CefRuntimeWin32Locales Include="$(MSBuildThisFileDirectory)..\CEF\locales\*.*" />
+    <CefRuntimeWin32SwiftShader Include="$(MSBuildThisFileDirectory)..\CEF\swiftshader\*.*" />
   </ItemGroup>
 </Project>
