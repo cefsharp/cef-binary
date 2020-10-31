@@ -24,6 +24,6 @@
   <files>
     <file src="..\cef_binary_3.y.z_windows32\LICENSE.txt" target="LICENSE.txt" />
     <file src="chromiumembeddedframework.runtime.json" target="runtime.json" />
-	<file src="cef128x128.png" target="images\" />
+    <file src="cef128x128.png" target="images\" />
   </files>
 </package>
