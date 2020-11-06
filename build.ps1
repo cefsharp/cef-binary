@@ -545,7 +545,7 @@ try
 	{
 		$Client = New-Object System.Net.WebClient;
 
-		$CefBuildServerUrl = "http://opensource.spotify.com/cefbuilds/"
+		$CefBuildServerUrl = "https://cef-builds.spotifycdn.com/"
 		$CefBuildServerJsonPackageList = $CefBuildServerUrl + "index.json"
 
 		$CefBuildsJson = Invoke-WebRequest -Uri $CefBuildServerJsonPackageList | ConvertFrom-Json
