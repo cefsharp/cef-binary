@@ -2,7 +2,7 @@
 
 # README
 
-This is a repackaging fork of the Chromium Embedded Framework (CEF) binary distribution files for Windows, found at http://opensource.spotify.com/cefbuilds/index.html, into [these NuGet packages](https://www.nuget.org/packages?q=Id%3A%22cef.redist%22%2C%22cef.sdk%22)
+This is a repackaging fork of the Chromium Embedded Framework (CEF) binary distribution files for Windows, found at https://cef-builds.spotifycdn.com/index.html, into [these NuGet packages](https://www.nuget.org/packages?q=Id%3A%22cef.redist%22%2C%22cef.sdk%22)
 
 To make it work properly for developers on VS2013 or VS2015 wanting to develop [CefSharp](http://github.com/cefsharp/CefSharp), we need to do some local modifications ([use dynamic linking](https://bitbucket.org/chromiumembedded/cef/wiki/LinkingDifferentRunTimeLibraries)) to make CefSharp.Core compile properly. This purpose of this repository is to track and maintain these modifications as well as tooling for maintaining the NuGet packages.
 
