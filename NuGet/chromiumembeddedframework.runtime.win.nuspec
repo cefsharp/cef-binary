@@ -19,7 +19,7 @@
     <description>Chromium Embedded Framework (CEF) Release Distribution
     NOTE: This package is maintained on behalf of the CEF authors by the CefSharp project at http://github.com/cefsharp/cef-binary</description>
     <tags>chrome chromium native embedded browser CEF nativepackage</tags>
-    <copyright>Copyright © 2008-2020</copyright>
+    <copyright>Copyright © 2008-2021</copyright>
   </metadata>
   <files>
     <file src="..\cef_binary_3.y.z_$CPlatform$\$Configuration$\*.dll" target="runtimes\win-$Platform$\native" />
