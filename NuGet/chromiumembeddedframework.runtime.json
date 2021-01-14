@@ -9,6 +9,11 @@
       "chromiumembeddedframework.runtime": {
         "chromiumembeddedframework.runtime.win-x86": "88.1.2"
       }
-    }
+    },
+    "win-arm64": {
+      "chromiumembeddedframework.runtime": {
+        "chromiumembeddedframework.runtime.win-arm64": "88.1.2"
+      }
+    },
   }
 }

@@ -58,6 +58,8 @@ try
 	$Cef32vcx = Join-Path (Join-Path $Cef32 'libcef_dll_wrapper') 'libcef_dll_wrapper.vcxproj'
 	$Cef64 = Join-Path $WorkingDir  'cef_binary_3.y.z_windows64'
 	$Cef64vcx = Join-Path (Join-Path $Cef64 'libcef_dll_wrapper') 'libcef_dll_wrapper.vcxproj'
+	$CefArm64 = Join-Path $WorkingDir  'cef_binary_3.y.z_windowsarm64'
+	$CefArm64vcx = Join-Path (Join-Path $CefArm64 'libcef_dll_wrapper') 'libcef_dll_wrapper.vcxproj'
 
 	function Write-Diagnostic
 	{
@@ -218,6 +220,13 @@ try
 		md 'cef\x64\release\VS2015' | Out-Null
 		md 'cef\x64\release\VS2017' | Out-Null
 		md 'cef\x64\release\VS2019' | Out-Null
+		md 'cef\arm64' | Out-Null
+		md 'cef\arm64\debug' | Out-Null
+		md 'cef\arm64\debug\VS2017' | Out-Null
+		md 'cef\arm64\debug\VS2019' | Out-Null
+		md 'cef\arm64\release' | Out-Null
+		md 'cef\arm64\release\VS2017' | Out-Null
+		md 'cef\arm64\release\VS2019' | Out-Null
 	}
 
 	function Msvs
@@ -232,7 +241,7 @@ try
 			[string] $Configuration,
 
 			[Parameter(Position = 2, ValueFromPipeline = $true)]
-			[ValidateSet('x86', 'x64')]
+			[ValidateSet('x86', 'x64', 'arm64')]
 			[string] $Platform
 		)
 
@@ -327,10 +336,21 @@ try
 			Die 'Error unable to find any visual studio environment'
 		}
 
-		$CefProject = TernaryReturn ($Platform -eq 'x86') $Cef32vcx $Cef64vcx
-		$CefDir = TernaryReturn ($Platform -eq 'x86') $Cef32 $Cef64
-
-		$Arch = TernaryReturn ($Platform -eq 'x64') 'x64' 'win32'
+		$CefProject = $Cef32vcx
+		$CefDir = $Cef32
+		$Arch = 'win32'
+		if ($Platform -eq 'x64')
+		{
+			$CefProject = $Cef64vcx
+			$CefDir = $Cef64
+			$Arch = 'x64'
+		}
+		elseif ($Platform -eq 'arm64')
+		{
+			$CefProject = $CefArm64vcx
+			$CefDir = $CefArm64
+			$Arch = 'arm64'
+		}
 
 		$VCVarsAll = Join-Path $VXXCommonTools vcvarsall.bat
 		if (-not (Test-Path $VCVarsAll))
@@ -340,15 +360,22 @@ try
 		}
 
 		$VCXProj = $Cef32vcx
+		$VCVarsAllArch = 'x86'
 		if ($Platform -eq 'x64')
 		{
 			$VCXProj = $Cef64vcx
+			$VCVarsAllArch = 'x64'
+		}
+		elseif ($Platform -eq 'arm64')
+		{
+			$VCXProj = $CefArm64vcx
+			$VCVarsAllArch = 'amd64_arm64'
 		}
 
 		# Only configure build environment once
 		if ($env:CEFSHARP_BUILD_IS_BOOTSTRAPPED -ne "$Toolchain$Platform")
 		{
-			Invoke-BatchFile $VCVarsAll $Platform
+			Invoke-BatchFile $VCVarsAll $VCVarsAllArch
 			Write-Diagnostic "pushd $CefDir"
 			pushd $CefDir
 			# Remove previously generated CMake data for the different platform/toolchain
@@ -433,6 +460,15 @@ try
 		}
 		Msvs "$Toolchain" 'Release' 'x64'
 
+		if ($Toolchain -eq 'v141' -or $Toolchain -eq 'v142') 
+		{
+			if (! $NoDebugBuild)
+			{
+				Msvs "$Toolchain" 'Debug' 'arm64'
+			}
+			Msvs "$Toolchain" 'Release' 'arm64'
+		}
+
 		Write-Diagnostic "Finished build targeting toolchain $Toolchain"
 	}
 
@@ -448,7 +484,7 @@ try
 			[string] $Configuration,
 
 			[Parameter(Position = 2, ValueFromPipeline = $true)]
-			[ValidateSet('x86', 'x64')]
+			[ValidateSet('x86', 'x64', 'arm64')]
 			[string] $Platform
 		)
 
@@ -476,8 +512,18 @@ try
 			$VisualStudioVersion = "VS2013"
 		}
 
-		$Arch = TernaryReturn ($Platform -eq 'x64') 'x64' 'win32'
-		$CefArchDir = TernaryReturn ($Platform -eq 'x64') $Cef64 $Cef32
+		$Arch = 'win32'
+		$CefArchDir = $Cef32
+		if ($Platform -eq 'x64')
+		{
+			$Arch = 'x64'
+			$CefArchDir = $Cef64
+		}
+		elseif ($Platform -eq 'arm64')
+		{
+			$Arch = 'arm64'
+			$CefArchDir = $CefArm64
+		}
 
 		# cef_binary_3.y.z_windows32\out\debug\lib -> cef\win32\debug\vs2013
 		Copy-Item $CefArchDir\libcef_dll_wrapper\$Configuration\libcef_dll_wrapper.lib $Cef\$Arch\$Configuration\$VisualStudioVersion | Out-Null
@@ -504,6 +550,9 @@ try
 		. $Nuget pack nuget\cef.redist.nuspec -NoPackageAnalysis -Version $CefPackageVersion -Properties 'Configuration=Release;Platform=x64;CPlatform=windows64;' -OutputDirectory nuget
 		. $Nuget pack nuget\chromiumembeddedframework.runtime.win.nuspec -NoPackageAnalysis -Version $CefPackageVersion -Properties 'Configuration=Release;Platform=x64;CPlatform=windows64;' -OutputDirectory nuget
 		
+		# Build arm64 packages
+		. $Nuget pack nuget\chromiumembeddedframework.runtime.win.nuspec -NoPackageAnalysis -Version $CefPackageVersion -Properties 'Configuration=Release;Platform=arm64;CPlatform=windowsarm64;' -OutputDirectory nuget
+		
 		# Meta Package
 		. $Nuget pack nuget\chromiumembeddedframework.runtime.nuspec -NoPackageAnalysis -Version $CefPackageVersion -Properties 'Configuration=Release;' -OutputDirectory nuget
 
@@ -518,8 +567,10 @@ try
 		{
 			appveyor PushArtifact "nuget\cef.redist.x86.$CefPackageVersion.nupkg"
 			appveyor PushArtifact "nuget\cef.redist.x64.$CefPackageVersion.nupkg"
+			appveyor PushArtifact "nuget\cef.redist.arm64.$CefPackageVersion.nupkg"
 			appveyor PushArtifact "nuget\chromiumembeddedframework.runtime.win-x86.$CefPackageVersion.nupkg"
 			appveyor PushArtifact "nuget\chromiumembeddedframework.runtime.win-x64.$CefPackageVersion.nupkg"
+			appveyor PushArtifact "nuget\chromiumembeddedframework.runtime.win-arm64.$CefPackageVersion.nupkg"
 			appveyor PushArtifact "nuget\chromiumembeddedframework.runtime.$CefPackageVersion.nupkg"
 			appveyor PushArtifact "nuget\cef.sdk.$CefPackageVersion.nupkg"
 		}
@@ -551,6 +602,7 @@ try
 		$CefBuildsJson = Invoke-WebRequest -Uri $CefBuildServerJsonPackageList | ConvertFrom-Json
 		$CefWin32CefVersion = $CefBuildsJson.windows32.versions | Where-Object {$_.cef_version -eq $CefVersion}
 		$CefWin64CefVersion = $CefBuildsJson.windows64.versions | Where-Object {$_.cef_version -eq $CefVersion}
+		$CefWinArm64CefVersion = $CefBuildsJson.windowsarm64.versions | Where-Object {$_.cef_version -eq $CefVersion}
 
 		$Cef32FileName = ($CefWin32CefVersion.files | Where-Object {$_.type -eq "standard"}).name
 		$Cef32FileHash = ($CefWin32CefVersion.files | Where-Object {$_.type -eq "standard"}).sha1
@@ -558,11 +610,18 @@ try
 		$Cef64FileName = ($CefWin64CefVersion.files | Where-Object {$_.type -eq "standard"}).name
 		$Cef64FileHash = ($CefWin64CefVersion.files | Where-Object {$_.type -eq "standard"}).sha1
 		$Cef64FileSize = (($CefWin64CefVersion.files | Where-Object {$_.type -eq "standard"}).size /1MB)
+		$CefArm64FileName = ($CefWinArm64CefVersion.files | Where-Object {$_.type -eq "standard"}).name
+		$CefArm64FileHash = ($CefWinArm64CefVersion.files | Where-Object {$_.type -eq "standard"}).sha1
+		$CefArm64FileSize = (($CefWinArm64CefVersion.files | Where-Object {$_.type -eq "standard"}).size /1MB)
 
 		# Make sure there is a 32bit and 64bit version for the specified build
 		if ($CefWin32CefVersion.cef_version -ne $CefWin64CefVersion.cef_version)
 		{
 			Die 'Win32 version is $CefWin32CefVersion.cef_version and Win64 version is $CefWin64CefVersion.cef_version - both must be the same'
+		}
+		if ($CefWin32CefVersion.cef_version -ne $CefWinArm64CefVersion.cef_version)
+		{
+			Die 'Win32 version is $CefWin32CefVersion.cef_version and WinArm64 version is $CefWinArm64CefVersion.cef_version - both must be the same'
 		}
 
 		set-alias sz "$env:ProgramFiles\7-Zip\7z.exe"
@@ -644,6 +703,45 @@ try
 			Move-Item ($Folder + '\*') $Cef64 -force
 			Remove-Item $Folder
 		}
+
+		$LocalFile = Join-Path $WorkingDir $CefArm64FileName
+
+		if (-not (Test-Path $LocalFile))
+		{
+			Write-Diagnostic "Downloading $CefArm64FileName; this will take a while as the file is $CefArm64FileSize MB."
+			$Client.DownloadFile($CefBuildServerUrl + [System.Web.HttpUtility]::UrlEncode($CefArm64FileName), $LocalFile);
+			
+			$CefArm64LocalFileHash = (Get-FileHash -Path $LocalFile -Algorithm SHA1).Hash
+			
+			Write-Diagnostic "Download $CefArm64FileName complete"
+			Write-Diagnostic "Expected SHA1 for $CefArm64FileName $CefArm64FileHash"
+			Write-Diagnostic "Actual SHA1 for $CefArm64FileName $CefArm64LocalFileHash"
+						
+			if($CefArm64LocalFileHash -ne $CefArm64FileHash)
+			{
+				Die "SHA1 hash did not match"
+			}
+		}
+
+		if (-not (Test-Path (Join-Path $CefArm64 '\include\cef_version.h')))
+		{
+			# Extract bzip file
+			sz e $LocalFile
+
+			# Extract tar file
+			$TarFile = ($LocalFile).Substring(0, $LocalFile.length - 4)
+			sz x $TarFile
+
+			# Sleep for a short period to allow 7z to release it's file handles
+			sleep -m 2000
+
+			# Remove tar file
+			Remove-Item $TarFile
+
+			$Folder = Join-Path $WorkingDir ($CefArm64FileName.Substring(0, $CefArm64FileName.length - 8))
+			Move-Item ($Folder + '\*') $CefArm64 -force
+			Remove-Item $Folder
+		}
 	}
 
 	function CopyFromLocalCefBuild()
@@ -656,6 +754,7 @@ try
 
 		$Cef32FileName = "cef_binary_$($CefVersion)_windows32." + $Extension;
 		$Cef64FileName = "cef_binary_$($CefVersion)_windows64." + $Extension;
+		$CefArm64FileName = "cef_binary_$($CefVersion)_windowsarm64." + $Extension;
 
 		set-alias sz "$env:ProgramFiles\7-Zip\7z.exe"
 
@@ -728,6 +827,37 @@ try
 			}
 			$Folder = Join-Path $WorkingDir ($Cef64FileName.Substring(0, $Cef64FileName.length - ($Extension.Length+1)))
 			Move-Item ($Folder + '\*') $Cef64 -force
+			Remove-Item $Folder
+		}
+
+		$LocalFile = Join-Path $WorkingDir $CefArm64FileName
+
+		if (-not (Test-Path $LocalFile))
+		{
+			Write-Diagnostic "Copy $CefArm64FileName (approx 200mb)"
+			Copy-Item ($CefBuildDir+$CefArm64FileName) $LocalFile;
+			Write-Diagnostic "Copy of $CefArm64FileName complete"
+		}
+
+		if (-not (Test-Path (Join-Path $CefArm64 '\include\cef_version.h')))
+		{
+			# Extract bzip file
+			sz x $LocalFile;
+
+			if ($Extension -eq "tar.bz2")
+			{
+				# Extract tar file
+				$TarFile = ($LocalFile).Substring(0, $LocalFile.length - 4)
+				sz x $TarFile
+
+				# Sleep for a short period to allow 7z to release it's file handles
+				sleep -m 2000
+
+				# Remove tar file
+				Remove-Item $TarFile
+			}
+			$Folder = Join-Path $WorkingDir ($CefArm64FileName.Substring(0, $CefArm64FileName.length - ($Extension.Length+1)))
+			Move-Item ($Folder + '\*') $CefArm64 -force
 			Remove-Item $Folder
 		}
 	}
