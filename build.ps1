@@ -551,6 +551,7 @@ try
 		. $Nuget pack nuget\chromiumembeddedframework.runtime.win.nuspec -NoPackageAnalysis -Version $CefPackageVersion -Properties 'Configuration=Release;Platform=x64;CPlatform=windows64;' -OutputDirectory nuget
 		
 		# Build arm64 packages
+		. $Nuget pack nuget\cef.redist.nuspec -NoPackageAnalysis -Version $CefPackageVersion -Properties 'Configuration=Release;Platform=arm64;CPlatform=windowsarm64;' -OutputDirectory nuget
 		. $Nuget pack nuget\chromiumembeddedframework.runtime.win.nuspec -NoPackageAnalysis -Version $CefPackageVersion -Properties 'Configuration=Release;Platform=arm64;CPlatform=windowsarm64;' -OutputDirectory nuget
 		
 		# Meta Package
