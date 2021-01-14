@@ -369,7 +369,7 @@ try
 		elseif ($Platform -eq 'arm64')
 		{
 			$VCXProj = $CefArm64vcx
-			$VCVarsAllArch = 'amd64_arm64'
+			$VCVarsAllArch = 'x64_arm64'
 		}
 
 		# Only configure build environment once
