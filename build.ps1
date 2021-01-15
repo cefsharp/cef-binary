@@ -372,9 +372,18 @@ try
 			$VCVarsAllArch = 'x64_arm64'
 		}
 
-		# Only configure build environment once
-		if ($env:CEFSHARP_BUILD_IS_BOOTSTRAPPED -ne "$Toolchain$Platform")
+		# Store the current environment variables so that we can reset them after running the build.
+		# This is because vcvarsall.bat appends e.g. to the PATH variable every time it is called,
+		# which can eventually lead to an error like "The input line is too long." when the PATH
+		# gets too long.
+		$PreviousEnvPath = $Env:Path
+		$PreviousEnvLib = $Env:Lib
+		$PreviousEnvLibPath = $Env:LibPath
+		$PreviousEnvInclude = $Env:Include
+
+		try
 		{
+			# Configure build environment
 			Invoke-BatchFile $VCVarsAll $VCVarsAllArch
 			Write-Diagnostic "pushd $CefDir"
 			pushd $CefDir
@@ -390,53 +399,60 @@ try
 			Write-Diagnostic "Running cmake: $cmake_path -LAH -G '$CmakeGenerator' -A $Arch -DUSE_SANDBOX=Off -DCEF_RUNTIME_LIBRARY_FLAG=/MD ."
 			&"$cmake_path" -LAH -G "$CmakeGenerator" -A $Arch -DUSE_SANDBOX=Off -DCEF_RUNTIME_LIBRARY_FLAG=/MD .
 			popd
-			$env:CEFSHARP_BUILD_IS_BOOTSTRAPPED = "$Toolchain$Platform"
+
+			$Arguments = @(
+				"$CefProject",
+				"/t:rebuild",
+				"/p:VisualStudioVersion=$VisualStudioVersion",
+				"/p:Configuration=$Configuration",
+				"/p:PlatformToolset=$Toolchain",
+				"/p:Platform=$Arch",
+				"/p:PreferredToolArchitecture=$Arch",
+				"/p:ConfigurationType=StaticLibrary"
+			)
+
+			$StartInfo = New-Object System.Diagnostics.ProcessStartInfo
+			$StartInfo.FileName = "msbuild.exe"
+			$StartInfo.Arguments = $Arguments
+
+			$StartInfo.EnvironmentVariables.Clear()
+
+			#Brace must be on same line for foreach-object to work
+			Get-ChildItem -Path env:* | ForEach-Object {
+				$StartInfo.EnvironmentVariables.Add($_.Name, $_.Value)
+			}
+
+			$StartInfo.UseShellExecute = $false
+			$StartInfo.CreateNoWindow = $false
+			$StartInfo.RedirectStandardError = $true
+			$StartInfo.RedirectStandardOutput = $true
+
+			$Process = New-Object System.Diagnostics.Process
+			$Process.StartInfo = $startInfo
+			$Process.Start()
+
+			$stdout = $Process.StandardOutput.ReadToEnd()
+			$stderr = $Process.StandardError.ReadToEnd()
+
+			$Process.WaitForExit()
+
+			if ($Process.ExitCode -ne 0)
+			{
+				Write-Host "stdout: $stdout"
+				Write-Host "stderr: $stderr"
+				Die "Build failed"
+			}
+
+			CreateCefSdk $Toolchain $Configuration $Platform
 		}
-
-		$Arguments = @(
-			"$CefProject",
-			"/t:rebuild",
-			"/p:VisualStudioVersion=$VisualStudioVersion",
-			"/p:Configuration=$Configuration",
-			"/p:PlatformToolset=$Toolchain",
-			"/p:Platform=$Arch",
-			"/p:PreferredToolArchitecture=$Arch",
-			"/p:ConfigurationType=StaticLibrary"
-		)
-
-		$StartInfo = New-Object System.Diagnostics.ProcessStartInfo
-		$StartInfo.FileName = "msbuild.exe"
-		$StartInfo.Arguments = $Arguments
-
-		$StartInfo.EnvironmentVariables.Clear()
-
-		#Brace must be on same line for foreach-object to work
-		Get-ChildItem -Path env:* | ForEach-Object {
-			$StartInfo.EnvironmentVariables.Add($_.Name, $_.Value)
-		}
-
-		$StartInfo.UseShellExecute = $false
-		$StartInfo.CreateNoWindow = $false
-		$StartInfo.RedirectStandardError = $true
-		$StartInfo.RedirectStandardOutput = $true
-
-		$Process = New-Object System.Diagnostics.Process
-		$Process.StartInfo = $startInfo
-		$Process.Start()
-	
-		$stdout = $Process.StandardOutput.ReadToEnd()
-		$stderr = $Process.StandardError.ReadToEnd()
-	
-		$Process.WaitForExit()
-
-		if ($Process.ExitCode -ne 0)
+		finally
 		{
-			Write-Host "stdout: $stdout"
-			Write-Host "stderr: $stderr"
-			Die "Build failed"
+			# Reset the environment variables to their previous values.        
+			$Env:Path = $PreviousEnvPath
+			$Env:Lib = $PreviousEnvLib
+			$Env:LibPath = $PreviousEnvLibPath
+			$Env:Include = $PreviousEnvInclude
 		}
-
-		CreateCefSdk $Toolchain $Configuration $Platform
 	}
 
 	function VSX
