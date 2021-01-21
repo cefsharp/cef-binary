@@ -616,7 +616,7 @@ try
 		$CefBuildServerUrl = "https://cef-builds.spotifycdn.com/"
 		$CefBuildServerJsonPackageList = $CefBuildServerUrl + "index.json"
 
-		$CefBuildsJson = Invoke-WebRequest -Uri $CefBuildServerJsonPackageList | ConvertFrom-Json
+		$CefBuildsJson = Invoke-WebRequest -UseBasicParsing -Uri $CefBuildServerJsonPackageList | ConvertFrom-Json
 		$CefWin32CefVersion = $CefBuildsJson.windows32.versions | Where-Object {$_.cef_version -eq $CefVersion}
 		$CefWin64CefVersion = $CefBuildsJson.windows64.versions | Where-Object {$_.cef_version -eq $CefVersion}
 		$CefWinArm64CefVersion = $CefBuildsJson.windowsarm64.versions | Where-Object {$_.cef_version -eq $CefVersion}
