@@ -30,5 +30,6 @@
 	<file src="..\cef_binary_3.y.z_$CPlatform$\LICENSE.txt" target="LICENSE.txt" />
 
     <file src="cef.redist.$Platform$.props" target="build\" />
+	<file src="cef.redist.$Platform$.props" target="buildTransitive\" />	
   </files>
 </package>
