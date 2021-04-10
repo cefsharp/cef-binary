@@ -22,10 +22,10 @@ artifacts:
   - path: NuGet\*.nupkg
     name: nupkgfiles
 
-# Publish to appveyor nuget feed
-#deploy:
-  #provider: NuGet
-  #server: https://ci.appveyor.com/nuget/cefsharp-ci
-  #api_key:
-  #  secure: vNESC6IT/8JSw4bcX9i68/mj0K1Jhq1apofM4pQtbuw=
-  #artifact: nupkgfiles
+# Publish to myget feed
+deploy:
+  provider: NuGet
+  server: https://www.myget.org/F/cefsharp/api/v2/package
+  api_key:
+    secure: V8du2PPvMPok3Ya701jt5v2XWQgOZf52/H5wDHXBpKvXYkIIe8sonhVUy2TmEkqt
+  artifact: nupkgfiles
