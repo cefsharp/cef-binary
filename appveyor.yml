@@ -23,9 +23,9 @@ artifacts:
     name: nupkgfiles
 
 # Publish to myget feed
-deploy:
-  provider: NuGet
-  server: https://www.myget.org/F/cefsharp/api/v2/package
-  api_key:
-    secure: V8du2PPvMPok3Ya701jt5v2XWQgOZf52/H5wDHXBpKvXYkIIe8sonhVUy2TmEkqt
-  artifact: nupkgfiles
+#deploy:
+#  provider: NuGet
+#  server: https://www.myget.org/F/cefsharp/api/v2/package
+#  api_key:
+#    secure: V8du2PPvMPok3Ya701jt5v2XWQgOZf52/H5wDHXBpKvXYkIIe8sonhVUy2TmEkqt
+#  artifact: nupkgfiles
