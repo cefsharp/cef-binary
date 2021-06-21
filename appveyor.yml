@@ -18,9 +18,9 @@ build_script:
 # Disable tests
 test: off
 
-artifacts:
-  - path: NuGet\*.nupkg
-    name: nupkgfiles
+# artifacts:
+#  - path: NuGet\*.nupkg
+#    name: nupkgfiles
 
 # Publish to myget feed
 #deploy:
