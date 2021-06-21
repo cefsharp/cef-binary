@@ -26,6 +26,6 @@
       <_CefRedist64 Include="$(MSBuildThisFileDirectory)..\CEF\**\*.*" />
     </ItemGroup>
     <Message Importance="high" Text="Copying CEF Redist x64 files from $(MSBuildThisFileDirectory)..\CEF to $(CefRedist64TargetDir)" />
-    <Copy SourceFiles="@(_CefRedist64)" DestinationFolder="$(CefRedist64TargetDir)" SkipUnchangedFiles="true" />
+    <Copy SourceFiles="@(_CefRedist64)" DestinationFiles="@(_CefRedist64->'$(CefRedist64TargetDir)\%(RecursiveDir)%(Filename)%(Extension)')" SkipUnchangedFiles="true" />
   </Target>
 </Project>
