@@ -27,6 +27,13 @@
     <file src="..\cef_binary_3.y.z_$CPlatform$\Resources\*.pak" target="runtimes\win-$Platform$\native\"/>
     <file src="..\cef_binary_3.y.z_$CPlatform$\Resources\*.dat" target="runtimes\win-$Platform$\native\"/>
     <file src="..\cef_binary_3.y.z_$CPlatform$\Readme.txt" target="\"/>
+	<file src="chromiumembeddedframework.runtime.win-$Platform$.props" target="buildTransitive\" />
+	
+	<!-- Architecture-specific files folder hierarchy lost (native subfolders)  -->
+    <!-- https://github.com/NuGet/Home/issues/7698#issuecomment-455368655 -->
+    <!-- We have to copy swiftshader and locales via manually -->
+    <file src="..\cef_binary_3.y.z_$CPlatform$\Resources\locales\*.pak" target="CEF\win-$Platform$\locales"/>
+    <file src="..\cef_binary_3.y.z_$CPlatform$\$Configuration$\swiftshader\*.dll" target="CEF\win-$Platform$\swiftshader" />
     
     <file src="..\cef_binary_3.y.z_windows32\LICENSE.txt" target="LICENSE.txt" />
     <file src="cef128x128.png" target="images\" />
