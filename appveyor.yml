@@ -1,6 +1,6 @@
 image: Visual Studio 2017
 
-version: 88.1.6-CI{build}
+version: 92.0.16-CI{build}
 
 shallow_clone: true
 
