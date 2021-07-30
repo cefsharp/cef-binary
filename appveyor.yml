@@ -9,7 +9,10 @@ skip_non_tags: true
 
 # to run your custom scripts instead of automatic MSBuild
 build_script:
-  - ps: .\build.ps1
+  #- ps: .\build.ps1
+  # https://help.appveyor.com/discussions/problems/10014-false-build-fail-status
+  # Use cmd powershell as attempted workaround for https://github.com/cefsharp/cef-binary/issues/70
+  - cmd: powershell .\build.ps1
 
 # Disable tests
 test: off
