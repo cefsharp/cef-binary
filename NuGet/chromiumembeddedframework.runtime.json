@@ -2,17 +2,17 @@
   "runtimes": {
     "win-x64": {
       "chromiumembeddedframework.runtime": {
-        "chromiumembeddedframework.runtime.win-x64": "92.0.16"
+        "chromiumembeddedframework.runtime.win-x64": "93.0.1"
       }
     },
     "win-x86": {
       "chromiumembeddedframework.runtime": {
-        "chromiumembeddedframework.runtime.win-x86": "92.0.16"
+        "chromiumembeddedframework.runtime.win-x86": "93.0.1"
       }
     },
     "win-arm64": {
       "chromiumembeddedframework.runtime": {
-        "chromiumembeddedframework.runtime.win-arm64": "92.0.16"
+        "chromiumembeddedframework.runtime.win-arm64": "93.0.1"
       }
     },
   }
