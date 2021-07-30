@@ -6,5 +6,6 @@
   <ItemGroup>
 	<CefRuntimeWinArm64Locales Include="$(MSBuildThisFileDirectory)..\CEF\win-arm64\locales\*.*" />
     <CefRuntimeWinArm64SwiftShader Include="$(MSBuildThisFileDirectory)..\CEF\win-arm64\swiftshader\*.*" />
+	<CefRuntimeWinArm64Native Include="$(MSBuildThisFileDirectory)..\runtimes\win-arm64\native\*.*" />
   </ItemGroup>
 </Project>
