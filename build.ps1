@@ -477,6 +477,7 @@ try
 
 		# cef_binary_3.y.z_windows32\out\debug\lib -> cef\win32\debug\vs2019
 		Copy-Item $CefArchDir\libcef_dll_wrapper\$Configuration\libcef_dll_wrapper.lib $Cef\$Arch\$Configuration\$VisualStudioVersion | Out-Null
+		Copy-Item $CefArchDir\libcef_dll_wrapper\$Configuration\libcef_dll_wrapper.pdb $Cef\$Arch\$Configuration\$VisualStudioVersion | Out-Null
 
 		# cef_binary_3.y.z_windows32\debug -> cef\win32\debug
 		Copy-Item $CefArchDir\$Configuration\libcef.lib $Cef\$Arch\$Configuration | Out-Null
