@@ -1,7 +1,7 @@
 #requires -Version 5
 
 param(
-	[ValidateSet("vs2012", "vs2013", "vs2015", "vs2017", "vs2019", "nupkg", "nupkg-only")]
+	[ValidateSet("vs2019", "vs2021", "nupkg", "nupkg-only")]
 	[Parameter(Position = 0)]
 	[string] $Target = "nupkg",
 
@@ -14,7 +14,7 @@ param(
 	[string] $CefBinaryDir = "../cefsource/chromium/src/cef/binary_distrib/",
 
 	[Parameter(Position = 3)]
-	$CefVersion = "93.0.1+g2d46bb7+chromium-93.0.4577.15",
+	$CefVersion = "94.0.5+g506b164+chromium-94.0.4606.41",
 
 	[ValidateSet("tar.bz2","zip","7z")]
 	[Parameter(Position = 4)]
@@ -196,43 +196,31 @@ try
 		# Create default directory structure
 		md 'cef\win32' | Out-Null
 		md 'cef\win32\debug' | Out-Null
-		md 'cef\win32\debug\VS2012' | Out-Null
-		md 'cef\win32\debug\VS2013' | Out-Null
-		md 'cef\win32\debug\VS2015' | Out-Null
-		md 'cef\win32\debug\VS2017' | Out-Null
 		md 'cef\win32\debug\VS2019' | Out-Null
+		md 'cef\win32\debug\VS2021' | Out-Null
 		md 'cef\win32\release' | Out-Null
-		md 'cef\win32\release\VS2012' | Out-Null
-		md 'cef\win32\release\VS2013' | Out-Null
-		md 'cef\win32\release\VS2015' | Out-Null
-		md 'cef\win32\release\VS2017' | Out-Null
 		md 'cef\win32\release\VS2019' | Out-Null
+		md 'cef\win32\release\VS2021' | Out-Null
 		md 'cef\x64' | Out-Null
 		md 'cef\x64\debug' | Out-Null
-		md 'cef\x64\debug\VS2012' | Out-Null
-		md 'cef\x64\debug\VS2013' | Out-Null
-		md 'cef\x64\debug\VS2015' | Out-Null
-		md 'cef\x64\debug\VS2017' | Out-Null
 		md 'cef\x64\debug\VS2019' | Out-Null
+		md 'cef\x64\debug\VS2021' | Out-Null
 		md 'cef\x64\release' | Out-Null
-		md 'cef\x64\release\VS2012' | Out-Null
-		md 'cef\x64\release\VS2013' | Out-Null
-		md 'cef\x64\release\VS2015' | Out-Null
-		md 'cef\x64\release\VS2017' | Out-Null
 		md 'cef\x64\release\VS2019' | Out-Null
+		md 'cef\x64\release\VS2021' | Out-Null
 		md 'cef\arm64' | Out-Null
 		md 'cef\arm64\debug' | Out-Null
-		md 'cef\arm64\debug\VS2017' | Out-Null
 		md 'cef\arm64\debug\VS2019' | Out-Null
+		md 'cef\arm64\debug\VS2021' | Out-Null
 		md 'cef\arm64\release' | Out-Null
-		md 'cef\arm64\release\VS2017' | Out-Null
 		md 'cef\arm64\release\VS2019' | Out-Null
+		md 'cef\arm64\release\VS2021' | Out-Null
 	}
 
 	function Msvs
 	{
 		param(
-			[ValidateSet('v110', 'v120', 'v140', 'v141', 'v142')]
+			[ValidateSet('v142', 'v143')]
 			[Parameter(Position = 0, ValueFromPipeline = $true)]
 			[string] $Toolchain,
 
@@ -251,85 +239,49 @@ try
 		$VXXCommonTools = $null
 		$CmakeGenerator = $null
 
-		switch -Exact ($Toolchain)
+		$VS_VER = 16;
+		$VS_OFFICIAL_VER = 2019;
+		
+		if ($_ -eq 'v143')
 		{
-			'v110'
-			{
-				if($env:VS110COMNTOOLS -eq $null)
-				{
-					Die "Visual Studio 2012 was not found"
-				}
-				$VisualStudioVersion = '11.0'
-				$VXXCommonTools = Join-Path $env:VS110COMNTOOLS '..\..\vc'
-				$CmakeGenerator = 'Visual Studio 11'
-			}
-			'v120'
-			{
-				if($env:VS120COMNTOOLS -eq $null)
-				{
-					Die "Visual Studio 2013 was not found"
-				}
-				$VisualStudioVersion = '12.0'
-				$VXXCommonTools = Join-Path $env:VS120COMNTOOLS '..\..\vc'
-				$CmakeGenerator = 'Visual Studio 12'
-			}
-			'v140'
-			{
-				if($env:VS140COMNTOOLS -eq $null)
-				{
-					Die "Visual Studio 2015 was not found"
-				}
-				$VisualStudioVersion = '14.0'
-				$VXXCommonTools = Join-Path $env:VS140COMNTOOLS '..\..\vc'
-				$CmakeGenerator = 'Visual Studio 14'
-			}
-			{($_ -eq 'v141') -or ($_ -eq 'v142')}
-			{
-				$VS_VER = 15;
-				$VS_OFFICIAL_VER = 2017;
-				
-				if ($_ -eq 'v142')
-				{
-					$VS_VER=16;
-					$VS_OFFICIAL_VER=2019;
-				}
-				
-				$programFilesDir = (${env:ProgramFiles(x86)}, ${env:ProgramFiles} -ne $null)[0]
+			$VS_VER=17;
+			$VS_OFFICIAL_VER=2021;
+		}
+		
+		$programFilesDir = (${env:ProgramFiles(x86)}, ${env:ProgramFiles} -ne $null)[0]
 
-				$vswherePath = Join-Path $programFilesDir 'Microsoft Visual Studio\Installer\vswhere.exe'
-				#Check if we already have vswhere which is included in newer versions of VS2017/VS2019
-				if(-not (Test-Path $vswherePath))
-				{
-					Write-Diagnostic "Downloading VSWhere as no install found at $vswherePath"
-				
-					# Check if we already have a local copy and download if required
-					$vswherePath = Join-Path $WorkingDir \vswhere.exe
-				
-					# TODO: Check hash and download if hash differs
-					if(-not (Test-Path $vswherePath))
-					{
-						$client = New-Object System.Net.WebClient;
-						$client.DownloadFile('https://github.com/Microsoft/vswhere/releases/download/2.5.2/vswhere.exe', $vswherePath);
-					}
-				}
-			
-				Write-Diagnostic "VSWhere path $vswherePath"
-
-				$versionSearchStr = "[$VS_VER.0," + ($VS_VER+1) + ".0)"
-				$VS2017InstallPath = & $vswherePath -version $versionSearchStr -property installationPath
-			
-				Write-Diagnostic "$($VS_OFFICIAL_VER)InstallPath: $VS2017InstallPath"
-				
-				if($VS2017InstallPath -eq $null -or !(Test-Path $VS2017InstallPath))
-				{
-					Die "Visual Studio $VS_OFFICIAL_VER was not found"
-				}
-				
-				$VisualStudioVersion = "$VS_VER.0"
-				$VXXCommonTools = Join-Path $VS2017InstallPath VC\Auxiliary\Build
-				$CmakeGenerator = "Visual Studio $VS_VER"
+		$vswherePath = Join-Path $programFilesDir 'Microsoft Visual Studio\Installer\vswhere.exe'
+		#Check if we already have vswhere which is included in newer versions of VS2019/VS2021
+		if(-not (Test-Path $vswherePath))
+		{
+			Write-Diagnostic "Downloading VSWhere as no install found at $vswherePath"
+		
+			# Check if we already have a local copy and download if required
+			$vswherePath = Join-Path $WorkingDir \vswhere.exe
+		
+			# TODO: Check hash and download if hash differs
+			if(-not (Test-Path $vswherePath))
+			{
+				$client = New-Object System.Net.WebClient;
+				$client.DownloadFile('https://github.com/Microsoft/vswhere/releases/download/2.5.2/vswhere.exe', $vswherePath);
 			}
 		}
+	
+		Write-Diagnostic "VSWhere path $vswherePath"
+
+		$versionSearchStr = "[$VS_VER.0," + ($VS_VER+1) + ".0)"
+		$VSInstallPath = & $vswherePath -version $versionSearchStr -property installationPath
+	
+		Write-Diagnostic "$($VS_OFFICIAL_VER)InstallPath: $VSInstallPath"
+		
+		if($VSInstallPath -eq $null -or !(Test-Path $VSInstallPath))
+		{
+			Die "Visual Studio $VS_OFFICIAL_VER was not found"
+		}
+		
+		$VisualStudioVersion = "$VS_VER.0"
+		$VXXCommonTools = Join-Path $VSInstallPath VC\Auxiliary\Build
+		$CmakeGenerator = "Visual Studio $VS_VER"
 
 		if ($VXXCommonTools -eq $null -or (-not (Test-Path($VXXCommonTools))))
 		{
@@ -458,7 +410,7 @@ try
 	function VSX
 	{
 		param(
-			[ValidateSet('v110', 'v120', 'v140', 'v141', 'v142')]
+			[ValidateSet('v142', 'v143')]
 			[Parameter(Position = 0, ValueFromPipeline = $true)]
 			[string] $Toolchain
 		)
@@ -476,14 +428,11 @@ try
 		}
 		Msvs "$Toolchain" 'Release' 'x64'
 
-		if ($Toolchain -eq 'v141' -or $Toolchain -eq 'v142') 
+		if (! $NoDebugBuild)
 		{
-			if (! $NoDebugBuild)
-			{
-				Msvs "$Toolchain" 'Debug' 'arm64'
-			}
-			Msvs "$Toolchain" 'Release' 'arm64'
+			Msvs "$Toolchain" 'Debug' 'arm64'
 		}
+		Msvs "$Toolchain" 'Release' 'arm64'
 
 		Write-Diagnostic "Finished build targeting toolchain $Toolchain"
 	}
@@ -491,7 +440,7 @@ try
 	function CreateCefSdk
 	{
 		param(
-			[ValidateSet('v110', 'v120', 'v140', 'v141', 'v142')]
+			[ValidateSet('v142', 'v143')]
 			[Parameter(Position = 0, ValueFromPipeline = $true)]
 			[string] $Toolchain,
 
@@ -506,26 +455,11 @@ try
 
 		Write-Diagnostic "Creating sdk for $Toolchain"
 
-		$VisualStudioVersion = $null
-		if($Toolchain -eq "v142")
+		$VisualStudioVersion = "VS2019"
+		
+		if($Toolchain -eq "v143")
 		{
-			$VisualStudioVersion = "VS2019"
-		}
-		elseif($Toolchain -eq "v141")
-		{
-			$VisualStudioVersion = "VS2017"
-		}
-		elseif($Toolchain -eq "v140")
-		{
-			$VisualStudioVersion = "VS2015"
-		}
-		elseif ($Toolchain -eq "v110")
-		{
-			$VisualStudioVersion = "VS2012"
-		}
-		else
-		{
-			$VisualStudioVersion = "VS2013"
+			$VisualStudioVersion = "VS2021"
 		}
 
 		$Arch = 'win32'
@@ -541,7 +475,7 @@ try
 			$CefArchDir = $CefArm64
 		}
 
-		# cef_binary_3.y.z_windows32\out\debug\lib -> cef\win32\debug\vs2013
+		# cef_binary_3.y.z_windows32\out\debug\lib -> cef\win32\debug\vs2019
 		Copy-Item $CefArchDir\libcef_dll_wrapper\$Configuration\libcef_dll_wrapper.lib $Cef\$Arch\$Configuration\$VisualStudioVersion | Out-Null
 
 		# cef_binary_3.y.z_windows32\debug -> cef\win32\debug
@@ -603,7 +537,7 @@ try
 			}
 			
 			$Client = New-Object System.Net.WebClient;
-			$Client.DownloadFile('https://dist.nuget.org/win-x86-commandline/v5.4.0/nuget.exe', $Nuget);
+			$Client.DownloadFile('https://dist.nuget.org/win-x86-commandline/v5.11.0/nuget.exe', $Nuget);
 		}
 	}
 
@@ -940,21 +874,9 @@ try
 		{
 			Nupkg
 		}
-		"vs2013"
+		"vs2021"
 		{
-			VSX v120
-		}
-		"vs2012"
-		{
-			VSX v110
-		}
-		"vs2015"
-		{
-			VSX v140
-		}
-		"vs2017"
-		{
-			VSX v141
+			VSX v143
 		}
 		"vs2019"
 		{
