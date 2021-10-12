@@ -608,7 +608,7 @@ try
 {
 	$global:CefBuildsJson = $null
 	$VSwherePath = $null
-    $WorkingDir = split-path -parent $MyInvocation.MyCommand.Definition;
+	$WorkingDir = split-path -parent $MyInvocation.MyCommand.Definition;
 
 	Write-Diagnostic "pushd $WorkingDir"
 	Push-Location $WorkingDir
@@ -621,7 +621,7 @@ try
 			Enabled=($BuildArches.Contains('win-x86') -or $BuildArches.Contains('x86'));
 			NativeArch='win32';
 			Arch='x86';
-            ArchLong='windows32';
+			ArchLong='windows32';
 			Folder=Join-Path $WorkingDir 'cef_binary_3.y.z_windows32';
 		};
 		
@@ -629,7 +629,7 @@ try
 			Enabled=$BuildArches.Contains('win-x64') -or $BuildArches.Contains('x64');
 			NativeArch='x64';
 			Arch='x64';
-            ArchLong='windows64';
+			ArchLong='windows64';
 			Folder=Join-Path $WorkingDir 'cef_binary_3.y.z_windows64';
 		};
 		
@@ -637,7 +637,7 @@ try
 			Enabled=($BuildArches.Contains('win-arm64') -or $BuildArches.Contains('arm64'));
 			NativeArch='arm64';
 			Arch='arm64';
-            ArchLong='windowsarm64';
+			ArchLong='windowsarm64';
 			Folder=Join-Path $WorkingDir 'cef_binary_3.y.z_windowsarm64';
 		};
 	}
@@ -698,7 +698,7 @@ try
 		}
 	}
 
-    if($Target -eq "nupkg-only")
+	if($Target -eq "nupkg-only")
 	{
 		Nupkg
 		return;
@@ -733,7 +733,7 @@ try
 			}
 		}
 
-        Bootstrap $platform
+		Bootstrap $platform
 	}
 
 	# Loop through twice so the files have been downloaded
