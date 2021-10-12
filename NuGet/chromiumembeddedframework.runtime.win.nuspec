@@ -29,7 +29,7 @@
     <file src="..\cef_binary_3.y.z_$CPlatform$\Resources\*.dat" target="runtimes\win-$Platform$\native\"/>
     <file src="..\cef_binary_3.y.z_$CPlatform$\Readme.txt" target="\"/>
     
-    <file src="..\cef_binary_3.y.z_windows32\LICENSE.txt" target="LICENSE.txt" />
+    <file src="..\cef_binary_3.y.z_$CPlatform$\LICENSE.txt" target="LICENSE.txt" />
     <file src="cef128x128.png" target="images\" />
   </files>
 </package>
