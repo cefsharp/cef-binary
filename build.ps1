@@ -458,7 +458,7 @@ function Nupkg
 	
 	if ($env:APPVEYOR_REPO_TAG -eq "True")
 	{
-		Get-ChildItem -Path .\Nuget -Filter *.nupkg -File -Name| ForEach-Object {
+		Get-ChildItem -Path .\Nuget -Filter *.nupkg -File | ForEach-Object {
 			appveyor PushArtifact $_.FullName
 		} | Out-Null
 	}
