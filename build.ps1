@@ -114,25 +114,6 @@ function Warn
 
 }
 
-function TernaryReturn
-{
-	param(
-		[Parameter(Position = 0, ValueFromPipeline = $true)]
-		[bool] $Yes,
-		[Parameter(Position = 1, ValueFromPipeline = $true)]
-		$Value,
-		[Parameter(Position = 2, ValueFromPipeline = $true)]
-		$Value2
-	)
-
-	if ($Yes)
-	{
-		return $Value
-	}
-
-	$Value2
-}
-
 function DownloadDependencies()
 {
 	$folder = Join-Path $env:LOCALAPPDATA .\nuget;
@@ -148,9 +129,13 @@ function DownloadDependencies()
 		$Client.DownloadFile('https://dist.nuget.org/win-x86-commandline/v5.11.0/nuget.exe', $Nuget);
 	}
 
-	$programFilesDir = (${env:ProgramFiles(x86)}, ${env:ProgramFiles} -ne $null)[0]
+	$global:VSWherePath = Join-Path ${env:ProgramFiles} 'Microsoft Visual Studio\Installer\vswhere.exe'
 
-	$global:VSwherePath = Join-Path $programFilesDir 'Microsoft Visual Studio\Installer\vswhere.exe'
+	if(-not (Test-Path $global:VSWherePath))
+	{
+		$global:VSWherePath = Join-Path ${env:ProgramFiles(x86)} 'Microsoft Visual Studio\Installer\vswhere.exe'
+	}
+
 	#Check if we already have vswhere which is included in newer versions of VS2019/VS2021
 	if(-not (Test-Path $global:VSwherePath))
 	{
@@ -186,7 +171,7 @@ function WriteVersionToRuntimeJson
 function CheckDependencies()
 {
 	# Check for cmake
-	if ((Get-Command "cmake.exe" -ErrorAction SilentlyContinue) -eq $null)
+	if ($null -eq (Get-Command "cmake.exe" -ErrorAction SilentlyContinue))
 	{
 		Die "Unable to find cmake.exe in your PATH"
 	}
@@ -215,13 +200,13 @@ function Bootstrap
 
 	$arch = $Platform.NativeArch
 
-	md "cef\$arch" | Out-Null
-	md "cef\$arch\debug" | Out-Null
-	md "cef\$arch\debug\VS2019" | Out-Null
-	md "cef\$arch\debug\VS2021" | Out-Null
-	md "cef\$arch\release" | Out-Null
-	md "cef\$arch\release\VS2019" | Out-Null
-	md "cef\$arch\release\VS2021" | Out-Null
+	mkdir "cef\$arch" | Out-Null
+	mkdir "cef\$arch\debug" | Out-Null
+	mkdir "cef\$arch\debug\VS2019" | Out-Null
+	mkdir "cef\$arch\debug\VS2021" | Out-Null
+	mkdir "cef\$arch\release" | Out-Null
+	mkdir "cef\$arch\release\VS2019" | Out-Null
+	mkdir "cef\$arch\release\VS2021" | Out-Null
 }
 
 function Msvs
@@ -264,7 +249,7 @@ function Msvs
 	
 	Write-Diagnostic "$($VS_OFFICIAL_VER)InstallPath: $VSInstallPath"
 		
-	if($VSInstallPath -eq $null -or !(Test-Path $VSInstallPath))
+	if($null -eq $VSInstallPath -or !(Test-Path $VSInstallPath))
 	{
 		Die "Visual Studio $VS_OFFICIAL_VER was not found"
 	}
@@ -273,7 +258,7 @@ function Msvs
 	$VXXCommonTools = Join-Path $VSInstallPath VC\Auxiliary\Build
 	$CmakeGenerator = "Visual Studio $VS_VER"
 
-	if ($VXXCommonTools -eq $null -or (-not (Test-Path($VXXCommonTools))))
+	if ($null -eq $VXXCommonTools -or (-not (Test-Path($VXXCommonTools))))
 	{
 		Die 'Error unable to find any visual studio environment'
 	}
@@ -305,10 +290,10 @@ function Msvs
 		# Configure build environment
 		Invoke-BatchFile $VCVarsAll $VCVarsAllArch
 		Write-Diagnostic "pushd $CefDir"
-		pushd $CefDir
+		Push-Location $CefDir
 		# Remove previously generated CMake data for the different platform/toolchain
-		rm CMakeCache.txt -ErrorAction:SilentlyContinue
-		rm -r CMakeFiles -ErrorAction:SilentlyContinue
+		Remove-Item CMakeCache.txt -ErrorAction:SilentlyContinue
+		Remove-Item -r CMakeFiles -ErrorAction:SilentlyContinue
 		$cmake_path = "cmake.exe";
 		if ($env:ChocolateyInstall -And (Test-Path ($env:ChocolateyInstall + "\bin\" + $cmake_path)))
 		{
@@ -317,7 +302,7 @@ function Msvs
 		&"$cmake_path" --version
 		Write-Diagnostic "Running cmake: $cmake_path  -Wno-dev -LAH -G '$CmakeGenerator' -A $Arch -DUSE_SANDBOX=Off -DCEF_RUNTIME_LIBRARY_FLAG=/MD ."
 		&"$cmake_path"  -Wno-dev -LAH -G "$CmakeGenerator" -A $Arch -DUSE_SANDBOX=Off -DCEF_RUNTIME_LIBRARY_FLAG=/MD .
-		popd
+		Pop-Location
 
 		$Arguments = @(
 			"$CefProject",
@@ -474,8 +459,8 @@ function Nupkg
 	if ($env:APPVEYOR_REPO_TAG -eq "True")
 	{
 		Get-ChildItem -Path .\Nuget -Filter *.nupkg -File -Name| ForEach-Object {
-			appveyor PushArtifact $_
-		}
+			appveyor PushArtifact $_.FullName
+		} | Out-Null
 	}
 }
 
@@ -522,7 +507,7 @@ function DownloadCefBinaryAndUnzip()
 
 	$CefBuildServerUrl = "https://cef-builds.spotifycdn.com/"
 
-	if($global:CefBuildsJson -eq $null)
+	if($null -eq $global:CefBuildsJson)
 	{
 		$CefBuildServerJsonPackageList = $CefBuildServerUrl + "index.json"
 
@@ -533,7 +518,7 @@ function DownloadCefBinaryAndUnzip()
 
 	$CefWinCefVersion = $global:CefBuildsJson.($arch).versions | Where-Object {$_.cef_version -eq $CefVersion}
 
-	if($CefWinCefVersion -eq $null)
+	if($null -eq $CefWinCefVersion)
 	{
 		Die "Build Unavailable - $arch has no files for version $CefVersion"
 	}
