@@ -1,7 +1,7 @@
 #requires -Version 5
 
 param(
-	[ValidateSet("vs2019", "vs2021", "nupkg", "nupkg-only")]
+	[ValidateSet("vs2019", "vs2022", "nupkg", "nupkg-only")]
 	[Parameter(Position = 0)]
 	[string] $Target = "nupkg",
 
@@ -136,7 +136,7 @@ function DownloadDependencies()
 		$global:VSWherePath = Join-Path ${env:ProgramFiles(x86)} 'Microsoft Visual Studio\Installer\vswhere.exe'
 	}
 
-	#Check if we already have vswhere which is included in newer versions of VS2019/VS2021
+	#Check if we already have vswhere which is included in newer versions of VS2019/VS2022
 	if(-not (Test-Path $global:VSwherePath))
 	{
 		Write-Diagnostic "Downloading VSWhere as no install found at $global:VSwherePath"
@@ -203,10 +203,10 @@ function Bootstrap
 	mkdir "cef\$arch" | Out-Null
 	mkdir "cef\$arch\debug" | Out-Null
 	mkdir "cef\$arch\debug\VS2019" | Out-Null
-	mkdir "cef\$arch\debug\VS2021" | Out-Null
+	mkdir "cef\$arch\debug\VS2022" | Out-Null
 	mkdir "cef\$arch\release" | Out-Null
 	mkdir "cef\$arch\release\VS2019" | Out-Null
-	mkdir "cef\$arch\release\VS2021" | Out-Null
+	mkdir "cef\$arch\release\VS2022" | Out-Null
 }
 
 function Msvs
@@ -403,7 +403,7 @@ function CreateCefSdk
 		
 	if($Toolchain -eq "v143")
 	{
-		$VisualStudioVersion = "VS2021"
+		$VisualStudioVersion = "VS2022"
 	}
 
 	$CefArchDir = $Platform.Folder
@@ -742,7 +742,7 @@ try
 			{
 				VSX v142 $platform
 			}
-			"vs2021"
+			"vs2022"
 			{
 				VSX v143 $platform
 			}
