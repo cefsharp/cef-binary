@@ -26,11 +26,8 @@
     <!-- https://github.com/NuGet/Home/issues/7698#issuecomment-455368655 -->
     <!-- We have to copy swiftshader and locales via manually -->
     <file src="..\cef_binary_3.y.z_windows32\Resources\locales\*.pak" target="CEF\win-x86\locales"/>
-    <file src="..\cef_binary_3.y.z_windows32\$Configuration$\swiftshader\*.dll" target="CEF\win-x86\swiftshader" />
 	<file src="..\cef_binary_3.y.z_windows64\Resources\locales\*.pak" target="CEF\win-x64\locales"/>
-    <file src="..\cef_binary_3.y.z_windows64\$Configuration$\swiftshader\*.dll" target="CEF\win-x64\swiftshader" />
     <file src="..\cef_binary_3.y.z_windowsarm64\Resources\locales\*.pak" target="CEF\win-arm64\locales"/>
-    <file src="..\cef_binary_3.y.z_windowsarm64\$Configuration$\swiftshader\*.dll" target="CEF\win-arm64\swiftshader" />
     <file src="..\cef\LICENSE.txt" target="LICENSE.txt" />
     <file src="chromiumembeddedframework.runtime.json" target="runtime.json" />
 	<file src="chromiumembeddedframework.runtime.props" target="buildTransitive\" />

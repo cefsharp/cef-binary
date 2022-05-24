@@ -16,7 +16,6 @@
   </metadata>
   <files>
     <file src="..\cef_binary_3.y.z_$CPlatform$\$Configuration$\*.dll" target="CEF\" />
-    <file src="..\cef_binary_3.y.z_$CPlatform$\$Configuration$\swiftshader\*.dll" target="CEF\swiftshader" />
     <file src="..\cef_binary_3.y.z_$CPlatform$\$Configuration$\*.bin" target="CEF\" />
 	<file src="..\cef_binary_3.y.z_$CPlatform$\$Configuration$\*.json" target="CEF\" />
     <file src="..\cef_binary_3.y.z_$CPlatform$\Resources\*.pak" target="CEF\"/>

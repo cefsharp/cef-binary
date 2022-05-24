@@ -729,7 +729,6 @@ try
 		# Create the folders for any that don't exist so the nuget packages are created with empty folders
 		# This can be removed once the new chromiumembeddedframework.runtime.resource package is created
 		[System.IO.Directory]::CreateDirectory([IO.Path]::Combine($platform.Folder, 'Resources','locales'))
-		[System.IO.Directory]::CreateDirectory([IO.Path]::Combine($platform.Folder, 'Release','swiftshader'))
 
 		if(!$platform.Enabled)
 		{

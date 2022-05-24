@@ -5,10 +5,7 @@
     -->  
   <ItemGroup>
     <CefRuntimeWin32Locales Include="$(MSBuildThisFileDirectory)..\CEF\win-x86\locales\*.*" />
-    <CefRuntimeWin32SwiftShader Include="$(MSBuildThisFileDirectory)..\CEF\win-x86\swiftshader\*.*" />
 	<CefRuntimeWin64Locales Include="$(MSBuildThisFileDirectory)..\CEF\win-x64\locales\*.*" />
-    <CefRuntimeWin64SwiftShader Include="$(MSBuildThisFileDirectory)..\CEF\win-x64\swiftshader\*.*" />
     <CefRuntimeWinArm64Locales Include="$(MSBuildThisFileDirectory)..\CEF\win-arm64\locales\*.*" />
-    <CefRuntimeWinArm64SwiftShader Include="$(MSBuildThisFileDirectory)..\CEF\win-arm64\swiftshader\*.*" />
   </ItemGroup>
 </Project>
