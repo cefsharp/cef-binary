@@ -236,10 +236,10 @@ function Msvs
 	$VS_VER = 16;
 	$VS_OFFICIAL_VER = 2019;
 		
-	if ($_ -eq 'v143')
+	if ($Toolchain -eq 'v143')
 	{
 		$VS_VER=17;
-		$VS_OFFICIAL_VER=2021;
+		$VS_OFFICIAL_VER=2022;
 	}
 	
 	Write-Diagnostic "VSWhere path $global:VSwherePath"
