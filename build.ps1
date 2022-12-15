@@ -251,7 +251,13 @@ function Msvs
 		
 	if($null -eq $VSInstallPath -or !(Test-Path $VSInstallPath))
 	{
-		Die "Visual Studio $VS_OFFICIAL_VER was not found"
+		$VSInstallPath = & $global:VSwherePath -version $versionSearchStr -property installationPath -products 'Microsoft.VisualStudio.Product.BuildTools'
+		Write-Diagnostic "BuildTools $($VS_OFFICIAL_VER)InstallPath: $VSInstallPath"
+
+		if($null -eq $VSInstallPath -or !(Test-Path $VSInstallPath))
+		{
+			Die "Visual Studio $VS_OFFICIAL_VER was not found"
+		}
 	}
 		
 	$VisualStudioVersion = "$VS_VER.0"
