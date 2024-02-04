@@ -30,6 +30,7 @@
     <file src="..\cef_binary_3.y.z_windowsarm64\Resources\locales\*.pak" target="CEF\win-arm64\locales"/>
     <file src="..\cef\LICENSE.txt" target="LICENSE.txt" />
     <file src="chromiumembeddedframework.runtime.json" target="runtime.json" />
+	<file src="chromiumembeddedframework.runtime.props" target="build\" />
 	<file src="chromiumembeddedframework.runtime.props" target="buildTransitive\" />
     <file src="cef128x128.png" target="images\" />
   </files>

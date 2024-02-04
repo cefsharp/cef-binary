@@ -22,12 +22,14 @@
     <copyright>Copyright © 2008-2021</copyright>
   </metadata>
   <files>
-    <file src="..\cef_binary_3.y.z_$CPlatform$\$Configuration$\*.dll" target="runtimes\win-$Platform$\native" />
+    <file src="..\cef_binary_3.y.z_$CPlatform$\$Configuration$\*.dll" target="runtimes\win-$Platform$\native\" />
     <file src="..\cef_binary_3.y.z_$CPlatform$\$Configuration$\*.bin" target="runtimes\win-$Platform$\native\" />
 	<file src="..\cef_binary_3.y.z_$CPlatform$\$Configuration$\*.json" target="runtimes\win-$Platform$\native\" />
     <file src="..\cef_binary_3.y.z_$CPlatform$\Resources\*.pak" target="runtimes\win-$Platform$\native\"/>
     <file src="..\cef_binary_3.y.z_$CPlatform$\Resources\*.dat" target="runtimes\win-$Platform$\native\"/>
     <file src="..\cef_binary_3.y.z_$CPlatform$\Readme.txt" target="\"/>
+	<file src="chromiumembeddedframework.runtime.win-$Platform$.props" target="build\" />
+	<file src="chromiumembeddedframework.runtime.win-$Platform$.props" target="buildTransitive\" />
     
     <file src="..\cef_binary_3.y.z_$CPlatform$\LICENSE.txt" target="LICENSE.txt" />
     <file src="cef128x128.png" target="images\" />

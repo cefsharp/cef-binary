@@ -6,11 +6,8 @@
     Checkout the CefSharp.Common.targets file for an example
     -->
   
-  <!--
-    Using wildcard matching as per https://stackoverflow.com/a/17252671
-    -->  
   <ItemGroup>
-    <CefRedist64 Include="$(MSBuildThisFileDirectory)..\CEF\**\*.*" />
+	<CefRuntimeWin64 Include="$(MSBuildThisFileDirectory)..\runtimes\win-x64\native\*.*" />
   </ItemGroup>
   
   <Target Name="CefRedist64CopyResources">
@@ -18,14 +15,14 @@
       <CefRedist64TargetDir Condition="'$(CefRedist64TargetDir)' == ''">$(TargetDir)</CefRedist64TargetDir>
     </PropertyGroup>
     <!--
-    Cannot gurantee access to the main CefRedist64 ItemGroup here
+    Cannot gurantee access to the main CefRuntimeWin64 ItemGroup here
     so we create a duplicate inside our target.
     https://github.com/dotnet/project-system/issues/4158
     -->
     <ItemGroup>
-      <_CefRedist64 Include="$(MSBuildThisFileDirectory)..\CEF\**\*.*" />
+      <_CefRuntimeWin64 Include="$(MSBuildThisFileDirectory)..\runtimes\win-x64\native\*.*" />
     </ItemGroup>
-    <Message Importance="high" Text="Copying CEF Redist x64 files from $(MSBuildThisFileDirectory)..\CEF to $(CefRedist64TargetDir)" />
-    <Copy SourceFiles="@(_CefRedist64)" DestinationFiles="@(_CefRedist64->'$(CefRedist64TargetDir)\%(RecursiveDir)%(Filename)%(Extension)')" SkipUnchangedFiles="true" />
+    <Message Importance="high" Text="Copying Chromium Embedded Framework Runtime x64 files from $(MSBuildThisFileDirectory)..\runtimes\win-x64\native to $(CefRedist64TargetDir)" />
+    <Copy SourceFiles="@(_CefRuntimeWin64)" DestinationFiles="@(_CefRuntimeWin64->'$(CefRedist64TargetDir)\%(RecursiveDir)%(Filename)%(Extension)')" SkipUnchangedFiles="true" />
   </Target>
 </Project>
