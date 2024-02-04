@@ -15,14 +15,14 @@
       <CefRedistArm64TargetDir Condition="'$(CefRedistArm64TargetDir)' == ''">$(TargetDir)</CefRedistArm64TargetDir>
     </PropertyGroup>
     <!--
-    Cannot gurantee access to the main CefRedistArm64 ItemGroup here
+    Cannot gurantee access to the main CefRuntimeWinArm64 ItemGroup here
     so we create a duplicate inside our target.
     https://github.com/dotnet/project-system/issues/4158
     -->
     <ItemGroup>
-      <_CefRedistArm64 Include="$(MSBuildThisFileDirectory)..\runtimes\win-arm64\native\*.*" />
+      <_CefRuntimeWinArm64 Include="$(MSBuildThisFileDirectory)..\runtimes\win-arm64\native\*.*" />
     </ItemGroup>
-    <Message Importance="high" Text="Copying Chromium Embedded Framework Runtime x86 files from $(MSBuildThisFileDirectory)..\runtimes\win-arm64\native to $(CefRedistArm64TargetDir)" />
-    <Copy SourceFiles="@(_CefRedistArm64)" DestinationFiles="@(_CefRedistArm64->'$(CefRedistArm64TargetDir)\%(RecursiveDir)%(Filename)%(Extension)')" SkipUnchangedFiles="true" />
+    <Message Importance="high" Text="Copying Chromium Embedded Framework Runtime arm64 files from $(MSBuildThisFileDirectory)..\runtimes\win-arm64\native to $(CefRedistArm64TargetDir)" />
+    <Copy SourceFiles="@(_CefRuntimeWinArm64)" DestinationFiles="@(_CefRuntimeWinArm64->'$(CefRedistArm64TargetDir)\%(RecursiveDir)%(Filename)%(Extension)')" SkipUnchangedFiles="true" />
   </Target>
 </Project>
