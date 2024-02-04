@@ -7,7 +7,7 @@
     -->
   
   <ItemGroup>
-    <CefRuntime32 Include="$(MSBuildThisFileDirectory)..\runtimes\win-x86\native\*.*" />
+    <CefRuntimeWin32 Include="$(MSBuildThisFileDirectory)..\runtimes\win-x86\native\*.*" />
   </ItemGroup>
   
   <Target Name="CefRedist32CopyResources">
