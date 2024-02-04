@@ -8,7 +8,10 @@
   
   <ItemGroup>
 	<CefRuntimeWin64 Include="$(MSBuildThisFileDirectory)..\runtimes\win-x64\native\*.*" />
-	<CefRuntimeWin64Locales Include="$(MSBuildThisFileDirectory)..\CEF\win-x64\locales\*.*" />
+	<_CefRuntimeWin64Locales Include="$(MSBuildThisFileDirectory)..\CEF\win-x64\locales\*.*" />
+	
+	<CefRedist64 Include="@(CefRuntimeWin64)" />
+	<CefRedist64 Include="@(_CefRuntimeWin64Locales->'locales\%(Filename)%(Extension)')" />
   </ItemGroup>
   
   <Target Name="CefRedist64CopyResources">
