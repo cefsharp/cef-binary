@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
   <metadata minClientVersion="5.0.0">
-    <id>chromiumembeddedframework.runtime</id>
+    <id>chromiumembeddedframework.runtime.resources</id>
     <version>$version$</version>
     <authors>The Chromium Embedded Framework Authors</authors>
     <owners>The CefSharp Authors</owners>
@@ -22,8 +22,15 @@
     <copyright>Copyright © 2008-2024</copyright>
   </metadata>
   <files>
+	<!-- Architecture-specific files folder hierarchy lost (native subfolders)  -->
+    <!-- https://github.com/NuGet/Home/issues/7698#issuecomment-455368655 -->
+    <!-- We have to copy locales manually -->
+    <file src="..\cef_binary_3.y.z_windows32\Resources\locales\*.pak" target="CEF\win-x86\locales"/>
+	<file src="..\cef_binary_3.y.z_windows64\Resources\locales\*.pak" target="CEF\win-x64\locales"/>
+    <file src="..\cef_binary_3.y.z_windowsarm64\Resources\locales\*.pak" target="CEF\win-arm64\locales"/>
     <file src="..\cef\LICENSE.txt" target="LICENSE.txt" />
-    <file src="chromiumembeddedframework.runtime.json" target="runtime.json" />
+	<file src="chromiumembeddedframework.runtime.resources.props" target="build\" />
+	<file src="chromiumembeddedframework.runtime.resources.props" target="buildTransitive\" />
     <file src="cef128x128.png" target="images\" />
   </files>
 </package>

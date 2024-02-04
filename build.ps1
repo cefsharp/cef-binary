@@ -251,13 +251,7 @@ function Msvs
 		
 	if($null -eq $VSInstallPath -or !(Test-Path $VSInstallPath))
 	{
-		$VSInstallPath = & $global:VSwherePath -version $versionSearchStr -property installationPath -products 'Microsoft.VisualStudio.Product.BuildTools'
-		Write-Diagnostic "BuildTools $($VS_OFFICIAL_VER)InstallPath: $VSInstallPath"
-
-		if($null -eq $VSInstallPath -or !(Test-Path $VSInstallPath))
-		{
-			Die "Visual Studio $VS_OFFICIAL_VER was not found"
-		}
+		Die "Visual Studio $VS_OFFICIAL_VER was not found"
 	}
 		
 	$VisualStudioVersion = "$VS_VER.0"
@@ -449,6 +443,7 @@ function Nupkg
 		
 	# Meta Package
 	. $Nuget pack nuget\chromiumembeddedframework.runtime.nuspec -NoPackageAnalysis -Version $CefPackageVersion -Properties 'Configuration=Release;' -OutputDirectory nuget
+	. $Nuget pack nuget\chromiumembeddedframework.runtime.resources.nuspec -NoPackageAnalysis -Version $CefPackageVersion -Properties 'Configuration=Release;' -OutputDirectory nuget
 
 	# Build sdk
 	$Filename = Resolve-Path ".\nuget\cef.sdk.props"
