@@ -8,16 +8,15 @@
   
   <ItemGroup>
     <CefRuntimeWin32 Include="$(MSBuildThisFileDirectory)..\runtimes\win-x86\native\*.*" />
-	<_CefRuntimeWin32Locales Include="$(MSBuildThisFileDirectory)..\CEF\win-x86\locales\*.*" />
+	<_CefRuntimeWin32Additional Include="$(MSBuildThisFileDirectory)..\CEF\win-x86\**\*.*" />
 	
 	<CefRedist32 Include="@(CefRuntimeWin32)" />
-	<CefRedist32 Include="@(_CefRuntimeWin32Locales->'locales\%(Filename)%(Extension)')" />
+	<CefRedist32 Include="@(_CefRuntimeWin32Additional)" />
   </ItemGroup>
   
   <Target Name="CefRedist32CopyResources">
     <PropertyGroup>
       <CefRedist32TargetDir Condition="'$(CefRedist32TargetDir)' == ''">$(TargetDir)</CefRedist32TargetDir>
-	  <_CefRedist32LocalesTargetDir>$(CefRedist32TargetDir)\locales</_CefRedist32LocalesTargetDir>
     </PropertyGroup>
     <!--
     Cannot gurantee access to the main CefRuntimeWin32 ItemGroup here
@@ -26,12 +25,9 @@
     -->
     <ItemGroup>
       <_CefRuntimeWin32 Include="$(MSBuildThisFileDirectory)..\runtimes\win-x86\native\*.*" />
-	  <_CefRuntimeWin32Locales Include="$(MSBuildThisFileDirectory)..\CEF\win-x86\locales\*.*" />
+	  <_CefRuntimeWin32 Include="$(MSBuildThisFileDirectory)..\CEF\win-x86\**\*.*" />
     </ItemGroup>
     <Message Importance="high" Text="Copying Chromium Embedded Framework Runtime x86 files from $(MSBuildThisFileDirectory)..\runtimes\win-x86\native to $(CefRedist32TargetDir)" />
     <Copy SourceFiles="@(_CefRuntimeWin32)" DestinationFiles="@(_CefRuntimeWin32->'$(CefRedist32TargetDir)\%(RecursiveDir)%(Filename)%(Extension)')" SkipUnchangedFiles="true" />
-	
-	<Message Importance="high" Text="Copying Chromium Embedded Framework Locales x86 files from $(MSBuildThisFileDirectory)..\CEF\win-x86\locales to $(_CefRedist32LocalesTargetDir)" />
-    <Copy SourceFiles="@(_CefRuntimeWin32Locales)" DestinationFiles="@(_CefRuntimeWin32Locales->'$(_CefRedist32LocalesTargetDir)\%(RecursiveDir)%(Filename)%(Extension)')" SkipUnchangedFiles="true" />
   </Target>
 </Project>

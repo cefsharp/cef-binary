@@ -8,16 +8,15 @@
 
   <ItemGroup>
 	<CefRuntimeWinArm64 Include="$(MSBuildThisFileDirectory)..\runtimes\win-arm64\native\*.*" />
-	<_CefRuntimeWinArm64Locales Include="$(MSBuildThisFileDirectory)..\CEF\win-arm64\locales\*.*" />
+	<_CefRuntimeWinArm64Additional Include="$(MSBuildThisFileDirectory)..\CEF\win-arm64\**\*.*" />
 	
 	<CefRedistArm64 Include="@(CefRuntimeWinArm64)" />
-	<CefRedistArm64 Include="@(_CefRuntimeWinArm64Locales->'locales\%(Filename)%(Extension)')" />
+	<CefRedistArm64 Include="@(_CefRuntimeWinArm64Additional)" />
   </ItemGroup>
   
   <Target Name="CefRedistArm64CopyResources">
     <PropertyGroup>
       <CefRedistArm64TargetDir Condition="'$(CefRedistArm64TargetDir)' == ''">$(TargetDir)</CefRedistArm64TargetDir>
-	  <_CefRedistArm64LocalesTargetDir>$(CefRedistArm64TargetDir)\locales</_CefRedistArm64LocalesTargetDir>
     </PropertyGroup>
     <!--
     Cannot gurantee access to the main CefRuntimeWinArm64 ItemGroup here
@@ -26,12 +25,9 @@
     -->
     <ItemGroup>
       <_CefRuntimeWinArm64 Include="$(MSBuildThisFileDirectory)..\runtimes\win-arm64\native\*.*" />
-	  <_CefRuntimeWinArm64Locales Include="$(MSBuildThisFileDirectory)..\CEF\win-arm64\locales\*.*" />
+	  <_CefRuntimeWinArm64 Include="$(MSBuildThisFileDirectory)..\CEF\win-arm64\**\*.*" />
     </ItemGroup>
     <Message Importance="high" Text="Copying Chromium Embedded Framework Runtime arm64 files from $(MSBuildThisFileDirectory)..\runtimes\win-arm64\native to $(CefRedistArm64TargetDir)" />
     <Copy SourceFiles="@(_CefRuntimeWinArm64)" DestinationFiles="@(_CefRuntimeWinArm64->'$(CefRedistArm64TargetDir)\%(RecursiveDir)%(Filename)%(Extension)')" SkipUnchangedFiles="true" />
-	
-	<Message Importance="high" Text="Copying Chromium Embedded Framework Locales x86 files from $(MSBuildThisFileDirectory)..\CEF\win-x86\locales to $(_CefRedistArm64LocalesTargetDir)" />
-    <Copy SourceFiles="@(_CefRuntimeWinArm64Locales)" DestinationFiles="@(_CefRuntimeWinArm64Locales->'$(_CefRedistArm64LocalesTargetDir)\%(RecursiveDir)%(Filename)%(Extension)')" SkipUnchangedFiles="true" />
   </Target>
 </Project>
