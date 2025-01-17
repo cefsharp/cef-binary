@@ -14,7 +14,7 @@ param(
 	[string] $CefBinaryDir = "../cefsource/chromium/src/cef/binary_distrib/",
 
 	[Parameter(Position = 3)]
-	$CefVersion = "121.2.14+ga44b59f+chromium-121.0.6167.75",
+	$CefVersion = "132.3.1+g144febe+chromium-132.0.6834.83",
 
 	[ValidateSet("tar.bz2","zip","7z")]
 	[Parameter(Position = 4)]
@@ -524,10 +524,13 @@ function DownloadCefBinaryAndUnzip()
 		Die "Build Unavailable - $arch has no files for version $CefVersion"
 	}
 
-	#TODO Duplication
-	$CefFileName = ($CefWinCefVersion.files | Where-Object {$_.type -eq "standard"}).name
-	$CefFileHash = ($CefWinCefVersion.files | Where-Object {$_.type -eq "standard"}).sha1
-	$CefFileSize = (($CefWinCefVersion.files | Where-Object {$_.type -eq "standard"}).size /1MB)
+    # CEF sometimes has multiple builds of the same version with one being Stable and one being Beta
+    # We'll take the newest build in that case
+    $CefStandardFiles = ($CefWinCefVersion.files | Where-Object {$_.type -eq "standard"} | Sort-Object -Descending -Property last_modified)[0];
+
+	$CefFileName = $CefStandardFiles.name
+	$CefFileHash = $CefStandardFiles.sha1
+	$CefFileSize = $CefStandardFiles.size /1MB
 
 	$LocalFile = Join-Path $WorkingDir $CefFileName
 	if (-not (Test-Path $LocalFile))
