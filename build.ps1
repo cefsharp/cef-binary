@@ -586,11 +586,15 @@ function CopyFromLocalCefBuild()
 		Copy-Item ($CefBinaryDir+$CefFileName) $LocalFile
 		Write-Diagnostic "Copy of $CefFileName complete"
 	}
-
-	if (-not (Test-Path (Join-Path $Platform.Folder '\include\cef_version.h')))
+	
+	Write-Diagnostic "Removing $Platform.Folder"
+	# Always remove directory if exists when copying from local
+	if (Test-Path $Platform.Folder)
 	{
-		ExtractArchive $LocalFile $CefFileName $Platform.Folder
+	    Remove-Item $Platform.Folder -Recurse | Out-Null
 	}
+
+	ExtractArchive $LocalFile $CefFileName $Platform.Folder
 }
 
 try
