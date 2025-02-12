@@ -535,10 +535,12 @@ function DownloadCefBinaryAndUnzip()
 	$LocalFile = Join-Path $WorkingDir $CefFileName
 	if (-not (Test-Path $LocalFile))
 	{
+		$UriEncodedFileName = [System.Web.HttpUtility]::UrlEncode($CefFileName).Replace("%2b", "%2B")
+		$FullUri = $CefBuildServerUrl + $UriEncodedFileName
+		Write-Diagnostic "Downloading $FullUri this will take a while as the file is $CefFileSize MB."
+		
 		$Client = New-Object System.Net.WebClient;
-
-		Write-Diagnostic "Downloading $CefFileName; this will take a while as the file is $CefFileSize MB."
-		$Client.DownloadFile($CefBuildServerUrl + [System.Web.HttpUtility]::UrlEncode($CefFileName), $LocalFile);
+		$Client.DownloadFile($FullUri, $LocalFile);
 
 		if (-not (Test-Path $LocalFile))
 		{
