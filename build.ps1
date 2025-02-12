@@ -535,7 +535,8 @@ function DownloadCefBinaryAndUnzip()
 	$LocalFile = Join-Path $WorkingDir $CefFileName
 	if (-not (Test-Path $LocalFile))
 	{
-		$UriEncodedFileName = [System.Web.HttpUtility]::UrlEncode($CefFileName).Replace("%2b", "%2B")
+		# The spotify build server uses case sensitive urls now, need to use EscapeDataString instead of UrlEncode
+		$UriEncodedFileName = [System.Uri]::EscapeDataString($CefFileName)
 		$FullUri = $CefBuildServerUrl + $UriEncodedFileName
 		Write-Diagnostic "Downloading $FullUri this will take a while as the file is $CefFileSize MB."
 		
