@@ -1,6 +1,6 @@
-image: Visual Studio 2019
+image: Visual Studio 2022
 
-version: 93.0.1-CI{build}
+version: 138.0.15-CI{build}
 
 shallow_clone: true
 
